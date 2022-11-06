@@ -1,0 +1,8 @@
+dali.py
+setup.py
+dali.egg-info/PKG-INFO
+dali.egg-info/SOURCES.txt
+dali.egg-info/dependency_links.txt
+dali.egg-info/entry_points.txt
+dali.egg-info/requires.txt
+dali.egg-info/top_level.txt
