@@ -1,13 +1,12 @@
 class DALIAddressByte:
-
-    DAPC = 'DAPC'
-    SHORT = 'SHORT'
-    GROUP = 'GROUP'
-    BROADCAST = 'BROADCAST'
-    UNADDRESSED = 'UNADDRESSED'
-    SPECIAL = 'SPECIAL'
-    RESERVED = 'RESERVED'
-    INVALID = 'INVALID'
+    DAPC = "DAPC"
+    SHORT = "SHORT"
+    GROUP = "GROUP"
+    BROADCAST = "BROADCAST"
+    UNADDRESSED = "UNADDRESSED"
+    SPECIAL = "SPECIAL"
+    RESERVED = "RESERVED"
+    INVALID = "INVALID"
 
     def __init__(self, dapc=False):
         if dapc:
@@ -41,37 +40,37 @@ class DALIAddressByte:
 
     def special(self, code=0):
         self.byte &= 0x01
-        if code in range(0xA0,0xCC):
+        if code in range(0xA0, 0xCC):
             self.byte |= code
             self.mode = self.SPECIAL
 
     def reserved(self, code=0):
         self.byte &= 0x01
-        if code in range(0xCC,0xFC):
+        if code in range(0xCC, 0xFC):
             self.byte |= code
             self.mode = self.RESERVED
 
-    def arg(self, text=''):
+    def arg(self, text=""):
         text = text.upper()
-        if text == 'BC':
+        if text == "BC":
             self.broadcast()
             return
-        if text == 'BCU':
+        if text == "BCU":
             self.unaddressed()
             return
-        if text[0] == 'A':
-            self.short(int(text[1:2]))
+        if text[0] == "A":
+            self.short(int(text[1:3]))
             return
-        if text[0] == 'G':
-            self.group(int(text[1:2]))
+        if text[0] == "G":
+            self.group(int(text[1:3]))
             return
 
     def __str__(self):
         if self.mode == self.SHORT:
             short_address = (self.byte >> 1) & 0x3F
-            return F'A{short_address:02}'
+            return f"A{short_address:02}"
         elif self.mode == self.GROUP:
             group_address = (self.byte >> 1) & 0xF
-            return F'G{group_address:02}'
+            return f"G{group_address:02}"
         else:
             return self.mode
