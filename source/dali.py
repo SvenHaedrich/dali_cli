@@ -19,7 +19,7 @@ class Session:
 pass_session = click.make_pass_decorator(Session)
 
 @click.group(name='dali')
-@click.version_option('0.0.1')
+@click.version_option('0.0.2')
 @click.option(
     '--serial-port', 
     envvar='DALI_SERIAL_PORT',
