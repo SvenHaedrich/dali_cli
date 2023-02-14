@@ -16,6 +16,8 @@ from gear import query as gear_query_cmd
 from gear import level as level_cmd
 from gear import summary as gear_summary_cmd
 from gear import list as gear_list_cmd
+from gear import configure as gear_conf_cmd
+from gear import special as gear_special_cmd
 
 # global data
 connection = None
@@ -23,7 +25,7 @@ timeout_sec = 0.15
 
 
 @click.group(name="dali")
-@click.version_option("0.0.2")
+@click.version_option("0.0.3")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -68,6 +70,8 @@ cli.add_command(level_cmd.dapc)
 cli.add_command(level_cmd.goto)
 
 
+#
+# ---- gear commands
 @cli.group(name="gear", help="Control gear commands.")
 def gear():
     pass
@@ -76,13 +80,45 @@ def gear():
 gear.add_command(gear_summary_cmd.summary)
 gear.add_command(gear_list_cmd.list)
 
+# ---- configure commands
+gear.add_command(gear_conf_cmd.reset)
+gear.add_command(gear_conf_cmd.actual)
+gear.add_command(gear_conf_cmd.op)
+gear.add_command(gear_conf_cmd.reset_mem)
+gear.add_command(gear_conf_cmd.id)
+gear.add_command(gear_conf_cmd.max)
+gear.add_command(gear_conf_cmd.min)
+gear.add_command(gear_conf_cmd.fail)
+gear.add_command(gear_conf_cmd.on)
+gear.add_command(gear_conf_cmd.time)
+gear.add_command(gear_conf_cmd.rate)
+gear.add_command(gear_conf_cmd.ext)
+gear.add_command(gear_conf_cmd.scene)
+gear.add_command(gear_conf_cmd.remove)
+gear.add_command(gear_conf_cmd.add)
+gear.add_command(gear_conf_cmd.ungroup)
+gear.add_command(gear_conf_cmd.short)
+gear.add_command(gear_conf_cmd.enable)
 
-@gear.group(name="set", help="Set control gear.")
-def gear_set():
-    pass
+# ---- special commands
+gear.add_command(gear_special_cmd.term)
+gear.add_command(gear_special_cmd.dtr0)
+gear.add_command(gear_special_cmd.init)
+gear.add_command(gear_special_cmd.rand)
+gear.add_command(gear_special_cmd.comp)
+gear.add_command(gear_special_cmd.withdraw)
+gear.add_command(gear_special_cmd.ping)
+gear.add_command(gear_special_cmd.search)
+gear.add_command(gear_special_cmd.program)
+gear.add_command(gear_special_cmd.verify)
+gear.add_command(gear_special_cmd.dt)
+gear.add_command(gear_special_cmd.dtr1)
+gear.add_command(gear_special_cmd.dtr2)
+gear.add_command(gear_special_cmd.write)
+gear.add_command(gear_special_cmd.noreply)
 
 
-@gear.group(name="query", help="Query gear status.")
+@gear.group(name="query", help="Query gear status commands.")
 def gear_query():
     pass
 
@@ -109,8 +145,10 @@ gear_query.add_command(gear_query_cmd.min_level)
 gear_query.add_command(gear_query_cmd.max_level)
 gear_query.add_command(gear_query_cmd.power_level)
 gear_query.add_command(gear_query_cmd.failure_level)
+gear_query.add_command(gear_special_cmd.short)
 
-
-@click.group(name="device", help="Control device commands.")
-def device():
-    pass
+#
+# ---- device commands
+# @click.group(name="device", help="Control device commands.")
+# def device():
+#    pass

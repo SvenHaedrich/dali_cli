@@ -90,9 +90,10 @@ def dapc(adr, level):
     help="Address, can be a short address (A0..A63) or group address (G0..G15).",
 )
 def goto(adr, scene):
-    address = DALIAddressByte()
-    address.arg(adr)
-    opcode = ForwardFrame16Bit.opcode(f"GO TO SCENE {scene}")
-    command = address.byte << 8 | opcode
-    frame = Raw_Frame(length=16, data=command)
-    dali.connection.write(frame)
+    if scene in range(0, 0x10):
+        address = DALIAddressByte()
+        address.arg(adr)
+        opcode = ForwardFrame16Bit.opcode(f"GO TO SCENE {scene}")
+        command = address.byte << 8 | opcode
+        frame = Raw_Frame(length=16, data=command)
+        dali.connection.write(frame)

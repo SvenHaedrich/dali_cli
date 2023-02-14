@@ -58,16 +58,16 @@ def gear_query_and_display_reply(adr, opcode):
 def status(adr):
     result = gear_query_value(adr, ForwardFrame16Bit.opcode("QUERY STATUS"))
     if not result == None:
-        click.echo(f"Status: {result} = 0x{result:02X} = {result:08b}b")
-        click.echo("Bit description")
-        click.echo(f" {(result >> 0 & 0x01)} : controlGearFailure")
-        click.echo(f" {(result >> 1 & 0x01)} : lampFailure")
-        click.echo(f" {(result >> 2 & 0x01)} : lampOn")
-        click.echo(f" {(result >> 3 & 0x01)} : limitError")
-        click.echo(f" {(result >> 4 & 0x01)} : fadeRunning")
-        click.echo(f" {(result >> 5 & 0x01)} : resetState")
-        click.echo(f" {(result >> 6 & 0x01)} : shortAddress is MASK")
-        click.echo(f" {(result >> 7 & 0x01)} : powerCycleSeen")
+        click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
+        click.echo("bit : description")
+        click.echo(f"  {(result >> 0 & 0x01)} : controlGearFailure")
+        click.echo(f"  {(result >> 1 & 0x01)} : lampFailure")
+        click.echo(f"  {(result >> 2 & 0x01)} : lampOn")
+        click.echo(f"  {(result >> 3 & 0x01)} : limitError")
+        click.echo(f"  {(result >> 4 & 0x01)} : fadeRunning")
+        click.echo(f"  {(result >> 5 & 0x01)} : resetState")
+        click.echo(f"  {(result >> 6 & 0x01)} : shortAddress is MASK")
+        click.echo(f"  {(result >> 7 & 0x01)} : powerCycleSeen")
     else:
         click.echo("Status: NO - timeout")
 
@@ -158,7 +158,7 @@ def version(adr):
     help="Address, can be a short address (A0..A63) or group address (G0..G15).",
 )
 def dtr0(adr):
-    gear_query_and_display_reply(adr, ForwardFrame16Bit.opcode("QUERY CONTEND DTR0"))
+    gear_query_and_display_reply(adr, ForwardFrame16Bit.opcode("QUERY CONTENT DTR0"))
 
 
 @click.command(name="dt", help="Device type")
