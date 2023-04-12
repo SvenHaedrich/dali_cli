@@ -25,18 +25,19 @@ timeout_sec = 0.15
 
 
 @click.group(name="dali")
-@click.version_option("0.0.2")
+@click.version_option("0.0.6")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
+    show_envvar=True,
     type=click.Path(),
     help="Serial port used for DALI communication.",
 )
 @click.option(
-    "-l",
-    "--lunatone",
-    help="Use a Lunatone USB connector for DALI communication.",
-    envvar="DALI_LUNATONE",
+    "--hid",
+    help="Use a HID class USB connector for DALI communication.",
+    envvar="DALI_CLASS",
+    show_envvar=True,
     is_flag=True,
 )
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
