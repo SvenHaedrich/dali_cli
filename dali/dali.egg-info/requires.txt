@@ -1,0 +1,4 @@
+click
+pyserial
+pyusb
+termcolor
