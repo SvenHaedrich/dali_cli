@@ -21,7 +21,7 @@ from gear import special as gear_special_cmd
 
 # global data
 connection = None
-timeout_sec = 0.15
+timeout_sec = 0.3
 
 
 @click.group(name="dali")
@@ -36,13 +36,13 @@ timeout_sec = 0.15
 @click.option(
     "--hid",
     help="Use a HID class USB connector for DALI communication.",
-    envvar="DALI_CLASS",
+    envvar="DALI_HID_USB",
     show_envvar=True,
     is_flag=True,
 )
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.pass_context
-def cli(ctx, serial_port, lunatone, debug):
+def cli(ctx, serial_port, hid, debug):
     """
     Command line interface for DALI systems.
     SevenLabs 2023
@@ -51,10 +51,10 @@ def cli(ctx, serial_port, lunatone, debug):
         logging.basicConfig(level=logging.DEBUG)
 
     global connection
-    if serial_port and not lunatone:
+    if serial_port and not hid:
         connection = dali_serial.DALI_Serial(port=serial_port, transparent=True)
 
-    if lunatone and not serial_port:
+    if hid and not serial_port:
         connection = dali_lunatone.DALI_Usb()
 
     if connection == None:

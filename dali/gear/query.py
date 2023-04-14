@@ -3,28 +3,36 @@ from DALI.forward_frame_16bit import ForwardFrame16Bit
 from DALI.address_byte import DALIAddressByte
 from DALI.raw_frame import Raw_Frame
 
+import logging
 import click
 import dali
 
+logger = logging.getLogger(__name__)
+
 
 def gear_query_value(adr, opcode):
+    logging.debug("gear_query_value")
     dali.connection.start_read()
     address = DALIAddressByte()
     address.arg(adr)
     command = address.byte << 8 | opcode
     cmd_frame = Raw_Frame(length=16, data=command)
     dali.connection.write(cmd_frame)
-    try:
-        while True:
+    while True:
+        try:
             frame = dali.connection.read_raw_frame(dali.timeout_sec)
-            if frame.data == cmd_frame.data:
-                continue
-            if frame.length == 8:
-                dali.connection.close()
-                return frame.data
-    except Empty:
-        dali.connection.close()
-        return None
+        except Empty:
+            logging.debug("no frame received")
+            frame.data = None
+            break
+        if frame.data == cmd_frame.data:
+            logging.debug("received query command")
+            continue
+        if frame.length == 8:
+            logging.debug("received backward frame")
+            break
+    dali.connection.close()
+    return frame.data
 
 
 def gear_query_and_display_reply(adr, opcode):
@@ -57,6 +65,7 @@ def gear_query_and_display_reply(adr, opcode):
 )
 def status(adr):
     result = gear_query_value(adr, ForwardFrame16Bit.opcode("QUERY STATUS"))
+    logging.debug(f"result is <{result}>")
     if not result == None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
         click.echo("bit : description")
@@ -69,7 +78,7 @@ def status(adr):
         click.echo(f"  {(result >> 6 & 0x01)} : shortAddress is MASK")
         click.echo(f"  {(result >> 7 & 0x01)} : powerCycleSeen")
     else:
-        click.echo("Status: NO - timeout")
+        click.echo("timeout - NO")
 
 
 @click.command(name="present", help="Control gear present")

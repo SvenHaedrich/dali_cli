@@ -62,8 +62,9 @@ def summary(adr):
     random_l = gear_query_multiple(
         adr, ForwardFrame16Bit.opcode("QUERY RANDOM ADDRESS (L)")
     )
-    random_address = random_h << 16 | random_m << 8 | random_l
-    click.echo(
-        f"Random address .....: {random_address} = 0x{random_address:06X} = {random_address:024b}b"
-    )
+    if not (random_h == None) and not (random_m == None) and not (random_l == None):
+        random_address = random_h << 16 | random_m << 8 | random_l
+        click.echo(
+            f"Random address .....: {random_address} = 0x{random_address:06X} = {random_address:024b}b"
+        )
     dali.connection.close()
