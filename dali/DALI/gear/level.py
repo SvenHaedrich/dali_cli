@@ -4,7 +4,6 @@ import dali
 from .action import gear_send_forward_frame
 from .opcode import LevelCommandOpcode
 from .address import DaliAddressByte
-from ..frame import DaliTxFrame
 
 gear_address_option = click.option(
     "--adr",
@@ -56,8 +55,7 @@ def dapc(adr, level):
         address = DaliAddressByte(dapc=True)
         if address.arg(adr):
             command = address.byte << 8 | level
-            frame = DaliTxFrame(length=16, data=command)
-            dali.connection.write(frame)
+            dali.connection.transmit(length=16, data=command)
         else:
             raise click.BadOptionUsage("adr", "invalid address option")
     else:

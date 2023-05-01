@@ -5,7 +5,6 @@ import struct
 import threading
 import time
 import usb
-from .. import frame
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +89,7 @@ class DaliUsb:
     def read_raw(self, timeout=None):
         return self.ep_read.read(self.ep_read.wMaxPacketSize, timeout=timeout)
 
-    def write(self, frame):
+    def transmit(self, length=0, data=0, priority=1, send_twice=False):
         """Write data to DALI bus.
         cmd : tupel of bytes to send
 
@@ -108,24 +107,24 @@ class DaliUsb:
         dr = self.DALI_USB_DIRECTION_TO_DALI
         sn = self.message_counter
         self.message_counter = (self.message_counter + 1) & 0xFF
-        if frame.length == 24:
-            ec = (frame.data >> 16) & 0xFF
-            ad = (frame.data >> 8) & 0xFF
-            oc = frame.data & 0xFF
+        if length == 24:
+            ec = (data >> 16) & 0xFF
+            ad = (data >> 8) & 0xFF
+            oc = data & 0xFF
             ty = self.DALI_USB_TYPE_24BIT
-        elif frame.length == 16:
+        elif length == 16:
             ec = 0x00
-            ad = (frame.data >> 8) & 0xFF
-            oc = frame.data & 0xFF
+            ad = (data >> 8) & 0xFF
+            oc = data & 0xFF
             ty = self.DALI_USB_TYPE_16BIT
-        elif frame.length == 8:
+        elif length == 8:
             ec = 0x00
             ad = 0x00
-            oc = frame.data & 0xFF
+            oc = data & 0xFF
             ty = self.DALI_USB_TYPE_8BIT
         else:
             raise Exception(
-                f"DALI commands must be 8,16,24 bit long but {frame} is {frame.length} bit long"
+                f"DALI commands must be 8,16,24 bit long this is {length} bit long"
             )
 
         data = struct.pack("BBxBxBBB" + (64 - 8) * "x", dr, sn, ty, ec, ad, oc)
@@ -134,11 +133,10 @@ class DaliUsb:
             f"DALI[OUT]: SN=0x{sn:02X} TY=0x{ty:02X} EC=0x{ec:02X} AD=0x{ad:02X} OC=0x{oc:02X}"
         )
         result = self.ep_write.write(data)
-        if frame.send_twice:
-            frame.send_twice = False
+        if send_twice:
             self.read_raw(timeout=100)
             time.sleep(0.014)
-            self.write(frame)
+            self.transmit(length, data)
         return result
 
     def close(self):

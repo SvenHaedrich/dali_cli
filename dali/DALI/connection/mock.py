@@ -6,25 +6,25 @@ logger = logging.getLogger(__name__)
 class DaliMock:
     def __init__(self):
         logger.debug("initialize mock interface")
-        self.last_frame = None
+        self.last_transmit = None
+        self.data = None
 
-    @staticmethod
-    def convert_frame_to_serial_command(frame):
-        if frame.send_twice:
-            return f"T{frame.priority} {frame.length:X} {frame.data:X}"
+    def start_receive(self):
+        logger.debug("start receive")
+
+    def get_next(self, timeout=None):
+        logger.debug("get next")
+        return
+
+    def transmit(self, length=0, data=0, priority=1, send_twice=False):
+        logger.debug("transmit")
+        if send_twice:
+            print(f"T{priority} {length:X} {data:X}")
         else:
-            return f"S{frame.priority} {frame.length:X} {frame.data:X}"
-
-    def start_read(self):
-        logger.debug("start read")
-
-    def read_raw_frame(self, timeout=None):
-        return self.last_frame
-
-    def write(self, frame):
-        logger.debug("write frame")
-        print(self.convert_frame_to_serial_command(frame))
-        self.last_frame = frame
+            print(f"S{priority} {length:X} {data:X}")
+        self.last_transmit = data
+        self.data = data
+        self.length = length
 
     def close(self):
         logger.debug("close mock interface")

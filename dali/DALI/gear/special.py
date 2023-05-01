@@ -3,28 +3,30 @@ import click
 import dali
 
 from .opcode import SpecialCommandOpcodes
-from ..frame import DaliTxFrame
 
 
 def write_gear_frame(address_byte, opcode_byte=0, send_twice=False):
     command = address_byte << 8 | opcode_byte
-    frame = DaliTxFrame(length=16, data=command, send_twice=send_twice)
-    dali.connection.write(frame)
-    return frame
+    dali.connection.transmit(length=16, data=command, send_twice=send_twice)
+    return
 
 
 def write_frame_and_show_answer(address_byte, opcode_byte=0):
     dali.connection.start_read()
-    cmd_frame = write_gear_frame(address_byte, opcode_byte)
+    write_gear_frame(address_byte, opcode_byte)
     answer = False
     try:
         while not answer:
-            frame = dali.connection.read_raw_frame(dali.timeout_sec)
-            if frame.data == cmd_frame.data:
+            dali.connection.get_next(dali.timeout_sec)
+            if dali.connection.data == dali.connection.last_transmit:
                 continue
-            if frame.length == 8:
+            if dali.connection.length == 8:
                 answer = True
-                click.echo(f"{frame.data} = 0x{frame.data:02X} = {frame.data:08b}b")
+                click.echo(
+                    f"{dali.connection.data} ="
+                    f"0x{dali.connection.data:02X} ="
+                    f"{dali.connectopm.data:08b}b"
+                )
     except Empty:
         if not answer:
             click.echo("timeout - NO")
