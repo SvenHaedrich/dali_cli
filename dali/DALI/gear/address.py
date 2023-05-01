@@ -1,4 +1,7 @@
-class DALIAddressByte:
+import dali
+
+
+class DaliAddressByte:
     DAPC = "DAPC"
     SHORT = "SHORT"
     GROUP = "GROUP"
@@ -16,13 +19,13 @@ class DALIAddressByte:
         self.mode = self.INVALID
 
     def short(self, address=0):
-        if address in range(0x40):
+        if address in range(dali.MAX_ADR):
             self.byte &= 0x01
             self.byte |= address << 1
             self.mode = self.SHORT
 
     def group(self, group=0):
-        if group in range(0x10):
+        if group in range(dali.MAX_GROUP):
             self.byte &= 0x01
             self.byte |= group << 1
             self.byte |= 0x80
@@ -54,23 +57,29 @@ class DALIAddressByte:
         text = text.upper()
         if text == "BC":
             self.broadcast()
-            return
+            return True
         if text == "BCU":
             self.unaddressed()
-            return
-        if text[0] == "A":
-            self.short(int(text[1:3]))
-            return
+            return True
         if text[0] == "G":
-            self.group(int(text[1:3]))
-            return
+            g = int(text[1:3])
+            if g in range(16):
+                self.group(g)
+                return True
+            else:
+                return False
+        s = int(text)
+        if s in range(dali.MAX_ADR):
+            self.short(s)
+            return True
+        return False
 
     def __str__(self):
         if self.mode == self.SHORT:
             short_address = (self.byte >> 1) & 0x3F
-            return f"A{short_address:02}"
+            return f"G{short_address:02}"
         elif self.mode == self.GROUP:
             group_address = (self.byte >> 1) & 0xF
-            return f"G{group_address:02}"
+            return f"GG{group_address:02}"
         else:
             return self.mode

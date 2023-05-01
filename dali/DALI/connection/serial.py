@@ -3,12 +3,12 @@ import logging
 import queue
 import threading
 import time
-import DALI
+from ..frame import DaliRxFrame
 
 logger = logging.getLogger(__name__)
 
 
-class DALI_Serial:
+class DaliSerial:
     DEFAULT_BAUDRATE = 115200
     QUEUE_MAXSIZE = 40
 
@@ -18,16 +18,30 @@ class DALI_Serial:
         self.port = serial.Serial(port=port, baudrate=baudrate, timeout=0.2)
         self.transparent = transparent
 
+    @staticmethod
+    def line_to_frame(line):
+        try:
+            start = line.find(ord("{")) + 1
+            end = line.find(ord("}"))
+            payload = line[start:end]
+            timestamp = int(payload[0:8], 16) / 1000.0
+            type = int(payload[8])
+            length = int(payload[9:11], 16)
+            data = int(payload[12:20], 16)
+            return DaliRxFrame(timestamp, type, length, data)
+        except ValueError:
+            return None
+
     def read_worker_thread(self):
         logger.debug("read_worker_thread started")
-        raw = DALI.Raw_Frame(self.transparent)
         while self.keep_running:
             logger.debug(f"keep_running {self.keep_running}")
             line = self.port.readline()
+            if self.transparent:
+                print(line.decode("utf-8"), end="")
             if len(line) > 0:
                 logger.debug(f"received line <{line}> from serial")
-                raw.from_line(line)
-                self.queue.put(raw)
+                self.queue.put(self.line_to_frame(line))
         logger.debug("read_worker_thread terminated")
 
     def start_read(self):
@@ -41,15 +55,19 @@ class DALI_Serial:
         return self.queue.get(block=True, timeout=timeout)
 
     @staticmethod
-    def convert_raw_frame_to_serial_command(frame):
+    def convert_frame_to_serial_command(frame):
         if frame.send_twice:
-            return f"T1 {frame.length:X} {frame.data:X}\r".encode("utf-8")
+            return f"T{frame.priority} {frame.length:X} {frame.data:X}\r".encode(
+                "utf-8"
+            )
         else:
-            return f"S1 {frame.length:X} {frame.data:X}\r".encode("utf-8")
+            return f"S{frame.priority} {frame.length:X} {frame.data:X}\r".encode(
+                "utf-8"
+            )
 
     def write(self, frame):
         logger.debug("write frame")
-        self.port.write(self.convert_raw_frame_to_serial_command(frame))
+        self.port.write(self.convert_frame_to_serial_command(frame))
 
     def close(self):
         logger.debug("close connection")

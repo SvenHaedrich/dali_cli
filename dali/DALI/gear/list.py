@@ -1,16 +1,14 @@
 from queue import Empty
-from DALI.forward_frame_16bit import ForwardFrame16Bit
-from DALI.address_byte import DALIAddressByte
-from DALI.raw_frame import Raw_Frame
-
 import click
-import dali
+
+from DALI.gear import action
+from DALI.gear import opcode
 
 
 @click.command(name="list", help="List available short addresses.")
 def list():
     dali.connection.start_read()
-    opcode = ForwardFrame16Bit.opcode("QUERY CONTROL GEAR PRESENT")
+    opcode = QueryCommandOpcode.GEAR_PRESENT
     address = DALIAddressByte()
     address.broadcast()
     command = address.byte << 8 | opcode
@@ -43,4 +41,3 @@ def list():
                         click.echo(f"A{short_address:02}")
             except Empty:
                 pass
-    dali.connection.close()

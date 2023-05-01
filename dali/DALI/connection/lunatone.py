@@ -5,12 +5,12 @@ import struct
 import threading
 import time
 import usb
-import DALI
+from .. import frame
 
 logger = logging.getLogger(__name__)
 
 
-class DALI_Usb:
+class DaliUsb:
     DALI_USB_VENDOR = 0x17B5
     DALI_USB_PRODUCT = 0x0020
 
@@ -174,35 +174,34 @@ class DALI_Usb:
                     logger.debug(
                         f"DALI[IN]: SN=0x{data[8]:02X} TY=0x{data[1]:02X} EC=0x{data[3]:02X} AD=0x{data[4]:02X} OC=0x{data[5]:02X}"
                     )
-                    raw.type = raw.COMMAND
-                    raw.timestamp = time.time()
+                    type = Dali_Rx_Frame.COMMAND
                     if data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_8BIT
                     ):
-                        raw.length = 8
-                        raw.data = data[5]
+                        length = 8
+                        payload = data[5]
                     elif data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_16BIT
                     ):
-                        raw.length = 16
-                        raw.data = data[5] + (data[4] << 8)
+                        length = 16
+                        payload = data[5] + (data[4] << 8)
                     elif data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_24BIT
                     ):
-                        raw.length = 24
-                        raw.data = data[5] + (data[4] << 8) + (data[3] << 16)
+                        length = 24
+                        payload = data[5] + (data[4] << 8) + (data[3] << 16)
                     elif data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_STATUS
                     ):
-                        raw.type = raw.ERROR
-                        raw.data = 0
+                        type = Dali_Rx_Frame.ERROR
+                        payload = 0
                         if data[5] == 0x04:
-                            raw.length = DALI.DALIError.RECOVER
+                            length = DALI.DALIError.RECOVER
                         elif data[5] == 0x03:
-                            raw.length = DALI.DALIError.FRAME
+                            length = DALI.DALIError.FRAME
                         else:
-                            raw.length = DALI.DALIError.GENERAL
-                    self.queue.put(raw)
+                            length = DALI.DALIError.GENERAL
+                    self.queue.put(Dali_Rx_Frame(time.time(), type, length, payload))
 
             except usb.USBError as e:
                 if e.errno not in (errno.ETIMEDOUT, errno.ENODEV):
