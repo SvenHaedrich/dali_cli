@@ -1,4 +1,5 @@
 import click
+import dali
 
 from .action import gear_send_forward_frame, set_dtr0
 from .opcode import ConfigureCommandOpcode
@@ -153,10 +154,14 @@ def ungroup(adr, group):
 @gear_address_option
 @click.argument("address", type=click.INT)
 def short(adr, address):
-    if address in range(0x40):
+    if address in range(dali.MAX_ADR):
         address = (address * 2) + 1
         set_dtr0(address, "ADDRESS")
         gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_SHORT_ADR, True)
+    else:
+        raise click.BadParameter(
+            f"needs to be between 0 and {dali.MAX_ADR-1}", param_hint="ADDRESS"
+        )
 
 
 @click.command(name="enable", help="Enable write access.")
