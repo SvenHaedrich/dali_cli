@@ -60,3 +60,5 @@ def summary(adr):
             f"0x{random_address:06X} = "
             f"{random_address:024b}b"
         )
+    else:
+        click.echo("Random address .....: NO - timeout")
