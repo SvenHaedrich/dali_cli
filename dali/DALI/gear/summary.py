@@ -7,7 +7,7 @@ from .opcode import QueryCommandOpcode
 
 
 def gear_query_multiple(adr, opcode):
-    cmd_frame = gear_send_forward_frame(adr, opcode)
+    gear_send_forward_frame(adr, opcode)
     try:
         while True:
             dali.connection.get_next(dali.timeout_sec)
