@@ -1,19 +1,16 @@
 from queue import Empty
 import click
+import dali
 
-from DALI.gear import action
-from DALI.gear import opcode
+from .opcode import QueryCommandOpcode
+from .action import gear_send_forward_frame
 
 
 @click.command(name="list", help="List available short addresses.")
 def list():
     dali.connection.start_read()
-    opcode = QueryCommandOpcode.GEAR_PRESENT
-    address = DALIAddressByte()
-    address.broadcast()
-    command = address.byte << 8 | opcode
-    cmd_frame = Raw_Frame(length=16, data=command)
-    dali.connection.write(cmd_frame)
+    address = "BC"
+    cmd_frame = gear_send_forward_frame(address, QueryCommandOpcode.GEAR_PRESENT)
     answer = False
     try:
         while not answer:
@@ -26,11 +23,11 @@ def list():
         pass
     if answer:
         click.echo("Found control gears:")
-        for short_address in range(0x40):
-            address.short(short_address)
-            command = address.byte << 8 | opcode
-            frame = Raw_Frame(length=16, data=command)
-            dali.connection.write(frame)
+        for short_address in range(dali.MAX_ADR):
+            address = f"{short_address:02}"
+            cmd_frame = gear_send_forward_frame(
+                address, QueryCommandOpcode.GEAR_PRESENT
+            )
             answer = False
             try:
                 while not answer:
@@ -38,6 +35,6 @@ def list():
                     if frame.data == cmd_frame.data:
                         continue
                     if frame.length == 8 and frame.data == 0xFF:
-                        click.echo(f"A{short_address:02}")
+                        click.echo(f"G{short_address:02}")
             except Empty:
                 pass
