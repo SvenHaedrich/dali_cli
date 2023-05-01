@@ -45,7 +45,9 @@ def min(adr):
 
 @click.command(
     name="dapc",
-    help="Direct arc power control (dim LEVEL). LEVEL needs to be between 0 and 255. Note, that 255 is the MASK value that will not change the actual light level.",
+    help="Direct arc power control (dim LEVEL). "
+    "LEVEL needs to be between 0 and 255. "
+    "Note, that 255 is the MASK value that will not change the actual light level.",
 )
 @click.argument("level", type=click.INT)
 @gear_address_option

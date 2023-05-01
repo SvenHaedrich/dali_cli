@@ -56,5 +56,7 @@ def summary(adr):
     if (random_h is not None) and (random_m is not None) and (random_l is not None):
         random_address = random_h << 16 | random_m << 8 | random_l
         click.echo(
-            f"Random address .....: {random_address} = 0x{random_address:06X} = {random_address:024b}b"
+            f"Random address .....: {random_address} = "
+            f"0x{random_address:06X} = "
+            f"{random_address:024b}b"
         )
