@@ -10,11 +10,11 @@ def gear_query_multiple(adr, opcode):
     cmd_frame = gear_send_forward_frame(adr, opcode)
     try:
         while True:
-            frame = dali.connection.read_raw_frame(dali.timeout_sec)
-            if frame.data == cmd_frame.data:
+            dali.connection.get_next(dali.timeout_sec)
+            if dali.connection.data == dali.connection.last_transmit:
                 continue
-            if frame.length == 8:
-                return frame.data
+            if dali.connection.length == 8:
+                return dali.connection.data
     except Empty:
         return None
 
@@ -34,7 +34,7 @@ def gear_summary_item(adr, caption, opcode):
     help="Address, can be a short address (A0..A63) or group address (G0..G15).",
 )
 def summary(adr):
-    dali.connection.start_read()
+    dali.connection.start_receive()
     gear_summary_item(adr, "Status", QueryCommandOpcode.STATUS)
     gear_summary_item(adr, "Operation mode", QueryCommandOpcode.OPERATING_MODE)
     gear_summary_item(adr, "Version", QueryCommandOpcode.VERSION_NUMBER)
