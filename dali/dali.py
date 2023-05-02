@@ -3,7 +3,7 @@ import click
 
 from DALI.connection import mock as connection_mock
 from DALI.connection import serial as connection_serial
-from DALI.connection import lunatone as connection_lunatone
+from DALI.connection import hid as connection_hid
 
 
 from DALI.gear import query as gear_query_cmd
@@ -61,7 +61,7 @@ def cli(ctx, serial_port, hid, mock, debug):
         connection = connection_serial.DaliSerial(port=serial_port)
 
     if hid and not serial_port and not mock:
-        connection = connection_lunatone.DaliUsb()
+        connection = connection_hid.DaliUsb()
 
     if mock and not serial_port and not hid:
         connection = connection_mock.DaliMock()
