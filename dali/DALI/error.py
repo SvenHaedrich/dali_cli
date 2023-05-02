@@ -1,7 +1,10 @@
 class DaliError:
+    INVALID = 0
+    COMMAND = 1
+    STATUS = 2
+    RECOVER = 8
     GENERAL = 9
     FRAME = 10
-    RECOVER = 8
 
     def __init__(self, error_code=0, data=0):
         self.data = data

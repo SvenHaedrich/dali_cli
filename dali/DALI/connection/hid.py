@@ -6,6 +6,8 @@ import threading
 import time
 import usb
 
+from ..error import DaliError
+
 logger = logging.getLogger(__name__)
 
 
@@ -127,12 +129,14 @@ class DaliUsb:
                 f"DALI commands must be 8,16,24 bit long this is {length} bit long"
             )
 
-        data = struct.pack("BBxBxBBB" + (64 - 8) * "x", dr, sn, ty, ec, ad, oc)
+        buffer = struct.pack("BBxBxBBB" + (64 - 8) * "x", dr, sn, ty, ec, ad, oc)
 
         logger.debug(
-            f"DALI[OUT]: SN=0x{sn:02X} TY=0x{ty:02X} EC=0x{ec:02X} AD=0x{ad:02X} OC=0x{oc:02X}"
+            f"DALI[OUT]: SN=0x{sn:02X} TY=0x{ty:02X} EC=0x{ec:02X} "
+            f"AD=0x{ad:02X} OC=0x{oc:02X}"
         )
-        result = self.ep_write.write(data)
+        result = self.ep_write.write(buffer)
+        self.last_transmit = data
         if send_twice:
             self.read_raw(timeout=100)
             time.sleep(0.014)
@@ -148,7 +152,6 @@ class DaliUsb:
 
     def read_worker_thread(self):
         logger.debug("read_worker_thread started")
-        raw = DALI.Raw_Frame()
         while self.keep_running:
             try:
                 data = self.read_raw(timeout=100)
@@ -170,9 +173,10 @@ class DaliUsb:
                 """
                 if data:
                     logger.debug(
-                        f"DALI[IN]: SN=0x{data[8]:02X} TY=0x{data[1]:02X} EC=0x{data[3]:02X} AD=0x{data[4]:02X} OC=0x{data[5]:02X}"
+                        f"DALI[IN]: SN=0x{data[8]:02X} TY=0x{data[1]:02X} "
+                        f"EC=0x{data[3]:02X} AD=0x{data[4]:02X} OC=0x{data[5]:02X}"
                     )
-                    type = Dali_Rx_Frame.COMMAND
+                    type = DaliError.COMMAND
                     if data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_8BIT
                     ):
@@ -191,27 +195,33 @@ class DaliUsb:
                     elif data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_STATUS
                     ):
-                        type = Dali_Rx_Frame.ERROR
+                        type = DaliError.STATUS
                         payload = 0
                         if data[5] == 0x04:
-                            length = DALI.DALIError.RECOVER
+                            length = DaliError.RECOVER
                         elif data[5] == 0x03:
-                            length = DALI.DALIError.FRAME
+                            length = DaliError.FRAME
                         else:
-                            length = DALI.DALIError.GENERAL
-                    self.queue.put(Dali_Rx_Frame(time.time(), type, length, payload))
+                            length = DaliError.GENERAL
+                    self.queue.put((time.time(), type, length, payload))
 
             except usb.USBError as e:
                 if e.errno not in (errno.ETIMEDOUT, errno.ENODEV):
                     raise e
         logger.debug("read_worker_thread terminated")
 
-    def start_read(self):
+    def start_receive(self):
         logger.debug("start read")
         self.keep_running = True
         self.thread = threading.Thread(target=self.read_worker_thread, args=())
         self.thread.daemon = True
         self.thread.start()
 
-    def read_raw_frame(self, timeout=None):
-        return self.queue.get(block=True, timeout=timeout)
+    def get_next(self, timeout=None):
+        logger.debug("get next")
+        result = self.queue.get(block=True, timeout=timeout)
+        self.timestamp = result[0]
+        self.type = result[1]
+        self.length = result[2]
+        self.data = result[3]
+        return

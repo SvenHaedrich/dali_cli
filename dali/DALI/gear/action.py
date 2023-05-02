@@ -42,7 +42,7 @@ def gear_query_value(adr, opcode):
 
 
 def gear_query_and_display_reply(adr, opcode):
-    dali.connection.start_read()
+    dali.connection.start_receive()
     address = DaliAddressByte()
     address.arg(adr)
     command = address.byte << 8 | opcode
