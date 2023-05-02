@@ -12,7 +12,7 @@ def write_gear_frame(address_byte, opcode_byte=0, send_twice=False):
 
 
 def write_frame_and_show_answer(address_byte, opcode_byte=0):
-    dali.connection.start_read()
+    dali.connection.start_receive()
     write_gear_frame(address_byte, opcode_byte)
     answer = False
     try:
@@ -91,7 +91,7 @@ def ping():
 @click.argument("address", type=click.INT)
 def search(address):
     if address in range(0x1000000):
-        dali.connection.start_read()
+        dali.connection.start_receive()
         cmd_frame = write_gear_frame(
             SpecialCommandOpcodes.SEARCHADDRH, (address >> 16) & 0xFF
         )

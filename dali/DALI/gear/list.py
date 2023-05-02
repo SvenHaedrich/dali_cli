@@ -8,7 +8,7 @@ from .action import gear_send_forward_frame
 
 @click.command(name="list", help="List available short addresses.")
 def list():
-    dali.connection.start_read()
+    dali.connection.start_receive()
     address = "BC"
     cmd_frame = gear_send_forward_frame(address, QueryCommandOpcode.GEAR_PRESENT)
     answer = False
