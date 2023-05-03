@@ -57,17 +57,20 @@ def cli(ctx, serial_port, hid, mock, debug):
         logging.basicConfig(level=logging.DEBUG)
 
     global connection
-    if serial_port and not hid and not mock:
-        connection = connection_serial.DaliSerial(port=serial_port)
+    try:
+        if serial_port and not hid and not mock:
+            connection = connection_serial.DaliSerial(port=serial_port)
 
-    if hid and not serial_port and not mock:
-        connection = connection_hid.DaliUsb()
+        if hid and not serial_port and not mock:
+            connection = connection_hid.DaliUsb()
 
-    if mock and not serial_port and not hid:
-        connection = connection_mock.DaliMock()
+        if mock and not serial_port and not hid:
+            connection = connection_mock.DaliMock()
 
-    if connection is None:
-        raise click.BadArgumentUsage("invalid connection configuration")
+        if connection is None:
+            raise click.BadArgumentUsage("invalid connection configuration.")
+    except:
+        raise click.BadArgumentUsage("can not open connection.")
 
 
 cli.add_command(level_cmd.off)
