@@ -224,4 +224,3 @@ class DaliUsb:
         self.type = result[1]
         self.length = result[2]
         self.data = result[3]
-        return
