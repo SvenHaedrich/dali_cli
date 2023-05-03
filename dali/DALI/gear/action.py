@@ -29,17 +29,20 @@ def gear_query_value(adr, opcode):
                 dali.connection.get_next(dali.timeout_sec)
             except Empty:
                 logging.debug("no frame received")
-                break
+                dali.connection.close()
+                return None
             if dali.connection.data == dali.connection.last_transmit:
                 logging.debug("received query command")
                 continue
             if dali.connection.length == 8:
                 logging.debug("received backward frame")
                 break
+        dali.connection.close()
         return dali.connection.data
     else:
         raise click.BadOptionUsage("adr", "invalid address option.")
     dali.connection.close()
+    return None
 
 
 def gear_query_and_display_reply(adr, opcode):

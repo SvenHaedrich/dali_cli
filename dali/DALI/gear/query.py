@@ -74,7 +74,7 @@ def version(adr):
         click.echo(f"Version: {result} = 0x{result:02X} = {result:08b}b")
         click.echo(f" equals: {(result>>2)}.{(result&0x3)}")
     else:
-        click.echo("Status: NO - timeout")
+        click.echo("timeout - NO")
 
 
 @click.command(name="dtr0", help="Content DTR0")
