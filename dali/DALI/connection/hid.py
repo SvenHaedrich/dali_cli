@@ -195,7 +195,7 @@ class DaliUsb:
                     elif data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_STATUS
                     ):
-                        type = DaliError.STATUS
+                        type_code = DaliError.STATUS
                         payload = 0
                         if data[5] == 0x04:
                             length = DaliError.RECOVER
@@ -203,7 +203,7 @@ class DaliUsb:
                             length = DaliError.FRAME
                         else:
                             length = DaliError.GENERAL
-                    self.queue.put((time.time(), type, length, payload))
+                    self.queue.put((time.time(), type_code, length, payload))
 
             except usb.USBError as e:
                 if e.errno not in (errno.ETIMEDOUT, errno.ENODEV):
