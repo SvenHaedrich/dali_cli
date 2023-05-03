@@ -10,31 +10,29 @@ from .action import gear_send_forward_frame
 def list():
     dali.connection.start_receive()
     address = "BC"
-    cmd_frame = gear_send_forward_frame(address, QueryCommandOpcode.GEAR_PRESENT)
+    gear_send_forward_frame(address, QueryCommandOpcode.GEAR_PRESENT)
     answer = False
     try:
         while not answer:
-            frame = dali.connection.read_raw_frame(dali.timeout_sec)
-            if frame.data == cmd_frame.data:
+            dali.connection.get_next(dali.timeout_sec)
+            if dali.connection.data == dali.connection.last_transmit:
                 continue
-            if frame:
-                answer = True
+            answer = True
     except Empty:
         pass
     if answer:
         click.echo("Found control gears:")
         for short_address in range(dali.MAX_ADR):
             address = f"{short_address:02}"
-            cmd_frame = gear_send_forward_frame(
-                address, QueryCommandOpcode.GEAR_PRESENT
-            )
+            gear_send_forward_frame(address, QueryCommandOpcode.GEAR_PRESENT)
             answer = False
             try:
                 while not answer:
-                    frame = dali.connection.read_raw_frame(dali.timeout_sec)
-                    if frame.data == cmd_frame.data:
+                    dali.connection.get_next(dali.timeout_sec)
+                    if dali.connection.data == dali.connection.last_transmit:
                         continue
-                    if frame.length == 8 and frame.data == 0xFF:
+                    if dali.connection.length == 8 and dali.connection.data == 0xFF:
                         click.echo(f"G{short_address:02}")
             except Empty:
                 pass
+    dali.connection.close()

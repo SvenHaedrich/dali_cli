@@ -62,3 +62,4 @@ def summary(adr):
         )
     else:
         click.echo("Random address .....: NO - timeout")
+    dali.connection.close()

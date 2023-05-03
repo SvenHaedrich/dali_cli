@@ -92,26 +92,22 @@ def ping():
 def search(address):
     if address in range(0x1000000):
         dali.connection.start_receive()
-        cmd_frame = write_gear_frame(
-            SpecialCommandOpcodes.SEARCHADDRH, (address >> 16) & 0xFF
-        )
+        write_gear_frame(SpecialCommandOpcodes.SEARCHADDRH, (address >> 16) & 0xFF)
         while True:
-            readback = dali.connection.read_raw_frame(timeout=dali.timeout_sec)
-            if cmd_frame.data == readback.data:
+            dali.connection.get_next(timeout=dali.timeout_sec)
+            if dali.connection.data == dali.connection.last_transmit:
                 break
-        cmd_frame = write_gear_frame(
-            SpecialCommandOpcodes.SEARCHADDRM, (address >> 8) & 0xFF
-        )
+            write_gear_frame(SpecialCommandOpcodes.SEARCHADDRM, (address >> 8) & 0xFF)
         while True:
-            readback = dali.connection.read_raw_frame(timeout=dali.timeout_sec)
-            if cmd_frame.data == readback.data:
+            dali.connection.get_next(timeout=dali.timeout_sec)
+            if dali.connection.data == dali.connection.last_transmit:
                 break
         cmd_frame = write_gear_frame(
             SpecialCommandOpcodes.SEARCHADDRL, (address >> 8) & 0xFF
         )
         while True:
-            readback = dali.connection.read_raw_frame(timeout=dali.timeout_sec)
-            if cmd_frame.data == readback.data:
+            dali.connection.get_next(timeout=dali.timeout_sec)
+            if dali.connection.data == dali.connection.last_transmit:
                 break
     else:
         raise click.BadParameter(
