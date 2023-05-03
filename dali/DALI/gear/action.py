@@ -39,6 +39,7 @@ def gear_query_value(adr, opcode):
         return dali.connection.data
     else:
         raise click.BadOptionUsage("adr", "invalid address option.")
+    dali.connection.close()
 
 
 def gear_query_and_display_reply(adr, opcode):
@@ -63,6 +64,7 @@ def gear_query_and_display_reply(adr, opcode):
     except Empty:
         if not answer:
             click.echo("timeout - NO")
+    dali.connection.close()
 
 
 def set_dtr0(value, parameter_hint="UNKNOWN"):
