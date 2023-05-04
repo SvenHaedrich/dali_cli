@@ -159,3 +159,51 @@ def power_level(adr):
 @gear_address_option
 def failure_level(adr):
     gear_query_and_display_reply(adr, QueryCommandOpcode.SYSTEM_FAILURE_LEVEL)
+
+
+@click.command(name="fade", help="Fade rate and fade time")
+@gear_address_option
+def fade(adr):
+    fade_time = (
+        "use extended fade time",
+        "0.7 s",
+        "1.0 s",
+        "1.4 s",
+        "2.0 s",
+        "2.8 s",
+        "4.0 s",
+        "5.7 s",
+        "8.0 s",
+        "11.3 s",
+        "16.0 s",
+        "22.6 s",
+        "32.0 s",
+        "45.3 s",
+        "64 s",
+        "90.5 s",
+    )
+    fade_rate = (
+        "1 step/s",
+        "358 steps/s",
+        "253 steps/s",
+        "179 steps/s",
+        "127 stes/s",
+        "89.4 steps/s",
+        "63.3 steps/s",
+        "44.7 steps/s",
+        "31.6 steps/s",
+        "22.4 steps/s",
+        "15.8 steps/s",
+        "11.2 steps/s",
+        "7.9 steps/s",
+        "5.6 steps/s",
+        "4.0 steps/s",
+        "2.8 steps/s",
+    )
+    result = gear_query_value(adr, QueryCommandOpcode.FADE_TIME_RATE)
+    if result is not None:
+        click.echo(f"Result: {result} = 0x{result:02X} = {result:08b}b")
+        click.echo(f" fade time: {fade_time[(result >> 4) &0xF]}")
+        click.echo(f" fade rate: {fade_rate[(result & 0xF)]}")
+    else:
+        click.echo("timeout - NO")
