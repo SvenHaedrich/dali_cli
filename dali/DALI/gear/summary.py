@@ -22,7 +22,7 @@ def gear_query_multiple(adr, opcode):
 def gear_summary_item(adr, caption, opcode):
     result = gear_query_multiple(adr, opcode)
     if result is not None:
-        click.echo(f"{caption:.<20}: {result} = 0x{result:02X} = {result:08b}b")
+        click.echo(f"{caption:.<20}: 0x{result:02X} = {result:08b}b = {result}")
     else:
         click.echo(f"{caption:.<20}: NO - timeout")
 
@@ -56,10 +56,18 @@ def summary(adr):
     if (random_h is not None) and (random_m is not None) and (random_l is not None):
         random_address = random_h << 16 | random_m << 8 | random_l
         click.echo(
-            f"Random address .....: {random_address} = "
-            f"0x{random_address:06X} = "
-            f"{random_address:024b}b"
+            f"Random address .....: 0x{random_address:06X} = "
+            f"{random_address:024b}b = "
+            f"{random_address}"
         )
     else:
         click.echo("Random address .....: NO - timeout")
+    gear_summary_item(adr, "Groups 0-7", QueryCommandOpcode.GROUPS_0_7)
+    gear_summary_item(adr, "Groups 8-15", QueryCommandOpcode.GROUPS_8_15)
+    gear_summary_item(adr, "Fade time & rate", QueryCommandOpcode.FADE_TIME_RATE)
+    gear_summary_item(adr, "Extended fade time", QueryCommandOpcode.EXTENDED_FADE_TIME)
+    for scene in range(dali.MAX_SCENE):
+        gear_summary_item(
+            adr, f"Scene {scene} level", QueryCommandOpcode.SCENE_LEVEL + scene
+        )
     dali.connection.close()
