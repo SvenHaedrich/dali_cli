@@ -157,6 +157,7 @@ gear_query.add_command(gear_query_cmd.min_level)
 gear_query.add_command(gear_query_cmd.max_level)
 gear_query.add_command(gear_query_cmd.power_level)
 gear_query.add_command(gear_query_cmd.failure_level)
+gear_query.add_command(gear_query_cmd.fade)
 gear_query.add_command(gear_special_cmd.short)
 
 #
