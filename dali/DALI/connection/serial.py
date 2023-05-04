@@ -54,6 +54,8 @@ class DaliSerial:
 
     def get_next(self, timeout=None):
         logger.debug("get next")
+        if not self.keep_running:
+            logger.error("read thread is not running")
         result = self.queue.get(block=True, timeout=timeout)
         self.timestamp = result[0]
         self.type = result[1]
@@ -71,6 +73,8 @@ class DaliSerial:
 
     def close(self):
         logger.debug("close connection")
+        if not self.keep_running:
+            logger.error("read thread is not running")
         self.keep_running = False
         while self.thread.is_alive():
             time.sleep(0.001)

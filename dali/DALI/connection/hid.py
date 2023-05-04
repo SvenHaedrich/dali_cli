@@ -145,6 +145,8 @@ class DaliUsb:
 
     def close(self):
         logger.debug("close connection")
+        if not self.keep_running:
+            logger.error("read thread is not running")
         self.keep_running = False
         while self.thread.is_alive():
             time.sleep(0.001)
@@ -176,7 +178,7 @@ class DaliUsb:
                         f"DALI[IN]: SN=0x{data[8]:02X} TY=0x{data[1]:02X} "
                         f"EC=0x{data[3]:02X} AD=0x{data[4]:02X} OC=0x{data[5]:02X}"
                     )
-                    type = DaliError.COMMAND
+                    type_code = DaliError.COMMAND
                     if data[1] == (
                         self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_8BIT
                     ):
@@ -219,6 +221,8 @@ class DaliUsb:
 
     def get_next(self, timeout=None):
         logger.debug("get next")
+        if not self.keep_running:
+            logger.error("read thread is not running")
         result = self.queue.get(block=True, timeout=timeout)
         self.timestamp = result[0]
         self.type = result[1]
