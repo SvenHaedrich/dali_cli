@@ -72,7 +72,6 @@ def gear_query_and_display_reply(adr, opcode):
 
 def set_dtr0(value, parameter_hint="UNKNOWN"):
     if value in range(dali.MAX_VALUE):
-        dali.connection.start_receive()
         command = 0xA3 << 8 | value
         dali.connection.transmit(length=16, data=command)
         while True:
