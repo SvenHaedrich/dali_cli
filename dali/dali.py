@@ -1,31 +1,33 @@
-from queue import Empty
-import sys
 import logging
-import time
-
-from DALI.forward_frame_16bit import ForwardFrame16Bit
-from DALI.address_byte import DALIAddressByte
-from DALI.raw_frame import Raw_Frame
-
-import dali_serial
-import dali_lunatone
 import click
 
+from DALI.connection import mock as connection_mock
+from DALI.connection import serial as connection_serial
+from DALI.connection import hid as connection_hid
 
-from gear import query as gear_query_cmd
-from gear import level as level_cmd
-from gear import summary as gear_summary_cmd
-from gear import list as gear_list_cmd
-from gear import configure as gear_conf_cmd
-from gear import special as gear_special_cmd
+
+from DALI.gear import query as gear_query_cmd
+from DALI.gear import level as level_cmd
+from DALI.gear import summary as gear_summary_cmd
+from DALI.gear import list as gear_list_cmd
+from DALI.gear import dump as gear_dump_cmd
+from DALI.gear import configure as gear_conf_cmd
+from DALI.gear import special as gear_special_cmd
 
 # global data
 connection = None
-timeout_sec = 0.3
+timeout_sec = 0.2
+
+# global const
+MAX_GROUP = 0x10
+MAX_SCENE = 0x10
+MAX_VALUE = 0x100
+MAX_ADR = 0x40
+MAX_BANK = 0x100
 
 
 @click.group(name="dali")
-@click.version_option("0.0.6")
+@click.version_option("0.0.7")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -40,9 +42,15 @@ timeout_sec = 0.3
     show_envvar=True,
     is_flag=True,
 )
+@click.option(
+    "--mock",
+    help="Mock DALI interface for testing.",
+    hidden=True,
+    is_flag=True,
+)
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.pass_context
-def cli(ctx, serial_port, hid, debug):
+def cli(ctx, serial_port, hid, mock, debug):
     """
     Command line interface for DALI systems.
     SevenLabs 2023
@@ -51,15 +59,20 @@ def cli(ctx, serial_port, hid, debug):
         logging.basicConfig(level=logging.DEBUG)
 
     global connection
-    if serial_port and not hid:
-        connection = dali_serial.DALI_Serial(port=serial_port, transparent=True)
+    try:
+        if serial_port and not hid and not mock:
+            connection = connection_serial.DaliSerial(port=serial_port)
 
-    if hid and not serial_port:
-        connection = dali_lunatone.DALI_Usb()
+        if hid and not serial_port and not mock:
+            connection = connection_hid.DaliUsb()
 
-    if connection == None:
-        click.echo("Illegal DALI source settings. Exit now.")
-        sys.exit(2)
+        if mock and not serial_port and not hid:
+            connection = connection_mock.DaliMock()
+
+        if connection is None:
+            raise click.BadArgumentUsage("invalid connection configuration.")
+    except Exception:
+        raise click.BadArgumentUsage("can not open connection.")
 
 
 cli.add_command(level_cmd.off)
@@ -80,6 +93,7 @@ def gear():
 
 gear.add_command(gear_summary_cmd.summary)
 gear.add_command(gear_list_cmd.list)
+gear.add_command(gear_dump_cmd.dump)
 
 # ---- configure commands
 gear.add_command(gear_conf_cmd.reset)
@@ -146,6 +160,7 @@ gear_query.add_command(gear_query_cmd.min_level)
 gear_query.add_command(gear_query_cmd.max_level)
 gear_query.add_command(gear_query_cmd.power_level)
 gear_query.add_command(gear_query_cmd.failure_level)
+gear_query.add_command(gear_query_cmd.fade)
 gear_query.add_command(gear_special_cmd.short)
 
 #
