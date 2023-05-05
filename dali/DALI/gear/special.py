@@ -102,9 +102,7 @@ def search(address):
             dali.connection.get_next(timeout=dali.timeout_sec)
             if dali.connection.data == dali.connection.last_transmit:
                 break
-        cmd_frame = write_gear_frame(
-            SpecialCommandOpcodes.SEARCHADDRL, (address >> 8) & 0xFF
-        )
+        write_gear_frame(SpecialCommandOpcodes.SEARCHADDRL, (address >> 8) & 0xFF)
         while True:
             dali.connection.get_next(timeout=dali.timeout_sec)
             if dali.connection.data == dali.connection.last_transmit:
