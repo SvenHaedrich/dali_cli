@@ -1,4 +1,5 @@
 import click
+import dali
 
 from .opcode import QueryCommandOpcode
 from .action import gear_query_value, gear_query_and_display_reply
@@ -14,6 +15,7 @@ gear_address_option = click.option(
 @click.command(name="status", help="Gear status byte")
 @gear_address_option
 def status(adr):
+    dali.connection.start_receive()
     result = gear_query_value(adr, QueryCommandOpcode.STATUS)
     if result is not None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
@@ -28,6 +30,7 @@ def status(adr):
         click.echo(f"  {(result >> 7 & 0x01)} : powerCycleSeen")
     else:
         click.echo("timeout - NO")
+    dali.connection.close()
 
 
 @click.command(name="present", help="Control gear present")
@@ -69,12 +72,14 @@ def missing(adr):
 @click.command(name="version", help="Version number")
 @gear_address_option
 def version(adr):
+    dali.connection.start_receive()
     result = gear_query_value(adr, QueryCommandOpcode.VERSION_NUMBER)
     if result is not None:
         click.echo(f"Version: {result} = 0x{result:02X} = {result:08b}b")
         click.echo(f" equals: {(result>>2)}.{(result&0x3)}")
     else:
         click.echo("timeout - NO")
+    dali.connection.close()
 
 
 @click.command(name="dtr0", help="Content DTR0")
@@ -200,6 +205,7 @@ def fade(adr):
         "4.0 steps/s",
         "2.8 steps/s",
     )
+    dali.connection.start_receive()
     result = gear_query_value(adr, QueryCommandOpcode.FADE_TIME_RATE)
     if result is not None:
         click.echo(f"Result: {result} = 0x{result:02X} = {result:08b}b")
@@ -207,3 +213,4 @@ def fade(adr):
         click.echo(f" fade rate: {fade_rate[(result & 0xF)]}")
     else:
         click.echo("timeout - NO")
+    dali.connection.close()
