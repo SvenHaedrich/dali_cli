@@ -1,47 +1,20 @@
-from queue import Empty
 import click
 import dali
 
-from .opcode import SpecialCommandOpcodes
-
-
-def write_gear_frame(address_byte, opcode_byte=0, send_twice=False):
-    command = address_byte << 8 | opcode_byte
-    dali.connection.transmit(length=16, data=command, send_twice=send_twice)
-    return
-
-
-def write_frame_and_show_answer(address_byte, opcode_byte=0):
-    dali.connection.start_receive()
-    write_gear_frame(address_byte, opcode_byte)
-    answer = False
-    try:
-        while not answer:
-            dali.connection.get_next(dali.timeout_sec)
-            if dali.connection.data == dali.connection.last_transmit:
-                continue
-            if dali.connection.length == 8:
-                answer = True
-                click.echo(
-                    f"{dali.connection.data} ="
-                    f"0x{dali.connection.data:02X} ="
-                    f"{dali.connectopm.data:08b}b"
-                )
-    except Empty:
-        if not answer:
-            click.echo("timeout - NO")
+from .opcode import SpecialCommandOpcode
+from .action import write_gear_frame, write_frame_and_show_answer
 
 
 @click.command(name="term", help="Terminate initialisation and identifaction states.")
 def term():
-    write_gear_frame(SpecialCommandOpcodes.TERMINATE)
+    write_gear_frame(SpecialCommandOpcode.TERMINATE)
 
 
 @click.command(name="dtr0", help="Set data transfer register 0.")
 @click.argument("data", type=click.INT)
 def dtr0(data):
     if data in range(dali.MAX_VALUE):
-        write_gear_frame(SpecialCommandOpcodes.DTR0, data)
+        write_gear_frame(SpecialCommandOpcode.DTR0, data)
     else:
         raise click.BadParameter(
             f"needs to be between 0 and {dali.MAX_VALUE-1}.", param_hint="DATA"
@@ -64,27 +37,27 @@ def init(device):
     except ValueError:
         raise click.BadParameter("use ALL, UN or short address", param_hint="DEVICE")
         return
-    write_gear_frame(SpecialCommandOpcodes.INITIALISE, data, True)
+    write_gear_frame(SpecialCommandOpcode.INITIALISE, data, True)
 
 
 @click.command(name="rand", help="Generate new randomAddress.")
 def rand():
-    write_gear_frame(SpecialCommandOpcodes.RANDOMISE, send_twice=True)
+    write_gear_frame(SpecialCommandOpcode.RANDOMISE, send_twice=True)
 
 
 @click.command(name="comp", help="Compare searchAddress and randomAddress.")
 def comp():
-    write_frame_and_show_answer(SpecialCommandOpcodes.COMPARE)
+    write_frame_and_show_answer(SpecialCommandOpcode.COMPARE)
 
 
 @click.command(name="withdraw", help="Withdraw from initialisation state.")
 def withdraw():
-    write_gear_frame(SpecialCommandOpcodes.WIDTHDRAW)
+    write_gear_frame(SpecialCommandOpcode.WIDTHDRAW)
 
 
 @click.command(name="ping", help="Indicate presence.")
 def ping():
-    write_gear_frame(SpecialCommandOpcodes.PING)
+    write_gear_frame(SpecialCommandOpcode.PING)
 
 
 @click.command(name="search", help="Set searchAddress.")
@@ -92,17 +65,17 @@ def ping():
 def search(address):
     if address in range(0x1000000):
         dali.connection.start_receive()
-        write_gear_frame(SpecialCommandOpcodes.SEARCHADDRH, (address >> 16) & 0xFF)
+        write_gear_frame(SpecialCommandOpcode.SEARCHADDRH, (address >> 16) & 0xFF)
         while True:
             dali.connection.get_next(timeout=dali.timeout_sec)
             if dali.connection.data == dali.connection.last_transmit:
                 break
-            write_gear_frame(SpecialCommandOpcodes.SEARCHADDRM, (address >> 8) & 0xFF)
+            write_gear_frame(SpecialCommandOpcode.SEARCHADDRM, (address >> 8) & 0xFF)
         while True:
             dali.connection.get_next(timeout=dali.timeout_sec)
             if dali.connection.data == dali.connection.last_transmit:
                 break
-        write_gear_frame(SpecialCommandOpcodes.SEARCHADDRL, (address >> 8) & 0xFF)
+        write_gear_frame(SpecialCommandOpcode.SEARCHADDRL, (address >> 8) & 0xFF)
         while True:
             dali.connection.get_next(timeout=dali.timeout_sec)
             if dali.connection.data == dali.connection.last_transmit:
@@ -118,10 +91,10 @@ def search(address):
 def program(address):
     if address in range(dali.MAX_ADR):
         write_gear_frame(
-            SpecialCommandOpcodes.PROGRAM_SHORT_ADDRESS, ((address << 1) | 1)
+            SpecialCommandOpcode.PROGRAM_SHORT_ADDRESS, ((address << 1) | 1)
         )
     elif address == 0xFF:
-        write_gear_frame(SpecialCommandOpcodes.PROGRAM_SHORT_ADDRESS, 0xFF)
+        write_gear_frame(SpecialCommandOpcode.PROGRAM_SHORT_ADDRESS, 0xFF)
     else:
         raise click.BadParameter(
             f"needs to be between 0 and {dali.MAX_ADR-1}.", param_hint="ADDRESS"
@@ -133,7 +106,7 @@ def program(address):
 def verify(address):
     if address in range(dali.MAX_ADR):
         write_frame_and_show_answer(
-            SpecialCommandOpcodes.VERIFY_SHORT_ADDRESS, ((address << 1) | 1)
+            SpecialCommandOpcode.VERIFY_SHORT_ADDRESS, ((address << 1) | 1)
         )
     else:
         raise click.BadParameter(
@@ -143,14 +116,14 @@ def verify(address):
 
 @click.command(name="short", help="Query shortAddress.")
 def short(address):
-    write_frame_and_show_answer(SpecialCommandOpcodes.QUERY_SHORT_ADDRESS)
+    write_frame_and_show_answer(SpecialCommandOpcode.QUERY_SHORT_ADDRESS)
 
 
 @click.command(name="dt", help="Enable device type.")
 @click.argument("type", type=click.INT)
 def dt(type):
     if type in range(dali.MAX_VALUE):
-        write_gear_frame(SpecialCommandOpcodes.ENABLE_DEVICE_TYPE, type)
+        write_gear_frame(SpecialCommandOpcode.ENABLE_DEVICE_TYPE, type)
     else:
         raise click.BadParameter(
             f"needs to be between 0 and {dali.MAX_VALUE-1}.", param_hint="TYPE"
@@ -161,7 +134,7 @@ def dt(type):
 @click.argument("data", type=click.INT)
 def dtr1(data):
     if data in range(dali.MAX_VALUE):
-        write_gear_frame(SpecialCommandOpcodes.DTR1, data)
+        write_gear_frame(SpecialCommandOpcode.DTR1, data)
     else:
         raise click.BadParameter(
             f"needs to be between 0 and {dali.MAX_VALUE-1}.", param_hint="DATA"
@@ -172,7 +145,7 @@ def dtr1(data):
 @click.argument("data", type=click.INT)
 def dtr2(data):
     if data in range(dali.MAX_VALUE):
-        write_gear_frame(SpecialCommandOpcodes.DTR2, data)
+        write_gear_frame(SpecialCommandOpcode.DTR2, data)
     else:
         raise click.BadParameter(
             f"needs to be between 0 and {dali.MAX_VALUE-1}.", param_hint="DATA"
@@ -183,7 +156,7 @@ def dtr2(data):
 @click.argument("data", type=click.INT)
 def write(data):
     if data in range(dali.MAX_VALUE):
-        write_frame_and_show_answer(SpecialCommandOpcodes.WRITE, data)
+        write_frame_and_show_answer(SpecialCommandOpcode.WRITE, data)
     else:
         raise click.BadParameter(
             f"needs to be between 0 and {dali.MAX_VALUE-1}.", param_hint="DATA"
@@ -194,7 +167,7 @@ def write(data):
 @click.argument("data", type=click.INT)
 def noreply(data):
     if data in range(dali.MAX_VALUE):
-        write_gear_frame(SpecialCommandOpcodes.WRITE_NR, data)
+        write_gear_frame(SpecialCommandOpcode.WRITE_NR, data)
     else:
         raise click.BadParameter(
             f"needs to be between 0 and {dali.MAX_VALUE-1}.", param_hint="DATA"

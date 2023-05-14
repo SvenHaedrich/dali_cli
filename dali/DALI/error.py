@@ -5,6 +5,7 @@ class DaliError:
     RECOVER = 8
     GENERAL = 9
     FRAME = 10
+    TIMEOUT = 11
 
     def __init__(self, error_code=0, data=0):
         self.data = data

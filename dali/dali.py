@@ -13,6 +13,7 @@ from DALI.gear import list as gear_list_cmd
 from DALI.gear import dump as gear_dump_cmd
 from DALI.gear import configure as gear_conf_cmd
 from DALI.gear import special as gear_special_cmd
+from DALI.gear import clear as gear_clear_cmd
 
 # global data
 connection = None
@@ -94,6 +95,7 @@ def gear():
 gear.add_command(gear_summary_cmd.summary)
 gear.add_command(gear_list_cmd.list)
 gear.add_command(gear_dump_cmd.dump)
+gear.add_command(gear_clear_cmd.clear)
 
 # ---- configure commands
 gear.add_command(gear_conf_cmd.reset)

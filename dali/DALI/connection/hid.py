@@ -12,25 +12,60 @@ logger = logging.getLogger(__name__)
 
 
 class DaliUsb:
-    DALI_USB_VENDOR = 0x17B5
-    DALI_USB_PRODUCT = 0x0020
+    _USB_VENDOR = 0x17B5
+    _USB_PRODUCT = 0x0020
 
-    DALI_USB_DIRECTION_FROM_DALI = 0x11
-    DALI_USB_DIRECTION_TO_DALI = 0x12
-    DALI_USB_TYPE_NO = 0x01
-    DALI_USB_TYPE_8BIT = 0x02
-    DALI_USB_TYPE_16BIT = 0x03
-    DALI_USB_TYPE_25BIT = 0x04
-    DALI_USB_TYPE_24BIT = 0x06
-    DALI_USB_TYPE_STATUS = 0x07
-    DALI_USB_RECEIVE_MASK = 0x70
+    _USB_CMD_INIT = 0x01
+    _USB_CMD_BOOTLOADER = 0x02
+    _USB_CMD_SEND = 0x12
+    _USB_CMD_SEND_ANSWER = 0x15
+    _USB_CMD_SET_IOPINS = 0x20
+    _USB_CMD_READ_IOPINS = 0x21
+    _USB_CMD_IDENTIFY = 0x22
+    _USB_CMD_POWER = 0x40
 
-    def __init__(self, vendor=DALI_USB_VENDOR, product=DALI_USB_PRODUCT):
-        # lookup devices by vendor and DALI_USB_PRODUCT
+    _USB_CTRL_DAPC = 0x04
+    _USB_CTRL_DEVTYPE = 0x80
+    _USB_CTRL_SETDTR = 0x10
+    _USB_CTRL_TWICE = 0x20
+    _USB_CTRL_ID = 0x40
+
+    _USB_WRITE_TYPE_NO = 0x01
+    _USB_WRITE_TYPE_8BIT = 0x02
+    _USB_WRITE_TYPE_16BIT = 0x03
+    _USB_WRITE_TYPE_25BIT = 0x04
+    _USB_WRITE_TYPE_DSI = 0x05
+    _USB_WRITE_TYPE_24BIT = 0x06
+    _USB_WRITE_TYPE_STATUS = 0x07
+    _USB_WRITE_TYPE_17BIT = 0x08
+
+    _USB_READ_MODE_INFO = 0x01
+    _USB_READ_MODE_OBSERVE = 0x11
+    _USB_READ_MODE_REPSONSE = 0x12
+
+    _USB_READ_TYPE_NO_FRAME = 0x71
+    _USB_READ_TYPE_8BIT = 0x72
+    _USB_READ_TYPE_16BIT = 0x73
+    _USB_READ_TYPE_25BIT = 0x74
+    _USB_READ_TYPE_DSI = 0x75
+    _USB_READ_TYPE_24BIT = 0x76
+    _USB_READ_TYPE_INFO = 0x77
+    _USB_READ_TYPE_17BIT = 0x78
+
+    _USB_STATUS_CHECKSUM = 0x01
+    _USB_STATUS_SHORTED = 0x02
+    _USB_STATUS_FRAME_ERROR = 0x03
+    _USB_STATUS_OK = 0x04
+    _USB_STATUS_DSI = 0x05
+    _USB_STATUS_DALI = 0x06
+
+    def __init__(self, vendor=_USB_VENDOR, product=_USB_PRODUCT):
+        # lookup devices by _USB_VENDOR and _USB_PRODUCT
         self.interface = 0
         self.queue = queue.Queue(maxsize=40)
         self.keep_running = False
-        self.message_counter = 1
+        self.send_sequence_number = 1
+        self.receive_sequence_number = None
 
         logger.debug("try to discover DALI interfaces")
         devices = [
@@ -52,13 +87,8 @@ class DaliUsb:
         if self.device.is_kernel_driver_active(self.interface) is True:
             self.device.detach_kernel_driver(self.interface)
 
-        # set device configuration
         self.device.set_configuration()
-
-        # claim interface
         usb.util.claim_interface(self.device, self.interface)
-
-        # get active configuration
         cfg = self.device.get_active_configuration()
         intf = cfg[(0, 0)]
 
@@ -68,19 +98,17 @@ class DaliUsb:
             custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress)
             == usb.util.ENDPOINT_OUT,
         )
-
         self.ep_read = usb.util.find_descriptor(
             intf,
             custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress)
             == usb.util.ENDPOINT_IN,
         )
-
         if not self.ep_read or not self.ep_write:
             raise usb.core.USBError(
                 f"could not determine read or write endpoint on {self.device}"
             )
 
-        # read pending messages and disregard
+        # read pending messages and discard
         try:
             while True:
                 self.ep_read.read(self.ep_read.wMaxPacketSize, timeout=10)
@@ -91,56 +119,55 @@ class DaliUsb:
     def read_raw(self, timeout=None):
         return self.ep_read.read(self.ep_read.wMaxPacketSize, timeout=timeout)
 
-    def transmit(self, length=0, data=0, priority=1, send_twice=False):
-        """Write data to DALI bus.
-        cmd : tupel of bytes to send
-
-        Data expected by DALI USB
-        dr sn ?? ty ?? ec ad oc.. .. .. .. .. .. .. ..
-        12 xx 00 03 00 00 ff 08 00 00 00 00 00 00 00 00
-
-        dr: direction
-            0x12 = USB side
-        sn: sequence number
-        ec: eCommand
-        ad: address
-        oc: opcode
-        """
-        dr = self.DALI_USB_DIRECTION_TO_DALI
-        sn = self.message_counter
-        self.message_counter = (self.message_counter + 1) & 0xFF
+    def transmit(self, length=0, data=0, priority=1, send_twice=False, block=False):
+        command = self._USB_CMD_SEND
+        self.send_sequence_number = (self.send_sequence_number + 1) & 0xFF
+        sequence = self.send_sequence_number
+        control = self._USB_CTRL_TWICE if send_twice else 0
         if length == 24:
-            ec = (data >> 16) & 0xFF
-            ad = (data >> 8) & 0xFF
-            oc = data & 0xFF
-            ty = self.DALI_USB_TYPE_24BIT
+            ext = (data >> 16) & 0xFF
+            address_byte = (data >> 8) & 0xFF
+            opcode_byte = data & 0xFF
+            write_type = self._USB_WRITE_TYPE_24BIT
         elif length == 16:
-            ec = 0x00
-            ad = (data >> 8) & 0xFF
-            oc = data & 0xFF
-            ty = self.DALI_USB_TYPE_16BIT
+            ext = 0x00
+            address_byte = (data >> 8) & 0xFF
+            opcode_byte = data & 0xFF
+            write_type = self._USB_WRITE_TYPE_16BIT
         elif length == 8:
-            ec = 0x00
-            ad = 0x00
-            oc = data & 0xFF
-            ty = self.DALI_USB_TYPE_8BIT
+            ext = 0x00
+            address_byte = 0x00
+            opcode_byte = data & 0xFF
+            write_type = self._USB_WRITE_TYPE_8BIT
         else:
             raise Exception(
-                f"DALI commands must be 8,16,24 bit long this is {length} bit long"
+                f"DALI commands must be 8,16 or 24 bit long. This is {length} bit long"
             )
 
-        buffer = struct.pack("BBxBxBBB" + (64 - 8) * "x", dr, sn, ty, ec, ad, oc)
-
         logger.debug(
-            f"DALI[OUT]: SN=0x{sn:02X} TY=0x{ty:02X} EC=0x{ec:02X} "
-            f"AD=0x{ad:02X} OC=0x{oc:02X}"
+            f"DALI>OUT: CMD=0x{command:02X} SEQ=0x{sequence:02X} TYC=0x{write_type:02X} "
+            f"EXT=0x{ext:02X} ADR=0x{address_byte:02X} OCB=0x{opcode_byte:02X}"
+        )
+        buffer = struct.pack(
+            "BBBBxBBB" + (64 - 8) * "x",
+            command,
+            sequence,
+            control,
+            write_type,
+            ext,
+            address_byte,
+            opcode_byte,
         )
         result = self.ep_write.write(buffer)
         self.last_transmit = data
-        if send_twice:
-            self.read_raw(timeout=100)
-            time.sleep(0.014)
-            self.transmit(length, data)
+
+        if block:
+            if not self.keep_running:
+                raise Exception("receive must be active for blocking call to transmit.")
+            else:
+                self.get_next()
+                if self.send_sequence_number != self.receive_sequence_number:
+                    raise Exception("expected same sequence number.")
         return result
 
     def close(self):
@@ -157,55 +184,42 @@ class DaliUsb:
         while self.keep_running:
             try:
                 data = self.read_raw(timeout=100)
-                """ raw data received from DALI USB:
-                dr ty ?? ec ad cm st st sn .. .. .. .. .. .. ..
-                11 73 00 00 ff 93 ff ff 00 00 00 00 00 00 00 00
-
-                dr: [0]: direction
-                    0x11 = DALI side
-                    0x12 = USB side
-                ty: [1]: type
-                ec: [2]: ecommand
-                ad: [3]: address
-                cm: [4] command
-                    also serves as response code for 72
-                st: [5] status
-                    internal status code, value unknown
-                sn: [6] seqnum
-                """
                 if data:
+                    mode = data[0]
+                    read_type = data[1]
+                    read_sequence_number = data[8]
                     logger.debug(
                         f"DALI[IN]: SN=0x{data[8]:02X} TY=0x{data[1]:02X} "
                         f"EC=0x{data[3]:02X} AD=0x{data[4]:02X} OC=0x{data[5]:02X}"
                     )
-                    type_code = DaliError.COMMAND
-                    if data[1] == (
-                        self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_8BIT
-                    ):
+                    if read_type == self._USB_READ_TYPE_8BIT:
+                        type_code = DaliError.COMMAND
                         length = 8
                         payload = data[5]
-                    elif data[1] == (
-                        self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_16BIT
-                    ):
+                    elif read_type == self._USB_READ_TYPE_16BIT:
+                        type_code = DaliError.COMMAND
                         length = 16
                         payload = data[5] + (data[4] << 8)
-                    elif data[1] == (
-                        self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_24BIT
-                    ):
+                    elif read_type == self._USB_READ_TYPE_24BIT:
+                        type_code = DaliError.COMMAND
                         length = 24
                         payload = data[5] + (data[4] << 8) + (data[3] << 16)
-                    elif data[1] == (
-                        self.DALI_USB_RECEIVE_MASK + self.DALI_USB_TYPE_STATUS
-                    ):
+                    elif read_type == self._USB_READ_TYPE_NO_FRAME:
+                        type_code = DaliError.TIMEOUT
+                        length = 0
+                        pyload = 0
+                    elif read_type == self._USB_READ_TYPE_INFO:
                         type_code = DaliError.STATUS
                         payload = 0
-                        if data[5] == 0x04:
+                        if data[5] == self._USB_STATUS_OK:
                             length = DaliError.RECOVER
-                        elif data[5] == 0x03:
+                        elif data[5] == self._USB_STATUS_FRAME_ERROR:
                             length = DaliError.FRAME
                         else:
                             length = DaliError.GENERAL
-                    self.queue.put((time.time(), type_code, length, payload))
+                    self.queue.put(
+                        (time.time(), type_code, length, payload, read_sequence_number)
+                    )
 
             except usb.USBError as e:
                 if e.errno not in (errno.ETIMEDOUT, errno.ENODEV):
@@ -228,3 +242,4 @@ class DaliUsb:
         self.type = result[1]
         self.length = result[2]
         self.data = result[3]
+        self.receive_sequence_number = result[4]

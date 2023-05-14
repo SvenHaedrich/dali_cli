@@ -174,7 +174,7 @@ def ungroup(adr, group):
         raise click.BadParameter("needs to be between 0 and 15", param_hint="GROUP")
 
 
-@click.command(name="short", help="Set short address.")
+@click.command(name="short", help="Set short address to ADDRESS.")
 @gear_address_option
 @click.argument("address", type=click.INT)
 def short(adr, address):

@@ -28,6 +28,7 @@ def list():
             answer = False
             try:
                 while not answer:
+                    click.echo(message=f"{short_address}\r", nl=False)
                     dali.connection.get_next(dali.timeout_sec)
                     if dali.connection.data == dali.connection.last_transmit:
                         continue
