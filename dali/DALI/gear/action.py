@@ -4,7 +4,7 @@ import logging
 from queue import Empty
 from .address import DaliAddressByte
 from .opcode import SpecialCommandOpcode
-from ..error import DaliError
+from ..connection.frame import DaliFrame
 
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,9 @@ def gear_send_forward_frame(adr, opcode, send_twice=False):
     address = DaliAddressByte()
     if address.arg(adr):
         command = address.byte << 8 | opcode
-        dali.connection.transmit(length=16, data=command, send_twice=send_twice)
+        dali.connection.transmit(
+            DaliFrame(length=16, data=command, send_twice=send_twice)
+        )
     else:
         raise click.BadOptionUsage("adr", "invalid address option.")
 
@@ -25,7 +27,7 @@ def gear_query_value(adr, opcode):
     address = DaliAddressByte()
     if address.arg(adr):
         command = address.byte << 8 | opcode
-        dali.connection.transmit(length=16, data=command)
+        dali.connection.transmit(DaliFrame(length=16, data=command))
         while True:
             try:
                 dali.connection.get_next(dali.timeout_sec)
@@ -52,7 +54,7 @@ def gear_query_and_display_reply(adr, opcode):
     address = DaliAddressByte()
     address.arg(adr)
     command = address.byte << 8 | opcode
-    dali.connection.transmit(length=16, data=command)
+    dali.connection.transmit(DaliFrame(length=16, data=command))
     answer = False
     try:
         while not answer:
@@ -75,11 +77,7 @@ def gear_query_and_display_reply(adr, opcode):
 def set_dtr0(value, parameter_hint="UNKNOWN"):
     if value in range(dali.MAX_VALUE):
         command = SpecialCommandOpcode.DTR0 << 8 | value
-        dali.connection.transmit(length=16, data=command)
-        while True:
-            dali.connection.get_next(dali.timeout_sec)
-            if dali.connection.data == dali.connection.last_transmit:
-                return
+        dali.connection.transmit(DaliFrame(length=16, data=command), block=True)
     else:
         raise click.BadParameter(
             "needs to be between 0 and 255.", param_hint=parameter_hint
@@ -89,11 +87,7 @@ def set_dtr0(value, parameter_hint="UNKNOWN"):
 def set_dtr1(value, parameter_hint="UNKNOWN"):
     if value in range(dali.MAX_VALUE):
         command = SpecialCommandOpcode.DTR1 << 8 | value
-        dali.connection.transmit(length=16, data=command)
-        while True:
-            dali.connection.get_next(dali.timeout_sec)
-            if dali.connection.data == dali.connection.last_transmit:
-                return
+        dali.connection.transmit(DaliFrame(length=16, data=command), block=True)
     else:
         raise click.BadParameter(
             "needs to be between 0 and 255.", param_hint=parameter_hint
@@ -102,7 +96,7 @@ def set_dtr1(value, parameter_hint="UNKNOWN"):
 
 def write_gear_frame(address_byte, opcode_byte=0, send_twice=False):
     command = address_byte << 8 | opcode_byte
-    dali.connection.transmit(length=16, data=command, send_twice=send_twice)
+    dali.connection.transmit(DaliFrame(length=16, data=command, send_twice=send_twice))
     return
 
 

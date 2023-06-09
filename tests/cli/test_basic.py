@@ -7,7 +7,7 @@ def test_version():
     runner = CliRunner()
     result = runner.invoke(cli, ["--version"])
     assert result.exit_code == 0
-    assert result.output == "dali, version 0.0.7\n"
+    assert result.output == "dali, version 0.0.8\n"
 
 
 def test_dapc_bc_command():

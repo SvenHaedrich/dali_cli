@@ -28,7 +28,7 @@ MAX_BANK = 0x100
 
 
 @click.group(name="dali")
-@click.version_option("0.0.7")
+@click.version_option("0.0.8")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -62,7 +62,7 @@ def cli(ctx, serial_port, hid, mock, debug):
     global connection
     try:
         if serial_port and not hid and not mock:
-            connection = connection_serial.DaliSerial(port=serial_port)
+            connection = connection_serial.DaliSerial(portname=serial_port)
 
         if hid and not serial_port and not mock:
             connection = connection_hid.DaliUsb()
