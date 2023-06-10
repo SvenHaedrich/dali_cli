@@ -11,7 +11,7 @@ def gear_query_multiple(adr, opcode):
     try:
         while True:
             dali.connection.get_next(dali.timeout_sec)
-            if dali.connection.data == dali.connection.last_transmit:
+            if dali.connection.frame.data == dali.connection.last_transmit.data:
                 continue
             if dali.connection.length == 8:
                 return dali.connection.data

@@ -27,23 +27,9 @@ def gear_query_value(adr, opcode):
     address = DaliAddressByte()
     if address.arg(adr):
         command = address.byte << 8 | opcode
-        dali.connection.transmit(DaliFrame(length=16, data=command))
-        while True:
-            try:
-                dali.connection.get_next(dali.timeout_sec)
-            except Empty:
-                logging.debug("get_next timed out")
-                return None
-            if dali.connection.length == 8:
-                logging.debug("received backward frame")
-                break
-            if dali.connection.type == DaliError.TIMEOUT:
-                logging.debug("received no answer")
-                return None
-            if dali.connection.data == dali.connection.last_transmit:
-                logging.debug("loopback of query command")
-                continue
-        return dali.connection.data
+        dali.connection.query_reply(DaliFrame(length=16, data=command))
+        if dali.connection.rx_frame.length == 8:
+            return dali.connection.rx_frame.data
     else:
         raise click.BadOptionUsage("adr", "invalid address option.")
     return None
@@ -54,23 +40,15 @@ def gear_query_and_display_reply(adr, opcode):
     address = DaliAddressByte()
     address.arg(adr)
     command = address.byte << 8 | opcode
-    dali.connection.transmit(DaliFrame(length=16, data=command))
-    answer = False
-    try:
-        while not answer:
-            dali.connection.get_next(dali.timeout_sec)
-            if dali.connection.data == dali.connection.last_transmit:
-                continue
-            if dali.connection.length == 8:
-                answer = True
-                click.echo(
-                    f"0x{dali.connection.data:02X} = "
-                    f"{dali.connection.data} = "
-                    f"{dali.connection.data:08b}b"
-                )
-    except Empty:
-        if not answer:
-            click.echo("timeout - NO")
+    dali.connection.query_reply(DaliFrame(length=16, data=command))
+    if dali.connection.rx_frame.length == 8:
+        click.echo(
+            f"0x{dali.connection.rx_frame.data:02X} = "
+            f"{dali.connection.rx_frame.data} = "
+            f"{dali.connection.rx_frame.data:08b}b"
+        )
+    else:
+        click.echo(dali.connection.rx_frame.status.message)
     dali.connection.close()
 
 
