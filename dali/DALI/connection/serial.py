@@ -22,7 +22,8 @@ class DaliSerial:
         self.keep_running = False
         self.rx_frame = None
 
-    def parse(self, line: str):
+    @staticmethod
+    def parse(line: str):
         try:
             start = line.find(ord("{")) + 1
             end = line.find(ord("}"))
