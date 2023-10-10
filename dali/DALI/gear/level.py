@@ -4,7 +4,7 @@ import dali
 from .action import gear_send_forward_frame
 from .opcode import LevelCommandOpcode
 from .address import DaliAddressByte
-from ..connection.frame import DaliFrame
+from ..dali_interface.source.frame import DaliFrame
 
 gear_address_option = click.option(
     "--adr",

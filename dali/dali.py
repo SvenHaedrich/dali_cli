@@ -1,9 +1,9 @@
 import logging
 import click
 
-from DALI.connection import mock as connection_mock
-from DALI.connection import serial as connection_serial
-from DALI.connection import hid as connection_hid
+from DALI.dali_interface.source import mock as connection_mock
+from DALI.dali_interface.source import serial as connection_serial
+from DALI.dali_interface.source import hid as connection_hid
 
 
 from DALI.gear import query as gear_query_cmd

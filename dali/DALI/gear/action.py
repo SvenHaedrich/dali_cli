@@ -4,7 +4,7 @@ import logging
 from queue import Empty
 from .address import DaliAddressByte
 from .opcode import SpecialCommandOpcode
-from ..connection.frame import DaliFrame
+from ..dali_interface.source.frame import DaliFrame
 
 
 logger = logging.getLogger(__name__)
@@ -80,20 +80,14 @@ def write_gear_frame(address_byte, opcode_byte=0, send_twice=False):
 
 def write_frame_and_show_answer(address_byte, opcode_byte=0):
     dali.connection.start_receive()
-    write_gear_frame(address_byte, opcode_byte)
-    answer = False
-    try:
-        while not answer:
-            dali.connection.get_next(dali.timeout_sec)
-            if dali.connection.data == dali.connection.last_transmit:
-                continue
-            if dali.connection.length == 8:
-                answer = True
-                click.echo(
-                    f"{dali.connection.data} ="
-                    f"0x{dali.connection.data:02X} ="
-                    f"{dali.connectopm.data:08b}b"
-                )
-    except Empty:
-        if not answer:
-            click.echo("timeout - NO")
+    data = address_byte << 8 | opcode_byte
+    dali.connection.query_reply(DaliFrame(length=16, data=data))
+    if dali.connection.rx_frame.length == 8:
+        click.echo(
+            f"{dali.connection.rx_frame.data} = "
+            f"0x{dali.connection.rx_frame.data:02X} = "
+            f"{dali.connection.rx_frame.data:08b}b"
+        )
+    else:
+        click.echo(dali.connection.rx_frame.status.message)
+    dali.connection.close()
