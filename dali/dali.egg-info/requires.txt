@@ -1,4 +1,0 @@
-click
-pyserial
-pyusb
-termcolor
