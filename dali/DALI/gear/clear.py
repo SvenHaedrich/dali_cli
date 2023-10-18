@@ -7,7 +7,6 @@ from .action import write_gear_frame, set_dtr0, gear_send_forward_frame
 
 @click.command(name="clear", help="Clear all short addresses and group settings.")
 def clear():
-    dali.connection.start_receive()
     write_gear_frame(SpecialCommandOpcode.INITIALISE, send_twice=True, block=True)
     set_dtr0(0xFF)
     write_gear_frame(SpecialCommandOpcode.DTR0, opcode_byte=0xFF)

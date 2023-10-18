@@ -17,6 +17,7 @@ gear_address_option = click.option(
 @gear_address_option
 def off(adr):
     gear_send_forward_frame(adr, LevelCommandOpcode.OFF)
+    dali.connection.close()
 
 
 @click.command(name="up", help="Dim up.")

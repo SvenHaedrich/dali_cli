@@ -72,7 +72,6 @@ def gear_show_memory_content(bank, location, value):
     help="Address, can be a short address (A0..A63) or group address (G0..G15).",
 )
 def dump(adr, bank):
-    dali.connection.start_receive()
     set_dtr1(bank, "BANK")
     set_dtr0(0, "LOCATION")
     last_accessible_location = gear_query_value(adr, QueryCommandOpcode.READ_MEMORY)

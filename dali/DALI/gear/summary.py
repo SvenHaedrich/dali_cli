@@ -1,4 +1,5 @@
 from queue import Empty
+from typeguard import typechecked
 import click
 import dali
 
@@ -19,7 +20,8 @@ def gear_query_multiple(adr, opcode):
         return None
 
 
-def gear_summary_item(adr, caption, opcode):
+@typechecked
+def gear_summary_item(adr: str, caption: str, opcode: int) -> None:
     result = gear_query_multiple(adr, opcode)
     if result is not None:
         click.echo(f"{caption:.<20}: 0x{result:02X} = {result:08b}b = {result}")
@@ -33,8 +35,8 @@ def gear_summary_item(adr, caption, opcode):
     default="BC",
     help="Address, can be a short address (A0..A63) or group address (G0..G15).",
 )
-def summary(adr):
-    dali.connection.start_receive()
+@typechecked
+def summary(adr: str) -> None:
     gear_summary_item(adr, "Status", QueryCommandOpcode.STATUS)
     gear_summary_item(adr, "Operation mode", QueryCommandOpcode.OPERATING_MODE)
     gear_summary_item(adr, "Version", QueryCommandOpcode.VERSION_NUMBER)
@@ -70,4 +72,3 @@ def summary(adr):
         gear_summary_item(
             adr, f"Scene {scene} level", QueryCommandOpcode.SCENE_LEVEL + scene
         )
-    dali.connection.close()

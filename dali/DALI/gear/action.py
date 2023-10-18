@@ -1,59 +1,72 @@
 import click
 import dali
 import logging
-from queue import Empty
+from typeguard import typechecked
+
+
 from .address import DaliAddressByte
 from .opcode import SpecialCommandOpcode
+
 from ..dali_interface.source.frame import DaliFrame
 
 
 logger = logging.getLogger(__name__)
 
 
-def gear_send_forward_frame(adr, opcode, send_twice=False):
-    logging.debug("gear_send_forward_frame")
+@typechecked
+def gear_send_forward_frame(
+    adr_parameter: str, opcode: int, send_twice: bool = False, close: bool = True
+):
+    logger.debug("gear_send_forward_frame")
     address = DaliAddressByte()
-    if address.arg(adr):
+    if address.arg(adr_parameter):
         command = address.byte << 8 | opcode
         dali.connection.transmit(
             DaliFrame(length=16, data=command, send_twice=send_twice)
         )
     else:
         raise click.BadOptionUsage("adr", "invalid address option.")
+    if close:
+        dali.connection.close()
 
 
-def gear_query_value(adr, opcode):
-    logging.debug("gear_query_value")
+@typechecked
+def gear_query_value(adr_parameter: str, opcode: int, close: bool = True) -> int | None:
+    logger.debug("gear_query_value")
     address = DaliAddressByte()
-    if address.arg(adr):
+    if address.arg(adr_parameter):
         command = address.byte << 8 | opcode
-        dali.connection.query_reply(DaliFrame(length=16, data=command))
-        if dali.connection.rx_frame.length == 8:
-            return dali.connection.rx_frame.data
+        reply = dali.connection.query_reply(DaliFrame(length=16, data=command))
+        if reply.length == 8:
+            return reply.data
     else:
         raise click.BadOptionUsage("adr", "invalid address option.")
+    if close:
+        dali.connection.close()
     return None
 
 
-def gear_query_and_display_reply(adr, opcode):
-    dali.connection.start_receive()
+@typechecked
+def gear_query_and_display_reply(
+    adr_parameter: str, opcode: int, close: bool = True
+) -> None:
+    logger.debug("gear_query_and_display_reply")
     address = DaliAddressByte()
-    address.arg(adr)
+    address.arg(adr_parameter)
     command = address.byte << 8 | opcode
-    dali.connection.query_reply(DaliFrame(length=16, data=command))
-    if dali.connection.rx_frame.length == 8:
-        click.echo(
-            f"0x{dali.connection.rx_frame.data:02X} = "
-            f"{dali.connection.rx_frame.data} = "
-            f"{dali.connection.rx_frame.data:08b}b"
-        )
+    reply = dali.connection.query_reply(DaliFrame(length=16, data=command))
+    if reply.length == 8:
+        click.echo(f"0x{reply.data:02X} = " f"{reply.data} = " f"{reply.data:08b}b")
     else:
-        click.echo(dali.connection.rx_frame.status.message)
-    dali.connection.close()
+        click.echo(reply.message)
+    if close:
+        dali.connection.close()
 
 
-def set_dtr0(value, parameter_hint="UNKNOWN"):
-    if value in range(dali.MAX_VALUE):
+@typechecked
+def set_dtr0(value: int, parameter_hint: str = "UNKNOWN") -> None:
+    logger.debug("set_dtr0")
+    if 0 <= value < dali.MAX_VALUE:
         command = SpecialCommandOpcode.DTR0 << 8 | value
         dali.connection.transmit(DaliFrame(length=16, data=command), block=True)
     else:
@@ -62,8 +75,10 @@ def set_dtr0(value, parameter_hint="UNKNOWN"):
         )
 
 
-def set_dtr1(value, parameter_hint="UNKNOWN"):
-    if value in range(dali.MAX_VALUE):
+@typechecked
+def set_dtr1(value: int, parameter_hint: str = "UNKNOWN") -> None:
+    logger.debug("set_dtr1")
+    if 0 <= value < dali.MAX_VALUE:
         command = SpecialCommandOpcode.DTR1 << 8 | value
         dali.connection.transmit(DaliFrame(length=16, data=command), block=True)
     else:
@@ -72,22 +87,21 @@ def set_dtr1(value, parameter_hint="UNKNOWN"):
         )
 
 
-def write_gear_frame(address_byte, opcode_byte=0, send_twice=False):
+@typechecked
+def write_gear_frame(
+    address_byte: int, opcode_byte: int = 0, send_twice: bool = False
+) -> None:
+    logger.debug("write_gear_frame")
     command = address_byte << 8 | opcode_byte
     dali.connection.transmit(DaliFrame(length=16, data=command, send_twice=send_twice))
-    return
 
 
-def write_frame_and_show_answer(address_byte, opcode_byte=0):
-    dali.connection.start_receive()
+@typechecked
+def write_frame_and_show_answer(address_byte: int, opcode_byte: int = 0):
+    logger.debug("write_frame_and_show_answer")
     data = address_byte << 8 | opcode_byte
-    dali.connection.query_reply(DaliFrame(length=16, data=data))
-    if dali.connection.rx_frame.length == 8:
-        click.echo(
-            f"{dali.connection.rx_frame.data} = "
-            f"0x{dali.connection.rx_frame.data:02X} = "
-            f"{dali.connection.rx_frame.data:08b}b"
-        )
+    reply = dali.connection.query_reply(DaliFrame(length=16, data=data))
+    if reply.length == 8:
+        click.echo(f"{reply.data} = " f"0x{reply.data:02X} = " f"{reply.data:08b}b")
     else:
-        click.echo(dali.connection.rx_frame.status.message)
-    dali.connection.close()
+        click.echo(reply.message)

@@ -15,7 +15,6 @@ gear_address_option = click.option(
 @click.command(name="status", help="Gear status byte")
 @gear_address_option
 def status(adr):
-    dali.connection.start_receive()
     result = gear_query_value(adr, QueryCommandOpcode.STATUS)
     if result is not None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
@@ -63,7 +62,7 @@ def reset(adr):
     gear_query_and_display_reply(adr, QueryCommandOpcode.RESET_STATE)
 
 
-@click.command(name="short", help="Missing short address")
+@click.command(name="missing", help="Missing short address")
 @gear_address_option
 def missing(adr):
     gear_query_and_display_reply(adr, QueryCommandOpcode.MISSING_SHORT_ADDRESS)
