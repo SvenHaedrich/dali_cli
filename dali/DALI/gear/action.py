@@ -7,7 +7,7 @@ from typeguard import typechecked
 from .address import DaliAddressByte
 from .opcode import SpecialCommandOpcode
 
-from ..dali_interface.source.frame import DaliFrame
+from ..dali_interface.frame import DaliFrame
 
 
 logger = logging.getLogger(__name__)

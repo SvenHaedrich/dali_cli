@@ -2,9 +2,9 @@ import logging
 import click
 from typing import Final
 
-from DALI.dali_interface.source.serial import DaliSerial
-from DALI.dali_interface.source.hid import DaliUsb
-from DALI.dali_interface.source.mock import DaliMock
+from DALI.dali_interface.serial import DaliSerial
+from DALI.dali_interface.hid import DaliUsb
+from DALI.dali_interface.mock import DaliMock
 
 
 from DALI.gear import query as gear_query_cmd
