@@ -1,4 +1,3 @@
-from queue import Empty
 from typeguard import typechecked
 import click
 import dali

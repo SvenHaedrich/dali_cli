@@ -3,8 +3,7 @@ import dali
 
 from .opcode import QueryCommandOpcode
 from .address import DaliAddressByte
-from ..dali_interface.frame import DaliFrame
-from ..dali_interface.status import DaliStatus
+from ..dali_interface.dali_interface import DaliFrame, DaliStatus
 
 
 @click.command(name="list", help="List available short addresses.")
