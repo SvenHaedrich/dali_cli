@@ -18,24 +18,24 @@ def test_simple_configure_command(command, opcode):
     result = runner.invoke(cli, ["--mock", "gear", command])
     expect = 0xFF00 + opcode
     assert result.exit_code == 0
-    assert result.output == f"S1 10+{expect:X}\n"
+    assert result.output == f"S2 10+{expect:X}\n"
     # test broadcast unaddressed
     result = runner.invoke(cli, ["--mock", "gear", command, "--adr", "BCU"])
     expect = 0xFD00 + opcode
     assert result.exit_code == 0
-    assert result.output == f"S1 10+{expect:X}\n"
+    assert result.output == f"S2 10+{expect:X}\n"
     # test short address
     for short in range(64):
         result = runner.invoke(cli, ["--mock", "gear", command, "--adr", str(short)])
         expect = 0x0100 + (short * 0x200) + opcode
         assert result.exit_code == 0
-        assert result.output == f"S1 10+{expect:X}\n"
+        assert result.output == f"S2 10+{expect:X}\n"
     # test group address
     for group in range(16):
         result = runner.invoke(cli, ["--mock", "gear", command, "--adr", f"G{group}"])
         expect = 0x8100 + (group * 0x200) + opcode
         assert result.exit_code == 0
-        assert result.output == f"S1 10+{expect:X}\n"
+        assert result.output == f"S2 10+{expect:X}\n"
 
 
 @pytest.mark.parametrize(
@@ -58,12 +58,12 @@ def test_set_dtr_to_configure(command, opcode):
     result = runner.invoke(cli, ["--mock", "gear", command, "0"])
     expect = 0xFF00 + opcode
     assert result.exit_code == 0
-    assert result.output == f"S1 10 A300\nS1 10+{expect:X}\n"
+    assert result.output == f"S2 10 A300\nS2 10+{expect:X}\n"
     # test broadcast unaddressed
     result = runner.invoke(cli, ["--mock", "gear", command, "0", "--adr", "BCU"])
     expect = 0xFD00 + opcode
     assert result.exit_code == 0
-    assert result.output == f"S1 10 A300\nS1 10+{expect:X}\n"
+    assert result.output == f"S2 10 A300\nS2 10+{expect:X}\n"
     # test short address
     for short in range(64):
         result = runner.invoke(
@@ -71,7 +71,7 @@ def test_set_dtr_to_configure(command, opcode):
         )
         expect = 0x0100 + (short * 0x200) + opcode
         assert result.exit_code == 0
-        assert result.output == f"S1 10 A300\nS1 10+{expect:X}\n"
+        assert result.output == f"S2 10 A300\nS2 10+{expect:X}\n"
     # test group address
     for group in range(16):
         result = runner.invoke(
@@ -79,7 +79,8 @@ def test_set_dtr_to_configure(command, opcode):
         )
         expect = 0x8100 + (group * 0x200) + opcode
         assert result.exit_code == 0
-        assert result.output == f"S1 10 A300\nS1 10+{expect:X}\n"
+
+        assert result.output == f"S2 10 A300\nS2 10+{expect:X}\n"
 
 
 def test_set_short_address():
@@ -88,12 +89,12 @@ def test_set_short_address():
     result = runner.invoke(cli, ["--mock", "gear", "short", "0"])
     expect = 0xFF80
     assert result.exit_code == 0
-    assert result.output == f"S1 10 A301\nS1 10+{expect:X}\n"
+    assert result.output == f"S2 10 A301\nS2 10+{expect:X}\n"
     # test broadcast unaddressed
     result = runner.invoke(cli, ["--mock", "gear", "short", "0", "--adr", "BCU"])
     expect = 0xFD80
     assert result.exit_code == 0
-    assert result.output == f"S1 10 A301\nS1 10+{expect:X}\n"
+    assert result.output == f"S2 10 A301\nS2 10+{expect:X}\n"
     # test short address
     for short in range(64):
         result = runner.invoke(
@@ -101,7 +102,7 @@ def test_set_short_address():
         )
         expect = 0x0180 + (short * 0x200)
         assert result.exit_code == 0
-        assert result.output == f"S1 10 A301\nS1 10+{expect:X}\n"
+        assert result.output == f"S2 10 A301\nS2 10+{expect:X}\n"
     # test group address
     for group in range(16):
         result = runner.invoke(
@@ -109,4 +110,4 @@ def test_set_short_address():
         )
         expect = 0x8180 + (group * 0x200)
         assert result.exit_code == 0
-        assert result.output == f"S1 10 A301\nS1 10+{expect:X}\n"
+        assert result.output == f"S2 10 A301\nS2 10+{expect:X}\n"

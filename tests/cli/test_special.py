@@ -17,7 +17,7 @@ def test_simple_special_command(command, address_byte, twice):
     result = runner.invoke(cli, ["--mock", "gear", command])
     expect = address_byte << 8
     assert result.exit_code == 0
-    assert result.output == f"S1 10{twice}{expect:X}\n"
+    assert result.output == f"S2 10{twice}{expect:X}\n"
 
 
 @pytest.mark.parametrize(
@@ -36,4 +36,4 @@ def test_special_command_with_parameter(command, address_byte):
         result = runner.invoke(cli, ["--mock", "gear", command, str(data)])
         expect = (address_byte << 8) + data
         assert result.exit_code == 0
-        assert result.output == f"S1 10 {expect:X}\n"
+        assert result.output == f"S2 10 {expect:X}\n"
