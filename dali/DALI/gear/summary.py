@@ -1,26 +1,14 @@
-from queue import Empty
+from typeguard import typechecked
 import click
 import dali
 
-from .action import gear_send_forward_frame
+from .action import gear_query_value
 from .opcode import QueryCommandOpcode
 
 
-def gear_query_multiple(adr, opcode):
-    gear_send_forward_frame(adr, opcode)
-    try:
-        while True:
-            dali.connection.get_next(dali.timeout_sec)
-            if dali.connection.data == dali.connection.last_transmit:
-                continue
-            if dali.connection.length == 8:
-                return dali.connection.data
-    except Empty:
-        return None
-
-
-def gear_summary_item(adr, caption, opcode):
-    result = gear_query_multiple(adr, opcode)
+@typechecked
+def gear_summary_item(adr: str, caption: str, opcode: int) -> None:
+    result = gear_query_value(adr, opcode, close=False)
     if result is not None:
         click.echo(f"{caption:.<20}: 0x{result:02X} = {result:08b}b = {result}")
     else:
@@ -33,8 +21,8 @@ def gear_summary_item(adr, caption, opcode):
     default="BC",
     help="Address, can be a short address (A0..A63) or group address (G0..G15).",
 )
-def summary(adr):
-    dali.connection.start_receive()
+@typechecked
+def summary(adr: str) -> None:
     gear_summary_item(adr, "Status", QueryCommandOpcode.STATUS)
     gear_summary_item(adr, "Operation mode", QueryCommandOpcode.OPERATING_MODE)
     gear_summary_item(adr, "Version", QueryCommandOpcode.VERSION_NUMBER)
@@ -50,9 +38,9 @@ def summary(adr):
     gear_summary_item(adr, "DTR0", QueryCommandOpcode.CONTENT_DTR0)
     gear_summary_item(adr, "DTR1", QueryCommandOpcode.CONTENT_DTR1)
     gear_summary_item(adr, "DTR2", QueryCommandOpcode.CONTENT_DTR2)
-    random_h = gear_query_multiple(adr, QueryCommandOpcode.RANDOM_ADDRESS_H)
-    random_m = gear_query_multiple(adr, QueryCommandOpcode.RANDOM_ADDRESS_M)
-    random_l = gear_query_multiple(adr, QueryCommandOpcode.RANDOM_ADDRESS_L)
+    random_h = gear_query_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_H, close=False)
+    random_m = gear_query_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_M, close=False)
+    random_l = gear_query_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_L, close=False)
     if (random_h is not None) and (random_m is not None) and (random_l is not None):
         random_address = random_h << 16 | random_m << 8 | random_l
         click.echo(
@@ -70,4 +58,3 @@ def summary(adr):
         gear_summary_item(
             adr, f"Scene {scene} level", QueryCommandOpcode.SCENE_LEVEL + scene
         )
-    dali.connection.close()

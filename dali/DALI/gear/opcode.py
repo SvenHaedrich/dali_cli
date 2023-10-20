@@ -65,7 +65,7 @@ class QueryCommandOpcode:
     EXTENDED_VERSION_NUMBER = 0xFF
 
 
-class SpecialCommandOpcodes:
+class SpecialCommandOpcode:
     TERMINATE = 0xA1
     DTR0 = 0xA3
     INITIALISE = 0xA5

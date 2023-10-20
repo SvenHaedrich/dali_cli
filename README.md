@@ -8,7 +8,10 @@ DALI is the digital addressable lighting interface as described [here](https://w
 
     git clone git@github.com:SvenHaedrich/dali_cli.git
     cd dali_cli
-    pip install -e .
+    git submodule update --init
+    python3 -m pip install --upgrade pip setuptools
+    python3 -m build
+    python3 -m pip install --editable .
 
 ## Building a Distribution
 

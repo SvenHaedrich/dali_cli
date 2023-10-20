@@ -1,9 +1,10 @@
 import logging
 import click
+from typing import Final
 
-from DALI.connection import mock as connection_mock
-from DALI.connection import serial as connection_serial
-from DALI.connection import hid as connection_hid
+from DALI.dali_interface.serial import DaliSerial
+from DALI.dali_interface.hid import DaliUsb
+from DALI.dali_interface.mock import DaliMock
 
 
 from DALI.gear import query as gear_query_cmd
@@ -13,21 +14,22 @@ from DALI.gear import list as gear_list_cmd
 from DALI.gear import dump as gear_dump_cmd
 from DALI.gear import configure as gear_conf_cmd
 from DALI.gear import special as gear_special_cmd
+from DALI.gear import clear as gear_clear_cmd
 
 # global data
 connection = None
 timeout_sec = 0.2
 
 # global const
-MAX_GROUP = 0x10
-MAX_SCENE = 0x10
-MAX_VALUE = 0x100
-MAX_ADR = 0x40
-MAX_BANK = 0x100
+MAX_GROUP: Final[int] = 0x10
+MAX_SCENE: Final[int] = 0x10
+MAX_VALUE: Final[int] = 0x100
+MAX_ADR: Final[int] = 0x40
+MAX_BANK: Final[int] = 0x100
 
 
 @click.group(name="dali")
-@click.version_option("0.0.7")
+@click.version_option("0.0.9")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -61,13 +63,13 @@ def cli(ctx, serial_port, hid, mock, debug):
     global connection
     try:
         if serial_port and not hid and not mock:
-            connection = connection_serial.DaliSerial(port=serial_port)
+            connection = DaliSerial(portname=serial_port)
 
         if hid and not serial_port and not mock:
-            connection = connection_hid.DaliUsb()
+            connection = DaliUsb()
 
         if mock and not serial_port and not hid:
-            connection = connection_mock.DaliMock()
+            connection = DaliMock()
 
         if connection is None:
             raise click.BadArgumentUsage("invalid connection configuration.")
@@ -94,6 +96,7 @@ def gear():
 gear.add_command(gear_summary_cmd.summary)
 gear.add_command(gear_list_cmd.list)
 gear.add_command(gear_dump_cmd.dump)
+gear.add_command(gear_clear_cmd.clear)
 
 # ---- configure commands
 gear.add_command(gear_conf_cmd.reset)

@@ -72,10 +72,11 @@ def gear_show_memory_content(bank, location, value):
     help="Address, can be a short address (A0..A63) or group address (G0..G15).",
 )
 def dump(adr, bank):
-    dali.connection.start_receive()
     set_dtr1(bank, "BANK")
     set_dtr0(0, "LOCATION")
-    last_accessible_location = gear_query_value(adr, QueryCommandOpcode.READ_MEMORY)
+    last_accessible_location = gear_query_value(
+        adr, QueryCommandOpcode.READ_MEMORY, close=False
+    )
     if last_accessible_location is None:
         click.echo(f"memory bank {bank} not implemented")
         dali.connection.close()
@@ -83,6 +84,8 @@ def dump(adr, bank):
     gear_show_memory_content(bank, 0, last_accessible_location)
     for location in range(1, last_accessible_location + 1):
         gear_show_memory_content(
-            bank, location, gear_query_value(adr, QueryCommandOpcode.READ_MEMORY)
+            bank,
+            location,
+            gear_query_value(adr, QueryCommandOpcode.READ_MEMORY, close=False),
         )
     dali.connection.close()

@@ -6,22 +6,18 @@ from dali import cli
 @pytest.mark.parametrize(
     "command,address_byte,twice",
     [
-        ("term", 0xA1, False),
-        ("rand", 0xA7, True),
-        ("withdraw", 0xAB, False),
-        ("ping", 0xAD, False),
+        ("term", 0xA1, " "),
+        ("rand", 0xA7, "+"),
+        ("withdraw", 0xAB, " "),
+        ("ping", 0xAD, " "),
     ],
 )
 def test_simple_special_command(command, address_byte, twice):
-    if twice:
-        serial_command = "T"
-    else:
-        serial_command = "S"
     runner = CliRunner()
     result = runner.invoke(cli, ["--mock", "gear", command])
     expect = address_byte << 8
     assert result.exit_code == 0
-    assert result.output == f"{serial_command}1 10 {expect:X}\n"
+    assert result.output == f"S2 10{twice}{expect:X}\n"
 
 
 @pytest.mark.parametrize(
@@ -40,4 +36,4 @@ def test_special_command_with_parameter(command, address_byte):
         result = runner.invoke(cli, ["--mock", "gear", command, str(data)])
         expect = (address_byte << 8) + data
         assert result.exit_code == 0
-        assert result.output == f"S1 10 {expect:X}\n"
+        assert result.output == f"S2 10 {expect:X}\n"
