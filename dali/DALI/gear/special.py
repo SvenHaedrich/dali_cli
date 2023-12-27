@@ -64,7 +64,6 @@ def ping():
 @click.argument("address", type=click.INT)
 def search(address):
     if 0 <= address < 0x1000000:
-        dali.connection.start_receive()
         write_gear_frame(SpecialCommandOpcode.SEARCHADDRH, (address >> 16) & 0xFF)
         while True:
             dali.connection.get(timeout=dali.timeout_sec)

@@ -71,7 +71,6 @@ def missing(adr):
 @click.command(name="version", help="Version number")
 @gear_address_option
 def version(adr):
-    dali.connection.start_receive()
     result = gear_query_value(adr, QueryCommandOpcode.VERSION_NUMBER)
     if result is not None:
         click.echo(f"Version: {result} = 0x{result:02X} = {result:08b}b")
@@ -204,7 +203,6 @@ def fade(adr):
         "4.0 steps/s",
         "2.8 steps/s",
     )
-    dali.connection.start_receive()
     result = gear_query_value(adr, QueryCommandOpcode.FADE_TIME_RATE)
     if result is not None:
         click.echo(f"Result: {result} = 0x{result:02X} = {result:08b}b")
