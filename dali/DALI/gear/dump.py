@@ -55,13 +55,17 @@ def gear_show_memory_content(bank, location, value):
     elif bank != 0 and location == 1:
         annotation = "indicactor byte"
     elif bank != 0 and location == 2:
-        annotation = "memory lock byte (0x55 = locked)"
+        annotation = "memory lock byte (0x55 = write-enabled)"
     else:
         annotation = annotations.get((bank, location), " ")
     if value is None:
         click.echo(f"0x{location:02X} : NO - timeout {annotation}")
     else:
-        click.echo(f"0x{location:02X} : 0x{value:02X} = {value:3} {annotation}")
+        if 0x20 < value:
+            ascii = chr(value)
+        else:
+            ascii = chr(0x20)
+        click.echo(f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii}´ {annotation}")
 
 
 @click.command(name="dump", help="Dump contents of a memory bank.")
@@ -69,7 +73,7 @@ def gear_show_memory_content(bank, location, value):
 @click.option(
     "--adr",
     default="BC",
-    help="Address, can be a short address (A0..A63) or group address (G0..G15).",
+    help="Address, can be a short address (0..63) or group address (G0..G15).",
 )
 def dump(adr, bank):
     set_dtr1(bank, "BANK")
