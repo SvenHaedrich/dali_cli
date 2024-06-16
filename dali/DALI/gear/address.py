@@ -23,13 +23,13 @@ class DaliAddressByte:
         self.mode = self.INVALID
 
     def short(self, address: int = 0) -> None:
-        if address in range(dali.MAX_ADR):
+        if 0 <= address < dali.MAX_ADR:
             self.byte &= 0x01
             self.byte |= address << 1
             self.mode = self.SHORT
 
     def group(self, group: int = 0) -> None:
-        if group in range(dali.MAX_GROUP):
+        if 0 <= group < dali.MAX_GROUP:
             self.byte &= 0x01
             self.byte |= group << 1
             self.byte |= 0x80

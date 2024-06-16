@@ -19,13 +19,13 @@ class DaliDeviceAddressByte:
         self.mode = self.INVALID
 
     def short(self, address: int = 0) -> None:
-        if 0 < address < dali.MAX_ADR:
+        if 0 <= address < dali.MAX_ADR:
             self.byte = 0x01
             self.byte |= address << 1
             self.mode = self.SHORT
 
     def group(self, group: int = 0) -> None:
-        if 0 < group < dali.MAX_GROUP:
+        if 0 <= group < dali.MAX_GROUP:
             self.byte = group << 1
             self.byte |= 0x81
             self.mode = self.GROUP
@@ -55,13 +55,13 @@ class DaliDeviceAddressByte:
             return True
         if text[0] == "G":
             g = int(text[1:3])
-            if g in range(16):
+            if 0 <= g < dali.MAX_GROUP:
                 self.group(g)
                 return True
             else:
                 return False
         s = int(text)
-        if 0 < s < dali.MAX_ADR:
+        if 0 <= s < dali.MAX_ADR:
             self.short(s)
             return True
         return False

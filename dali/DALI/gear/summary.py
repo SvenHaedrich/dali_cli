@@ -2,13 +2,13 @@ from typeguard import typechecked
 import click
 import dali
 
-from .action import gear_query_value
+from .action import query_gear_value
 from .opcode import QueryCommandOpcode
 
 
 @typechecked
 def gear_summary_item(adr: str, caption: str, opcode: int) -> None:
-    result = gear_query_value(adr, opcode, close=False)
+    result = query_gear_value(adr, opcode, close=False)
     if result is not None:
         click.echo(f"{caption:.<20}: 0x{result:02X} = {result:08b}b = {result}")
     else:
@@ -38,9 +38,9 @@ def summary(adr: str) -> None:
     gear_summary_item(adr, "DTR0", QueryCommandOpcode.CONTENT_DTR0)
     gear_summary_item(adr, "DTR1", QueryCommandOpcode.CONTENT_DTR1)
     gear_summary_item(adr, "DTR2", QueryCommandOpcode.CONTENT_DTR2)
-    random_h = gear_query_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_H, close=False)
-    random_m = gear_query_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_M, close=False)
-    random_l = gear_query_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_L, close=False)
+    random_h = query_gear_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_H, close=False)
+    random_m = query_gear_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_M, close=False)
+    random_l = query_gear_value(adr, QueryCommandOpcode.RANDOM_ADDRESS_L, close=False)
     if (random_h is not None) and (random_m is not None) and (random_l is not None):
         random_address = random_h << 16 | random_m << 8 | random_l
         click.echo(

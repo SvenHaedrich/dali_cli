@@ -18,6 +18,7 @@ from DALI.gear import special as gear_special_cmd
 from DALI.gear import clear as gear_clear_cmd
 
 from DALI.device import device_dump as device_dump_cmd
+from DALI.device import device_query as device_query_cmd
 
 # global data
 connection = None
@@ -181,4 +182,10 @@ def device():
     pass
 
 device.add_command(device_dump_cmd.dump)
+
+@device.group(name="query", help="Query device status commands")
+def device_query():
+    pass
+
+device_query.add_command(device_query_cmd.status)
 

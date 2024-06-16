@@ -1,7 +1,7 @@
 import click
 import dali
 
-from .action import gear_query_value, set_dtr0, set_dtr1
+from .action import query_gear_value, set_dtr0, set_dtr1
 from .opcode import QueryCommandOpcode
 
 
@@ -78,7 +78,7 @@ def gear_show_memory_content(bank, location, value):
 def dump(adr, bank):
     set_dtr1(bank, "BANK")
     set_dtr0(0, "LOCATION")
-    last_accessible_location = gear_query_value(
+    last_accessible_location = query_gear_value(
         adr, QueryCommandOpcode.READ_MEMORY, close=False
     )
     if last_accessible_location is None:
@@ -90,6 +90,6 @@ def dump(adr, bank):
         gear_show_memory_content(
             bank,
             location,
-            gear_query_value(adr, QueryCommandOpcode.READ_MEMORY, close=False),
+            query_gear_value(adr, QueryCommandOpcode.READ_MEMORY, close=False),
         )
     dali.connection.close()

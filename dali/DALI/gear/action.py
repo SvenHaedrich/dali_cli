@@ -31,7 +31,7 @@ def gear_send_forward_frame(
 
 
 @typechecked
-def gear_query_value(adr_parameter: str, opcode: int, close: bool = True) -> int | None:
+def query_gear_value(adr_parameter: str, opcode: int, close: bool = True) -> int | None:
     logger.debug("gear_query_value")
     address = DaliAddressByte()
     if address.arg(adr_parameter):
@@ -47,7 +47,7 @@ def gear_query_value(adr_parameter: str, opcode: int, close: bool = True) -> int
 
 
 @typechecked
-def gear_query_and_display_reply(
+def query_gear_and_display_reply(
     adr_parameter: str, opcode: int, close: bool = True
 ) -> None:
     logger.debug("gear_query_and_display_reply")
