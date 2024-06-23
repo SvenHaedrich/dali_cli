@@ -24,10 +24,10 @@ Install the latest version of `setuptools` using [pip](https://pypi.org/project/
 Now you can build the distribution package
 
     cd dali_cli
-    python -m build
+    python3 -m build
 
 Probably, you want to use the dali package in development mode. Here's how to do it:
 
     cd dali_cli
-    pip install --editable .
+    python3 pip install --editable .
 
