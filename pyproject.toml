@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dali"
+version = "0.1.0"
+description = "Command line interface to control a DALI system"
+authors = [
+    {name = "Sven Hädrich", email="sven.haedrich@sevenlab.de"}, 
+]
+dependencies = [
+    "click", "pyserial", "pyusb", "termcolor", "typeguard",
+]
+
+[tool.setuptools.packages.find]
+where = ["dali"]
+exclude = ["tests"]
