@@ -1,11 +1,11 @@
 import click
 import dali
 
-from .action import query_gear_value, set_dtr0, set_dtr1
-from .opcode import QueryCommandOpcode
+from .device_action import query_device_value, set_device_dtr0, set_device_dtr1
+from .device_opcode import DeviceQueryCommandOpcode
 
 
-def gear_show_memory_content(bank, location, value):
+def device_show_memory_content(bank, location, value):
     annotations = {
         (0, 0): "address of last accessible memory location",
         (0, 1): "reserved",
@@ -76,20 +76,20 @@ def gear_show_memory_content(bank, location, value):
     help="Address, can be a short address (0..63) or group address (G0..G15).",
 )
 def dump(adr, bank):
-    set_dtr1(bank, "BANK")
-    set_dtr0(0, "LOCATION")
-    last_accessible_location = query_gear_value(
-        adr, QueryCommandOpcode.READ_MEMORY, close=False
+    set_device_dtr1(bank, "BANK")
+    set_device_dtr0(0, "LOCATION")
+    last_accessible_location = query_device_value(
+        adr, DeviceQueryCommandOpcode.READ_MEMORY, close=False
     )
     if last_accessible_location is None:
         click.echo(f"memory bank {bank} not implemented")
         dali.connection.close()
         return
-    gear_show_memory_content(bank, 0, last_accessible_location)
+    device_show_memory_content(bank, 0, last_accessible_location)
     for location in range(1, last_accessible_location + 1):
-        gear_show_memory_content(
+        device_show_memory_content(
             bank,
             location,
-            query_gear_value(adr, QueryCommandOpcode.READ_MEMORY, close=False),
+            query_device_value(adr, DeviceQueryCommandOpcode.READ_MEMORY, close=False),
         )
     dali.connection.close()

@@ -2,6 +2,7 @@ import logging
 import click
 from typing import Final
 
+from DALI.dali_interface.dali_interface import DaliInterface, DaliFrame
 from DALI.dali_interface.serial import DaliSerial
 from DALI.dali_interface.hid import DaliUsb
 from DALI.dali_interface.mock import DaliMock
@@ -16,6 +17,9 @@ from DALI.gear import configure as gear_conf_cmd
 from DALI.gear import special as gear_special_cmd
 from DALI.gear import clear as gear_clear_cmd
 
+from DALI.device import device_dump as device_dump_cmd
+from DALI.device import device_query as device_query_cmd
+
 # global data
 connection = None
 timeout_sec = 0.2
@@ -27,6 +31,12 @@ MAX_VALUE: Final[int] = 0x100
 MAX_ADR: Final[int] = 0x40
 MAX_BANK: Final[int] = 0x100
 
+class DaliNone(DaliInterface):
+    def __init__(self):
+        super().__init__(start_receive=False)
+
+    def transmit(self,frame: DaliFrame, block: bool = False) -> None:
+        print("no interface defined -- command lost")    
 
 @click.group(name="dali")
 @click.version_option("0.0.9")
@@ -55,12 +65,13 @@ MAX_BANK: Final[int] = 0x100
 def cli(ctx, serial_port, hid, mock, debug):
     """
     Command line interface for DALI systems.
-    SevenLabs 2023
+    SevenLabs 2024
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
 
     global connection
+    connection = DaliNone()
     try:
         if serial_port and not hid and not mock:
             connection = DaliSerial(portname=serial_port)
@@ -71,8 +82,6 @@ def cli(ctx, serial_port, hid, mock, debug):
         if mock and not serial_port and not hid:
             connection = DaliMock()
 
-        if connection is None:
-            raise click.BadArgumentUsage("invalid connection configuration.")
     except Exception:
         raise click.BadArgumentUsage("can not open connection.")
 
@@ -167,7 +176,16 @@ gear_query.add_command(gear_query_cmd.fade)
 gear_query.add_command(gear_special_cmd.short)
 
 #
-# ---- device commands
-# @click.group(name="device", help="Control device commands.")
-# def device():
-#    pass
+# ---- gear commands
+@cli.group(name="device", help="Control device commands.")
+def device():
+    pass
+
+device.add_command(device_dump_cmd.dump)
+
+@device.group(name="query", help="Query device status commands")
+def device_query():
+    pass
+
+device_query.add_command(device_query_cmd.status)
+
