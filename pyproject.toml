@@ -13,6 +13,9 @@ dependencies = [
     "click", "pyserial", "pyusb", "termcolor", "typeguard",
 ]
 
+[project.scripts]
+dali = "dali:cli"
+
 [tool.setuptools.packages.find]
 where = ["dali"]
 exclude = ["tests"]
