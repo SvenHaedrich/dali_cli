@@ -9,6 +9,8 @@ DALI is the digital addressable lighting interface as described [here](https://w
     git clone git@github.com:SvenHaedrich/dali_cli.git
     cd dali_cli
     git submodule update --init
+    python3 -m venv --prompt dali .venv
+    source .venv/bin/activate
     python3 -m pip install --upgrade pip setuptools
     python3 -m build
     python3 -m pip install --editable .
@@ -29,5 +31,5 @@ Now you can build the distribution package
 Probably, you want to use the dali package in development mode. Here's how to do it:
 
     cd dali_cli
-    python3 pip install --editable .
+    python3 -m pip install --editable .
 
