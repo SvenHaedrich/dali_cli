@@ -1,7 +1,9 @@
+"""Control device addressing class."""
+
 from typing import Final
-from typeguard import typechecked
 
 import dali
+from typeguard import typechecked
 
 
 @typechecked

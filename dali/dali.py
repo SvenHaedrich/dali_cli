@@ -31,12 +31,14 @@ MAX_VALUE: Final[int] = 0x100
 MAX_ADR: Final[int] = 0x40
 MAX_BANK: Final[int] = 0x100
 
+
 class DaliNone(DaliInterface):
     def __init__(self):
         super().__init__(start_receive=False)
 
-    def transmit(self,frame: DaliFrame, block: bool = False) -> None:
-        print("no interface defined -- command lost")    
+    def transmit(self, frame: DaliFrame, block: bool = False) -> None:
+        print("no interface defined -- command lost")
+
 
 @click.group(name="dali")
 @click.version_option("0.2.0")
@@ -150,6 +152,7 @@ def gear_query():
     pass
 
 
+# ---- query commands
 gear_query.add_command(gear_query_cmd.status)
 gear_query.add_command(gear_query_cmd.present)
 gear_query.add_command(gear_query_cmd.failure)
@@ -175,17 +178,21 @@ gear_query.add_command(gear_query_cmd.failure_level)
 gear_query.add_command(gear_query_cmd.fade)
 gear_query.add_command(gear_special_cmd.short)
 
+
 #
-# ---- gear commands
+# ---- device commands
 @cli.group(name="device", help="Control device commands.")
 def device():
     pass
 
+
 device.add_command(device_dump_cmd.dump)
+
 
 @device.group(name="query", help="Query device status commands")
 def device_query():
     pass
+
 
 device_query.add_command(device_query_cmd.capabilities)
 device_query.add_command(device_query_cmd.dtr0)

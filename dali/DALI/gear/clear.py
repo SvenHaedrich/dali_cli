@@ -1,3 +1,5 @@
+"""Command sequence to clear short addresses and group settings."""
+
 import click
 import dali
 

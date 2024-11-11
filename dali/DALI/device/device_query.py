@@ -1,8 +1,10 @@
+"""Control device query commands implementation."""
+
 import click
 import dali
 
-from .device_opcode import DeviceQueryCommandOpcode
 from .device_action import query_device_value
+from .device_opcode import DeviceQueryCommandOpcode
 
 device_address_option = click.option(
     "--adr",

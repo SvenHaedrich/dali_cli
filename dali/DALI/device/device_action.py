@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 @typechecked
-def query_device_value(adr_parameter: str, opcode: int, close: bool = True) -> int | None:
+def query_device_value(
+    adr_parameter: str, opcode: int, close: bool = True
+) -> int | None:
     logger.debug("gear_device_value")
     address = DaliDeviceAddressByte()
     instance = 0xFE

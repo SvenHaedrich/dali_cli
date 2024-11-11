@@ -1,7 +1,7 @@
-venv
+.venv/
 *.pyc
 __pycache__
-.vscode
+.vscode/
 .coverage
 dist
 *egg-info

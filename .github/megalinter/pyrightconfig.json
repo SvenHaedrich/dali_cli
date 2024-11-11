@@ -1,0 +1,7 @@
+{
+    "reportMissingImports": false,
+    "reportOptionalMemberAccess": false,
+
+    "pythonVersion": "3.11",
+    "pythonPlatform": "Linux",
+}

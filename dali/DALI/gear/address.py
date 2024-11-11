@@ -1,3 +1,5 @@
+"""Class for control gear addressing."""
+
 from typing import Final
 from typeguard import typechecked
 

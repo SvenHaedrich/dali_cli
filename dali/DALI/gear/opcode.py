@@ -1,3 +1,6 @@
+"""Control gear opcodes."""
+
+
 class LevelCommandOpcode:
     OFF = 0x00
     UP = 0x01

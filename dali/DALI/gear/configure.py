@@ -1,3 +1,5 @@
+"""Control gear configure command implementations."""
+
 import click
 import dali
 

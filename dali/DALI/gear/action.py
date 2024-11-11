@@ -1,13 +1,15 @@
+"""Control gear action command implementation."""
+
+import logging
+
 import click
 import dali
-import logging
 from typeguard import typechecked
 
 
+from ..dali_interface.dali_interface import DaliFrame
 from .address import DaliAddressByte
 from .opcode import SpecialCommandOpcode
-
-from ..dali_interface.dali_interface import DaliFrame
 
 
 logger = logging.getLogger(__name__)

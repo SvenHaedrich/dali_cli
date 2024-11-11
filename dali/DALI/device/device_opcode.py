@@ -1,8 +1,12 @@
-class DevcieConfigureCommandOpcode:
+"""Control device opcodes."""
+
+
+class DeviceConfigureCommandOpcode:
     IDENTIFY_DEVICE = 0x00
     RESET_POWER_CYCLE_SEEN = 0x02
     RESET = 0x10
     RESET_MEMORY_BANK = 0x11
+
 
 class DeviceQueryCommandOpcode:
     QUERY_STATUS = 0x30
@@ -23,15 +27,15 @@ class DeviceSpecialCommandOpcode:
     INITIALISE = 0x01
     RANDOMISE = 0x02
     COMPARE = 0x03
-    WIDTHDRAW = 0x04
+    WITHDRAW = 0x04
     SEARCHADDRH = 0x05
     SEARCHADDRM = 0x06
     SEARCHADDRL = 0x07
     PROGRAM_SHORT_ADDRESS = 0x08
     VERIFY_SHORT_ADDRESS = 0x09
-    QUERY_SHORT_ADDRESS = 0x0a
+    QUERY_SHORT_ADDRESS = 0x0A
     WRITE_MEMORY = 0x20
-    WRITE_MEMORY_NO_REPLY = 0X21
+    WRITE_MEMORY_NO_REPLY = 0x21
     DTR0 = 0x30
     DTR1 = 0x31
     DTR2 = 0x32

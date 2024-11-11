@@ -1,3 +1,5 @@
+"""Control gear query command implementations."""
+
 import click
 import dali
 

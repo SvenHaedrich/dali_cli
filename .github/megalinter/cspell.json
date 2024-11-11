@@ -1,0 +1,36 @@
+{
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/vscode-extension/**",
+    "**/.git/**",
+    "**/.gitmodules",
+    ".vscode",
+    "megalinter",
+    "*.yml",
+    "*.yaml",
+    "**/requirements.txt"
+  ],
+  "words": [
+    "backframe",
+    "baudrate",
+    "BEGA",
+    "DAPC",
+    "GTIN",
+    "Hädrich",
+    "Haedrich",
+    "initialisation",
+    "Lunatone",
+    "portname",
+    "pytest",
+    "PYTHONPATH",
+    "randomise",
+    "setuptools",
+    "Sven",
+    "ungroup",
+    "usec",
+    "venv"
+  ],
+  "language": "en",
+  "noConfigSearch": true,
+  "version": "0.2"
+}

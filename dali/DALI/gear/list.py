@@ -1,3 +1,5 @@
+"""Control gear list available short addresses."""
+
 import click
 import dali
 

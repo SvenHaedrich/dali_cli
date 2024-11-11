@@ -1,3 +1,5 @@
+"""Control gear setting summary."""
+
 from typeguard import typechecked
 import click
 import dali

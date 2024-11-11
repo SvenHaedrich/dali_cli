@@ -1,3 +1,5 @@
+"""Control gear dump memory bank contents."""
+
 import click
 import dali
 
@@ -65,7 +67,9 @@ def gear_show_memory_content(bank, location, value):
             ascii = chr(value)
         else:
             ascii = chr(0x20)
-        click.echo(f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii}´ {annotation}")
+        click.echo(
+            f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii}´ {annotation}"
+        )
 
 
 @click.command(name="dump", help="Dump contents of a memory bank.")

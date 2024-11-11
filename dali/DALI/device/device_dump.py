@@ -1,3 +1,5 @@
+"""Control device dump memory bank content."""
+
 import click
 import dali
 
@@ -53,7 +55,7 @@ def device_show_memory_content(bank, location, value):
     if bank != 0 and location == 0:
         annotation = annotations[(0, 0)]
     elif bank != 0 and location == 1:
-        annotation = "indicactor byte"
+        annotation = "indicator byte"
     elif bank != 0 and location == 2:
         annotation = "memory lock byte (0x55 = write-enabled)"
     else:
@@ -65,7 +67,9 @@ def device_show_memory_content(bank, location, value):
             ascii = chr(value)
         else:
             ascii = chr(0x20)
-        click.echo(f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii}´ {annotation}")
+        click.echo(
+            f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii}´ {annotation}"
+        )
 
 
 @click.command(name="dump", help="Dump contents of a memory bank.")
