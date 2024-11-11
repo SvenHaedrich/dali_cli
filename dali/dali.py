@@ -39,7 +39,7 @@ class DaliNone(DaliInterface):
         print("no interface defined -- command lost")    
 
 @click.group(name="dali")
-@click.version_option("0.0.9")
+@click.version_option("0.2.0")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -187,5 +187,9 @@ device.add_command(device_dump_cmd.dump)
 def device_query():
     pass
 
+device_query.add_command(device_query_cmd.capabilities)
+device_query.add_command(device_query_cmd.dtr0)
+device_query.add_command(device_query_cmd.dtr1)
+device_query.add_command(device_query_cmd.dtr2)
 device_query.add_command(device_query_cmd.status)
-
+device_query.add_command(device_query_cmd.version)
