@@ -1,3 +1,5 @@
+"""Test basic functions and control gear commands of the CLI"""
+
 import pytest
 from click.testing import CliRunner
 from dali import cli

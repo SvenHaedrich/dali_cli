@@ -1,8 +1,8 @@
 """Control device query commands implementation."""
 
 import click
-import dali
 
+from ..dali_interface.dali_interface import DaliInterface
 from .device_action import query_device_value
 from .device_opcode import DeviceQueryCommandOpcode
 
@@ -14,9 +14,10 @@ device_address_option = click.option(
 
 
 @click.command(name="status", help="Device status byte.")
+@click.pass_obj
 @device_address_option
-def status(adr):
-    result = query_device_value(adr, DeviceQueryCommandOpcode.QUERY_STATUS)
+def status(dali: DaliInterface, adr):
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_STATUS)
     if result is not None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
         click.echo("bit : description")
@@ -30,13 +31,15 @@ def status(adr):
         click.echo(f"  {(result >> 7 & 0x01)} : unused")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()
 
 
 @click.command(name="version", help="Device version number")
+@click.pass_obj
 @device_address_option
-def version(adr):
-    result = query_device_value(adr, DeviceQueryCommandOpcode.QUERY_VERSION_NUMBER)
+def version(dali: DaliInterface, adr):
+    result = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_VERSION_NUMBER
+    )
     if result is not None:
         major_version = result >> 2
         minor_version = result & 7
@@ -45,13 +48,15 @@ def version(adr):
         )
     else:
         click.echo("timeout - NO")
-    dali.connection.close()
 
 
 @click.command(name="capabilities", help="Device capabilities")
+@click.pass_obj
 @device_address_option
-def capabilities(adr):
-    result = query_device_value(adr, DeviceQueryCommandOpcode.QUERY_DEVICE_CAPABILITIES)
+def capabilities(dali: DaliInterface, adr):
+    result = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_CAPABILITIES
+    )
     if result is not None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
         click.echo("bit : description")
@@ -67,37 +72,36 @@ def capabilities(adr):
         click.echo(f"  {(result >> 7 & 0x01)} : unused")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()
 
 
 @click.command(name="dtr0", help="Device content of DTR0")
+@click.pass_obj
 @device_address_option
-def dtr0(adr):
-    result = query_device_value(adr, DeviceQueryCommandOpcode.QUERY_CONTENT_DTR0)
+def dtr0(dali: DaliInterface, adr):
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_CONTENT_DTR0)
     if result is not None:
         click.echo(f"DTR0: {result} = 0x{result:02X} = {result:08b}b")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()
 
 
 @click.command(name="dtr1", help="Device content of DTR1")
+@click.pass_obj
 @device_address_option
-def dtr1(adr):
-    result = query_device_value(adr, DeviceQueryCommandOpcode.QUERY_CONTENT_DTR1)
+def dtr1(dali: DaliInterface, adr):
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_CONTENT_DTR1)
     if result is not None:
         click.echo(f"DTR1: {result} = 0x{result:02X} = {result:08b}b")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()
 
 
 @click.command(name="dtr2", help="Device content of DTR2")
+@click.pass_obj
 @device_address_option
-def dtr2(adr):
-    result = query_device_value(adr, DeviceQueryCommandOpcode.QUERY_CONTENT_DTR2)
+def dtr2(dali: DaliInterface, adr):
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_CONTENT_DTR2)
     if result is not None:
         click.echo(f"DTR2: {result} = 0x{result:02X} = {result:08b}b")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()

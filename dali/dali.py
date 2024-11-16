@@ -1,31 +1,19 @@
+"""Implement the main object of the DALI command line interface."""
+
 import logging
 
 import click
-from DALI.dali_interface.dali_interface import DaliInterface, DaliFrame
-from DALI.dali_interface.hid import DaliUsb
-from DALI.dali_interface.mock import DaliMock
-from DALI.dali_interface.serial import DaliSerial
 from DALI.device import device_dump as device_dump_cmd
 from DALI.device import device_query as device_query_cmd
-from DALI.gear import clear as gear_clear_cmd
-from DALI.gear import configure as gear_conf_cmd
-from DALI.gear import dump as gear_dump_cmd
-from DALI.gear import level as level_cmd
-from DALI.gear import list as gear_list_cmd
-from DALI.gear import query as gear_query_cmd
-from DALI.gear import special as gear_special_cmd
-from DALI.gear import summary as gear_summary_cmd
-
-# TODO(Sven) move this class away from the CLI this belongs into a DALI
-# context, not a vommand interface
-
-
-class DaliNone(DaliInterface):
-    def __init__(self):
-        super().__init__(start_receive=False)
-
-    def transmit(self, frame: DaliFrame, block: bool = False) -> None:
-        print("no interface defined -- command lost")
+from DALI.gear import gear_clear as gear_clear_cmd
+from DALI.gear import gear_configure as gear_conf_cmd
+from DALI.gear import gear_dump as gear_dump_cmd
+from DALI.gear import gear_level as level_cmd
+from DALI.gear import gear_list as gear_list_cmd
+from DALI.gear import gear_query as gear_query_cmd
+from DALI.gear import gear_special as gear_special_cmd
+from DALI.gear import gear_summary as gear_summary_cmd
+from DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")
@@ -60,30 +48,23 @@ def cli(ctx, serial_port, hid, mock, debug):
     if debug:
         logging.basicConfig(level=logging.DEBUG)
 
-    # TODO(Sven) transform the DALI connection into a context
-    # see: https://docs.python.org/3/library/contextlib.html#contextlib.AbstractContextManager
-    # and pass it correctly down to the command implementations
+    dali_interface = "None"
+    if serial_port and not hid and not mock:
+        dali_interface = "Serial"
 
-    ctx.connection = DaliNone()
-    try:
-        if serial_port and not hid and not mock:
-            ctx.connection = DaliSerial(portname=serial_port)
+    if hid and not serial_port and not mock:
+        dali_interface = "Usb"
 
-        if hid and not serial_port and not mock:
-            ctx.connection = DaliUsb()
-
-        if mock and not serial_port and not hid:
-            ctx.connection = DaliMock()
-
-    except Exception:
-        raise click.BadArgumentUsage("can not open connection.")
+    if mock and not serial_port and not hid:
+        dali_interface = "Mock"
+    ctx.obj = ctx.with_resource(dali_connection(dali_interface, serial_port))
 
 
 cli.add_command(level_cmd.off)
 cli.add_command(level_cmd.up)
 cli.add_command(level_cmd.down)
-cli.add_command(level_cmd.max)
-cli.add_command(level_cmd.min)
+cli.add_command(level_cmd.max_level)
+cli.add_command(level_cmd.min_level)
 cli.add_command(level_cmd.dapc)
 cli.add_command(level_cmd.goto)
 
@@ -96,7 +77,7 @@ def gear():
 
 
 gear.add_command(gear_summary_cmd.summary)
-gear.add_command(gear_list_cmd.list)
+gear.add_command(gear_list_cmd.gear_list)
 gear.add_command(gear_dump_cmd.dump)
 gear.add_command(gear_clear_cmd.clear)
 
@@ -105,9 +86,9 @@ gear.add_command(gear_conf_cmd.reset)
 gear.add_command(gear_conf_cmd.actual)
 gear.add_command(gear_conf_cmd.op)
 gear.add_command(gear_conf_cmd.reset_mem)
-gear.add_command(gear_conf_cmd.id)
-gear.add_command(gear_conf_cmd.max)
-gear.add_command(gear_conf_cmd.min)
+gear.add_command(gear_conf_cmd.identify)
+gear.add_command(gear_conf_cmd.max_level)
+gear.add_command(gear_conf_cmd.min_level)
 gear.add_command(gear_conf_cmd.fail)
 gear.add_command(gear_conf_cmd.on)
 gear.add_command(gear_conf_cmd.time)

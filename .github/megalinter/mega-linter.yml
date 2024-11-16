@@ -31,7 +31,7 @@ ENABLE_LINTERS:
 
 COPYPASTE_JSCPD_CONFIG_FILE: .github/megalinter/jscpd.json
 SPELL_CSPELL_CONFIG_FILE: .github/megalinter/cspell.json
-SPELL_CSPELL_FILTER_REGEX_EXCLUDE: (.mega-linter.*|.gitignore)
+SPELL_CSPELL_FILTER_REGEX_EXCLUDE: (.megalinter.*|.gitignore)
 PYTHON_PYLINT_CONFIG_FILE: .github/megalinter/pylintrc
 PYTHON_PYRIGHT_CONFIG_FILE: .github/megalinter/pyrightconfig.json
 YAML_V8R_FILTER_REGEX_EXCLUDE: (.mega-linter.*)

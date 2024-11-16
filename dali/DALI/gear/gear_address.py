@@ -1,63 +1,55 @@
 """Class for control gear addressing."""
 
-from typing import Final
-
-import dali
 from typeguard import typechecked
+
+from ..system.constants import DaliAddressingMode, DaliMax
 
 
 @typechecked
 class DaliAddressByte:
-    DAPC: Final[str] = "DAPC"
-    SHORT: Final[str] = "SHORT"
-    GROUP: Final[str] = "GROUP"
-    BROADCAST: Final[str] = "BROADCAST"
-    UNADDRESSED: Final[str] = "UNADDRESSED"
-    SPECIAL: Final[str] = "SPECIAL"
-    RESERVED: Final[str] = "RESERVED"
-    INVALID: Final[str] = "INVALID"
+    """Class for control gear addressing."""
 
     def __init__(self, dapc: bool = False) -> None:
         if dapc:
             self.byte = 0x00
         else:
             self.byte = 0x01
-        self.mode = self.INVALID
+        self.mode = DaliAddressingMode.INVALID
 
     def short(self, address: int = 0) -> None:
         if 0 <= address < DaliMax.ADR:
             self.byte &= 0x01
             self.byte |= address << 1
-            self.mode = self.SHORT
+            self.mode = DaliAddressingMode.SHORT
 
     def group(self, group: int = 0) -> None:
         if 0 <= group < DaliMax.GROUP:
             self.byte &= 0x01
             self.byte |= group << 1
             self.byte |= 0x80
-            self.mode = self.GROUP
+            self.mode = DaliAddressingMode.GROUP
 
     def broadcast(self) -> None:
         self.byte &= 0x01
         self.byte |= 0xFE
-        self.mode = self.BROADCAST
+        self.mode = DaliAddressingMode.BROADCAST
 
     def unaddressed(self) -> None:
         self.byte &= 0x01
         self.byte |= 0xFC
-        self.mode = self.UNADDRESSED
+        self.mode = DaliAddressingMode.UNADDRESSED
 
     def special(self, code: int = 0) -> None:
         self.byte &= 0x01
         if code in range(0xA0, 0xCC):
             self.byte |= code
-            self.mode = self.SPECIAL
+            self.mode = DaliAddressingMode.SPECIAL
 
     def reserved(self, code: int = 0) -> None:
         self.byte &= 0x01
         if code in range(0xCC, 0xFC):
             self.byte |= code
-            self.mode = self.RESERVED
+            self.mode = DaliAddressingMode.RESERVED
 
     def arg(self, text: str = "") -> bool:
         text = text.upper()
@@ -72,8 +64,7 @@ class DaliAddressByte:
             if g in range(16):
                 self.group(g)
                 return True
-            else:
-                return False
+            return False
         s = int(text)
         if s in range(DaliMax.ADR):
             self.short(s)
@@ -81,11 +72,10 @@ class DaliAddressByte:
         return False
 
     def __str__(self) -> str:
-        if self.mode == self.SHORT:
+        if self.mode == DaliAddressingMode.SHORT:
             short_address = (self.byte >> 1) & 0x3F
             return f"G{short_address:02}"
-        elif self.mode == self.GROUP:
+        if self.mode == DaliAddressingMode.GROUP:
             group_address = (self.byte >> 1) & 0xF
             return f"GG{group_address:02}"
-        else:
-            return self.mode
+        return self.mode.value
