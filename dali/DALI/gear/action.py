@@ -3,14 +3,12 @@
 import logging
 
 import click
-import dali
 from typeguard import typechecked
 
-
 from ..dali_interface.dali_interface import DaliFrame
+from ..system.constants import DaliMax
 from .address import DaliAddressByte
-from .opcode import SpecialCommandOpcode
-
+from .gear_opcode import GearSpecialCommandOpcode
 
 logger = logging.getLogger(__name__)
 
@@ -68,8 +66,8 @@ def query_gear_and_display_reply(
 @typechecked
 def set_dtr0(value: int, parameter_hint: str = "UNKNOWN") -> None:
     logger.debug("set_dtr0")
-    if 0 <= value < dali.MAX_VALUE:
-        command = SpecialCommandOpcode.DTR0 << 8 | value
+    if 0 <= value < DaliMax.VALUE:
+        command = GearSpecialCommandOpcode.DTR0 << 8 | value
         dali.connection.transmit(DaliFrame(length=16, data=command), block=True)
     else:
         raise click.BadParameter(
@@ -80,8 +78,8 @@ def set_dtr0(value: int, parameter_hint: str = "UNKNOWN") -> None:
 @typechecked
 def set_dtr1(value: int, parameter_hint: str = "UNKNOWN") -> None:
     logger.debug("set_dtr1")
-    if 0 <= value < dali.MAX_VALUE:
-        command = SpecialCommandOpcode.DTR1 << 8 | value
+    if 0 <= value < DaliMax.VALUE:
+        command = GearSpecialCommandOpcode.DTR1 << 8 | value
         dali.connection.transmit(DaliFrame(length=16, data=command), block=True)
     else:
         raise click.BadParameter(

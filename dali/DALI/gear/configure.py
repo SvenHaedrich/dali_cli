@@ -1,11 +1,10 @@
 """Control gear configure command implementations."""
 
 import click
-import dali
 
+from ..system.constants import DaliMax
 from .action import gear_send_forward_frame, set_dtr0
-from .opcode import ConfigureCommandOpcode
-
+from .gear_opcode import GearConfigureCommandOpcode
 
 gear_address_option = click.option(
     "--adr",
@@ -19,13 +18,13 @@ gear_address_option = click.option(
 )
 @gear_address_option
 def reset(adr):
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.RESET, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.RESET, True)
 
 
 @click.command(name="actual", help="Store the actualLevel into DTR0.")
 @gear_address_option
 def actual(adr):
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.STORE_ACTUAL_LEVEL, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.STORE_ACTUAL_LEVEL, True)
 
 
 @click.command(name="op", help="Set operating mode.")
@@ -33,7 +32,7 @@ def actual(adr):
 @click.argument("mode", type=click.INT)
 def op(adr, mode):
     set_dtr0(mode, "MODE")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_OPERATION_MODE, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_OPERATION_MODE, True)
     dali.connection.close()
 
 
@@ -42,13 +41,13 @@ def op(adr, mode):
 @click.argument("bank", type=click.INT)
 def reset_mem(adr, bank):
     set_dtr0(bank, "BANK")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.RESET_MEMORY_BANK, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.RESET_MEMORY_BANK, True)
 
 
 @click.command(name="id", help="Identify device.")
 @gear_address_option
 def id(adr):
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.IDENTIFY_GEAR, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.IDENTIFY_GEAR, True)
 
 
 @click.command(name="max", help="Set maximum level.")
@@ -56,7 +55,7 @@ def id(adr):
 @click.argument("level", type=click.INT)
 def max(adr, level):
     set_dtr0(level, "LEVEL")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_MAX_LEVEL, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_MAX_LEVEL, True)
 
 
 @click.command(name="min", help="Set minimum level.")
@@ -64,7 +63,7 @@ def max(adr, level):
 @click.argument("level", type=click.INT)
 def min(adr, level):
     set_dtr0(level, "LEVEL")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_MIN_LEVEL, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_MIN_LEVEL, True)
 
 
 @click.command(name="fail", help="Set system failure level.")
@@ -72,7 +71,7 @@ def min(adr, level):
 @click.argument("level", type=click.INT)
 def fail(adr, level):
     set_dtr0(level, "LEVEL")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_FAIL_LEVEL, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_FAIL_LEVEL, True)
 
 
 @click.command(name="on", help="Set power on level.")
@@ -80,7 +79,7 @@ def fail(adr, level):
 @click.argument("level", type=click.INT)
 def on(adr, level):
     set_dtr0(level, "LEVEL")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_POWER_ON_LEVEL, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_POWER_ON_LEVEL, True)
 
 
 @click.command(name="time", help="Set fade time.")
@@ -88,7 +87,7 @@ def on(adr, level):
 @click.argument("value", type=click.INT)
 def time(adr, value):
     set_dtr0(value, "VALUE")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_FADE_TIME, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_FADE_TIME, True)
 
 
 @click.command(name="rate", help="Set fade rate.")
@@ -96,7 +95,7 @@ def time(adr, value):
 @click.argument("value", type=click.INT)
 def rate(adr, value):
     set_dtr0(value, "VALUE")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_FADE_RATE, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_FADE_RATE, True)
 
 
 @click.command(name="ext", help="Set extended fade time.")
@@ -104,7 +103,7 @@ def rate(adr, value):
 @click.argument("value", type=click.INT)
 def ext(adr, value):
     set_dtr0(value, "VALUE")
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_EXT_FADE, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_EXT_FADE, True)
 
 
 @click.command(
@@ -118,7 +117,9 @@ def ext(adr, value):
 def scene(adr, number, level):
     if number in range(0x10):
         set_dtr0(level, "LEVEL")
-        gear_send_forward_frame(adr, (ConfigureCommandOpcode.SET_SCENE + number), True)
+        gear_send_forward_frame(
+            adr, (GearConfigureCommandOpcode.SET_SCENE + number), True
+        )
     else:
         raise click.BadParameter("needs to be between 0 and 15", param_hint="NUMBER")
 
@@ -129,7 +130,7 @@ def scene(adr, number, level):
 def remove(adr, number):
     if number in range(0x10):
         gear_send_forward_frame(
-            adr, (ConfigureCommandOpcode.REMOVE_SCENE + number), True
+            adr, (GearConfigureCommandOpcode.REMOVE_SCENE + number), True
         )
     else:
         raise click.BadParameter("needs to be between 0 and 15", param_hint="NUMBER")
@@ -140,7 +141,9 @@ def remove(adr, number):
 @click.argument("group", type=click.INT)
 def add(adr, group):
     if group in range(0x10):
-        gear_send_forward_frame(adr, (ConfigureCommandOpcode.ADD_GROUP + group), True)
+        gear_send_forward_frame(
+            adr, (GearConfigureCommandOpcode.ADD_GROUP + group), True
+        )
     else:
         raise click.BadParameter("needs to be between 0 and 15", param_hint="GROUP")
 
@@ -151,7 +154,7 @@ def add(adr, group):
 def ungroup(adr, group):
     if group in range(0x10):
         gear_send_forward_frame(
-            adr, (ConfigureCommandOpcode.REMOVE_GROUP + group), True
+            adr, (GearConfigureCommandOpcode.REMOVE_GROUP + group), True
         )
     else:
         raise click.BadParameter("needs to be between 0 and 15", param_hint="GROUP")
@@ -161,17 +164,17 @@ def ungroup(adr, group):
 @gear_address_option
 @click.argument("address", type=click.INT)
 def short(adr, address):
-    if address in range(dali.MAX_ADR):
+    if 0 <= address < DaliMax.ADR:
         address = (address * 2) + 1
         set_dtr0(address, "ADDRESS")
-        gear_send_forward_frame(adr, ConfigureCommandOpcode.SET_SHORT_ADR, True)
+        gear_send_forward_frame(adr, GearConfigureCommandOpcode.SET_SHORT_ADR, True)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {dali.MAX_ADR-1}", param_hint="ADDRESS"
+            f"needs to be between 0 and {DaliMax.ADR-1}", param_hint="ADDRESS"
         )
 
 
 @click.command(name="enable", help="Enable write access.")
 @gear_address_option
 def enable(adr):
-    gear_send_forward_frame(adr, ConfigureCommandOpcode.ENABLE_WRITE, True)
+    gear_send_forward_frame(adr, GearConfigureCommandOpcode.ENABLE_WRITE, True)

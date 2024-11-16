@@ -1,14 +1,12 @@
-import click
-import dali
 import logging
+
+import click
 from typeguard import typechecked
 
-
+from ..dali_interface.dali_interface import DaliFrame
+from ..system.constants import DaliMax
 from .device_address import DaliDeviceAddressByte
 from .device_opcode import DeviceSpecialCommandOpcode
-
-from ..dali_interface.dali_interface import DaliFrame
-
 
 logger = logging.getLogger(__name__)
 

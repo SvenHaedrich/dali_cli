@@ -1,9 +1,9 @@
 """Class for control gear addressing."""
 
 from typing import Final
-from typeguard import typechecked
 
 import dali
+from typeguard import typechecked
 
 
 @typechecked
@@ -25,13 +25,13 @@ class DaliAddressByte:
         self.mode = self.INVALID
 
     def short(self, address: int = 0) -> None:
-        if 0 <= address < dali.MAX_ADR:
+        if 0 <= address < DaliMax.ADR:
             self.byte &= 0x01
             self.byte |= address << 1
             self.mode = self.SHORT
 
     def group(self, group: int = 0) -> None:
-        if 0 <= group < dali.MAX_GROUP:
+        if 0 <= group < DaliMax.GROUP:
             self.byte &= 0x01
             self.byte |= group << 1
             self.byte |= 0x80
@@ -75,7 +75,7 @@ class DaliAddressByte:
             else:
                 return False
         s = int(text)
-        if s in range(dali.MAX_ADR):
+        if s in range(DaliMax.ADR):
             self.short(s)
             return True
         return False

@@ -1,35 +1,23 @@
 import logging
-import click
-from typing import Final
 
+import click
 from DALI.dali_interface.dali_interface import DaliInterface, DaliFrame
-from DALI.dali_interface.serial import DaliSerial
 from DALI.dali_interface.hid import DaliUsb
 from DALI.dali_interface.mock import DaliMock
-
-
-from DALI.gear import query as gear_query_cmd
-from DALI.gear import level as level_cmd
-from DALI.gear import summary as gear_summary_cmd
-from DALI.gear import list as gear_list_cmd
-from DALI.gear import dump as gear_dump_cmd
-from DALI.gear import configure as gear_conf_cmd
-from DALI.gear import special as gear_special_cmd
-from DALI.gear import clear as gear_clear_cmd
-
+from DALI.dali_interface.serial import DaliSerial
 from DALI.device import device_dump as device_dump_cmd
 from DALI.device import device_query as device_query_cmd
+from DALI.gear import clear as gear_clear_cmd
+from DALI.gear import configure as gear_conf_cmd
+from DALI.gear import dump as gear_dump_cmd
+from DALI.gear import level as level_cmd
+from DALI.gear import list as gear_list_cmd
+from DALI.gear import query as gear_query_cmd
+from DALI.gear import special as gear_special_cmd
+from DALI.gear import summary as gear_summary_cmd
 
-# global data
-connection = None
-timeout_sec = 0.2
-
-# global const
-MAX_GROUP: Final[int] = 0x10
-MAX_SCENE: Final[int] = 0x10
-MAX_VALUE: Final[int] = 0x100
-MAX_ADR: Final[int] = 0x40
-MAX_BANK: Final[int] = 0x100
+# TODO(Sven) move this class away from the CLI this belongs into a DALI
+# context, not a vommand interface
 
 
 class DaliNone(DaliInterface):
@@ -72,17 +60,20 @@ def cli(ctx, serial_port, hid, mock, debug):
     if debug:
         logging.basicConfig(level=logging.DEBUG)
 
-    global connection
-    connection = DaliNone()
+    # TODO(Sven) transform the DALI connection into a context
+    # see: https://docs.python.org/3/library/contextlib.html#contextlib.AbstractContextManager
+    # and pass it correctly down to the command implementations
+
+    ctx.connection = DaliNone()
     try:
         if serial_port and not hid and not mock:
-            connection = DaliSerial(portname=serial_port)
+            ctx.connection = DaliSerial(portname=serial_port)
 
         if hid and not serial_port and not mock:
-            connection = DaliUsb()
+            ctx.connection = DaliUsb()
 
         if mock and not serial_port and not hid:
-            connection = DaliMock()
+            ctx.connection = DaliMock()
 
     except Exception:
         raise click.BadArgumentUsage("can not open connection.")

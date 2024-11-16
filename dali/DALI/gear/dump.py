@@ -4,7 +4,7 @@ import click
 import dali
 
 from .action import query_gear_value, set_dtr0, set_dtr1
-from .opcode import QueryCommandOpcode
+from .gear_opcode import GearQueryCommandOpcode
 
 
 def gear_show_memory_content(bank, location, value):
@@ -55,7 +55,7 @@ def gear_show_memory_content(bank, location, value):
     if bank != 0 and location == 0:
         annotation = annotations[(0, 0)]
     elif bank != 0 and location == 1:
-        annotation = "indicactor byte"
+        annotation = "indicator byte"
     elif bank != 0 and location == 2:
         annotation = "memory lock byte (0x55 = write-enabled)"
     else:
@@ -83,7 +83,7 @@ def dump(adr, bank):
     set_dtr1(bank, "BANK")
     set_dtr0(0, "LOCATION")
     last_accessible_location = query_gear_value(
-        adr, QueryCommandOpcode.READ_MEMORY, close=False
+        adr, GearQueryCommandOpcode.READ_MEMORY, close=False
     )
     if last_accessible_location is None:
         click.echo(f"memory bank {bank} not implemented")
@@ -94,6 +94,6 @@ def dump(adr, bank):
         gear_show_memory_content(
             bank,
             location,
-            query_gear_value(adr, QueryCommandOpcode.READ_MEMORY, close=False),
+            query_gear_value(adr, GearQueryCommandOpcode.READ_MEMORY, close=False),
         )
     dali.connection.close()
