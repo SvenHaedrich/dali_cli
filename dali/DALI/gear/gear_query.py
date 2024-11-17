@@ -13,7 +13,7 @@ gear_address_option = click.option(
 )
 
 
-@click.command(name="status", help="Gear status byte")
+@click.command(name="status", help="Query control gear status byte")
 @click.pass_obj
 @gear_address_option
 def status(dali: DaliInterface, adr):

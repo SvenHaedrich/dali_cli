@@ -13,7 +13,10 @@ device_address_option = click.option(
 )
 
 
-@click.command(name="status", help="Device status byte.")
+@click.command(
+    name="status",
+    help="Query control device status byte. The answer shall be the status, which is formed by a combination of control device properties.",
+)
 @click.pass_obj
 @device_address_option
 def status(dali: DaliInterface, adr):
@@ -33,7 +36,7 @@ def status(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="version", help="Device version number")
+@click.command(name="version", help="Query control device version number.")
 @click.pass_obj
 @device_address_option
 def version(dali: DaliInterface, adr):
@@ -50,7 +53,10 @@ def version(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="capabilities", help="Device capabilities")
+@click.command(
+    name="capabilities",
+    help="Query control device capabilities. The answer shall be a combination of control device capabilities.",
+)
 @click.pass_obj
 @device_address_option
 def capabilities(dali: DaliInterface, adr):
@@ -74,7 +80,7 @@ def capabilities(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="dtr0", help="Device content of DTR0")
+@click.command(name="dtr0", help="Query control device content of DTR0")
 @click.pass_obj
 @device_address_option
 def dtr0(dali: DaliInterface, adr):
@@ -85,7 +91,7 @@ def dtr0(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="dtr1", help="Device content of DTR1")
+@click.command(name="dtr1", help="Query control device content of DTR1")
 @click.pass_obj
 @device_address_option
 def dtr1(dali: DaliInterface, adr):
@@ -96,7 +102,7 @@ def dtr1(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="dtr2", help="Device content of DTR2")
+@click.command(name="dtr2", help="Query control device content of DTR2")
 @click.pass_obj
 @device_address_option
 def dtr2(dali: DaliInterface, adr):
