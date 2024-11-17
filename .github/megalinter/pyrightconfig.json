@@ -1,0 +1,9 @@
+{
+    "reportMissingImports": false,
+    "reportOptionalMemberAccess": false,
+    "reportAttributeAccessIssue": false,
+    "reportFunctionMemberAccess": false,
+
+    "pythonVersion": "3.11",
+    "pythonPlatform": "Linux",
+}

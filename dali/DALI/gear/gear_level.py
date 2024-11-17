@@ -1,10 +1,12 @@
-import click
-import dali
+"""Control gear level command implementations."""
 
-from .action import gear_send_forward_frame
-from .opcode import LevelCommandOpcode
-from .address import DaliAddressByte
+import click
+
 from ..dali_interface.dali_interface import DaliFrame
+from ..system.constants import DaliMax
+from .gear_action import gear_send_forward_frame
+from .gear_address import DaliAddressByte
+from .gear_opcode import GearLevelCommandOpcode
 
 gear_address_option = click.option(
     "--adr",
@@ -14,34 +16,38 @@ gear_address_option = click.option(
 
 
 @click.command(name="off", help="Lights off.")
+@click.pass_obj
 @gear_address_option
-def off(adr):
-    gear_send_forward_frame(adr, LevelCommandOpcode.OFF)
-    dali.connection.close()
+def off(dali, adr):
+    gear_send_forward_frame(dali, adr, GearLevelCommandOpcode.OFF)
 
 
 @click.command(name="up", help="Dim up.")
+@click.pass_obj
 @gear_address_option
-def up(adr):
-    gear_send_forward_frame(adr, LevelCommandOpcode.UP)
+def up(dali, adr):
+    gear_send_forward_frame(dali, adr, GearLevelCommandOpcode.UP)
 
 
 @click.command(name="down", help="Dim down.")
+@click.pass_obj
 @gear_address_option
-def down(adr):
-    gear_send_forward_frame(adr, LevelCommandOpcode.DOWN)
+def down(dali, adr):
+    gear_send_forward_frame(dali, adr, GearLevelCommandOpcode.DOWN)
 
 
 @click.command(name="max", help="Recall maximum.")
+@click.pass_obj
 @gear_address_option
-def max(adr):
-    gear_send_forward_frame(adr, LevelCommandOpcode.RECALL_MAX)
+def max_level(dali, adr):
+    gear_send_forward_frame(dali, adr, GearLevelCommandOpcode.RECALL_MAX)
 
 
 @click.command(name="min", help="Recall minimum.")
+@click.pass_obj
 @gear_address_option
-def min(adr):
-    gear_send_forward_frame(adr, LevelCommandOpcode.RECALL_MIN)
+def min_level(dali, adr):
+    gear_send_forward_frame(dali, adr, GearLevelCommandOpcode.RECALL_MIN)
 
 
 @click.command(
@@ -51,13 +57,14 @@ def min(adr):
     "Note, that 255 is the MASK value that will not change the actual light level.",
 )
 @click.argument("level", type=click.INT)
+@click.pass_obj
 @gear_address_option
-def dapc(adr, level):
-    if level in range(dali.MAX_VALUE):
+def dapc(dali, adr, level):
+    if level in range(DaliMax.VALUE):
         address = DaliAddressByte(dapc=True)
         if address.arg(adr):
             command = address.byte << 8 | level
-            dali.connection.transmit(DaliFrame(length=16, data=command))
+            dali.transmit(DaliFrame(length=16, data=command))
         else:
             raise click.BadOptionUsage("adr", "invalid address option")
     else:
@@ -66,9 +73,10 @@ def dapc(adr, level):
 
 @click.command(name="goto", help="Go to SCENE. SCENE needs to be between 0 and 15")
 @click.argument("scene", type=click.INT)
+@click.pass_obj
 @gear_address_option
-def goto(adr, scene):
-    if scene in range(dali.MAX_SCENE):
-        gear_send_forward_frame(adr, (LevelCommandOpcode.GOTO_SCENE + scene))
+def goto(dali, adr, scene):
+    if scene in range(DaliMax.SCENE):
+        gear_send_forward_frame(dali, adr, (GearLevelCommandOpcode.GOTO_SCENE + scene))
     else:
         raise click.BadParameter("needs to be between 0 and 15.", param_hint="SCENE")

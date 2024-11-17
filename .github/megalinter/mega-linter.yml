@@ -1,0 +1,45 @@
+# Configuration file for MegaLinter
+#
+# See all available variables at https://megalinter.io/latest/config-file/ and in
+# linters documentation
+APPLY_FIXES: none
+
+ENABLE_LINTERS:
+  - BASH_EXEC
+  - BASH_SHELLCHECK
+  - BASH_SHFMT
+  - COPYPASTE_JSCPD
+  - SPELL_CSPELL
+  - SPELL_LYCHEE
+  - PYTHON_RUFF
+  - PYTHON_PYLINT
+  - PYTHON_ISORT
+  - PYTHON_PYRIGHT
+  - PYTHON_BLACK
+  - REPOSITORY_SECRETLINT
+  - REPOSITORY_GITLEAKS
+  - REPOSITORY_GRYPE
+  - REPOSITORY_TRIVY
+  - REPOSITORY_TRUFFLEHOG
+  - MARKDOWN_MARKDOWN_LINK_CHECK
+  - MARKDOWN_MARKDOWNLINT
+  - MARKDOWN_MARKDOWN_TABLE_FORMATTER
+  - JSON_V8R
+  - JSON_JSONLINT
+  - JSON_PRETTIER
+  - YAML_V8R
+
+COPYPASTE_JSCPD_CONFIG_FILE: .github/megalinter/jscpd.json
+SPELL_CSPELL_CONFIG_FILE: .github/megalinter/cspell.json
+SPELL_CSPELL_FILTER_REGEX_EXCLUDE: (.megalinter.*|.gitignore)
+PYTHON_PYLINT_CONFIG_FILE: .github/megalinter/pylintrc
+PYTHON_PYRIGHT_CONFIG_FILE: .github/megalinter/pyrightconfig.json
+YAML_V8R_FILTER_REGEX_EXCLUDE: (.mega-linter.*)
+
+SHOW_ELAPSED_TIME: false
+FILEIO_REPORTER: false
+
+DISABLE_ERRORS: false
+IGNORE_GITIGNORE_FILES: true
+EXCLUDED_DIRECTORIES:
+  - .github

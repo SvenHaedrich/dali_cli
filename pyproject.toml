@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dali"
-version = "0.1.0"
+version = "0.2.0"
 description = "Command line interface to control a DALI system"
 authors = [
     {name = "Sven Hädrich", email="sven.haedrich@sevenlab.de"}, 
@@ -12,6 +12,9 @@ authors = [
 dependencies = [
     "click", "pyserial", "pyusb", "termcolor", "typeguard",
 ]
+
+[project.scripts]
+dali = "dali:cli"
 
 [tool.setuptools.packages.find]
 where = ["dali"]

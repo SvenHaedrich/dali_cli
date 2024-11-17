@@ -1,4 +1,11 @@
-class LevelCommandOpcode:
+"""Control gear opcodes."""
+
+from enum import IntEnum
+
+
+class GearLevelCommandOpcode(IntEnum):
+    """Control gear level command opcodes IEC 62386-102:2022 11.3"""
+
     OFF = 0x00
     UP = 0x01
     DOWN = 0x02
@@ -7,7 +14,9 @@ class LevelCommandOpcode:
     GOTO_SCENE = 0x10
 
 
-class ConfigureCommandOpcode:
+class GearConfigureCommandOpcode(IntEnum):
+    """Control gear configure command opcodes IEC 62386-102:2022 11.4"""
+
     RESET = 0x20
     STORE_ACTUAL_LEVEL = 0x21
     SET_OPERATION_MODE = 0x23
@@ -28,7 +37,9 @@ class ConfigureCommandOpcode:
     ENABLE_WRITE = 0x81
 
 
-class QueryCommandOpcode:
+class GearQueryCommandOpcode(IntEnum):
+    """Control gear query command opcodes IEC 62386-102:2022 11.5"""
+
     STATUS = 0x90
     GEAR_PRESENT = 0x91
     LAMP_FAILURE = 0x92
@@ -65,13 +76,15 @@ class QueryCommandOpcode:
     EXTENDED_VERSION_NUMBER = 0xFF
 
 
-class SpecialCommandOpcode:
+class GearSpecialCommandOpcode(IntEnum):
+    """Control gear level command opcodes IEC 62386-102:2022 11.7"""
+
     TERMINATE = 0xA1
     DTR0 = 0xA3
     INITIALISE = 0xA5
     RANDOMISE = 0xA7
     COMPARE = 0xA9
-    WIDTHDRAW = 0xAB
+    WITHDRAW = 0xAB
     PING = 0xAD
     SEARCHADDRH = 0xB1
     SEARCHADDRM = 0xB3

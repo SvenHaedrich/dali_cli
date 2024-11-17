@@ -1,3 +1,5 @@
+"""Test control gear configure commands."""
+
 import pytest
 from click.testing import CliRunner
 from dali import cli

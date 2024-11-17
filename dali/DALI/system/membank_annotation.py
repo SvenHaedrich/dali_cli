@@ -1,11 +1,12 @@
+"""Print memory bank items with annotations."""
+
 import click
-import dali
-
-from .action import query_gear_value, set_dtr0, set_dtr1
-from .opcode import QueryCommandOpcode
 
 
-def gear_show_memory_content(bank, location, value):
+# pylint: disable=too-few-public-methods
+class MemoryBankItemWithAnnotation:
+    """Print memory bank items with annotations"""
+
     annotations = {
         (0, 0): "address of last accessible memory location",
         (0, 1): "reserved",
@@ -50,46 +51,26 @@ def gear_show_memory_content(bank, location, value):
         (1, 15): "OEM identification number byte 6",
         (1, 16): "OEM identification number byte 7 (LSB)",
     }
-    if bank != 0 and location == 0:
-        annotation = annotations[(0, 0)]
-    elif bank != 0 and location == 1:
-        annotation = "indicactor byte"
-    elif bank != 0 and location == 2:
-        annotation = "memory lock byte (0x55 = write-enabled)"
-    else:
-        annotation = annotations.get((bank, location), " ")
-    if value is None:
-        click.echo(f"0x{location:02X} : NO - timeout {annotation}")
-    else:
-        if 0x20 < value:
-            ascii = chr(value)
+
+    @staticmethod
+    def show(bank: int, location: int, value: int | None):
+        if bank != 0 and location == 0:
+            annotation = MemoryBankItemWithAnnotation.annotations[(0, 0)]
+        elif bank != 0 and location == 1:
+            annotation = "indicator byte"
+        elif bank != 0 and location == 2:
+            annotation = "memory lock byte (0x55 = write-enabled)"
         else:
-            ascii = chr(0x20)
-        click.echo(f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii}´ {annotation}")
-
-
-@click.command(name="dump", help="Dump contents of a memory bank.")
-@click.argument("bank", type=click.INT)
-@click.option(
-    "--adr",
-    default="BC",
-    help="Address, can be a short address (0..63) or group address (G0..G15).",
-)
-def dump(adr, bank):
-    set_dtr1(bank, "BANK")
-    set_dtr0(0, "LOCATION")
-    last_accessible_location = query_gear_value(
-        adr, QueryCommandOpcode.READ_MEMORY, close=False
-    )
-    if last_accessible_location is None:
-        click.echo(f"memory bank {bank} not implemented")
-        dali.connection.close()
-        return
-    gear_show_memory_content(bank, 0, last_accessible_location)
-    for location in range(1, last_accessible_location + 1):
-        gear_show_memory_content(
-            bank,
-            location,
-            query_gear_value(adr, QueryCommandOpcode.READ_MEMORY, close=False),
-        )
-    dali.connection.close()
+            annotation = MemoryBankItemWithAnnotation.annotations.get(
+                (bank, location), " "
+            )
+        if value is None:
+            click.echo(f"0x{location:02X} : NO - timeout {annotation}")
+        else:
+            if 0x20 < value:
+                ascii_presentation = chr(value)
+            else:
+                ascii_presentation = chr(0x20)
+            click.echo(
+                f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii_presentation}´ {annotation}"
+            )

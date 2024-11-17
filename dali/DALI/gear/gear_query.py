@@ -1,9 +1,10 @@
+"""Control gear query command implementations."""
+
 import click
-import dali
 
-from .opcode import QueryCommandOpcode
-from .action import query_gear_value, query_gear_and_display_reply
-
+from ..dali_interface.dali_interface import DaliInterface
+from .gear_action import query_gear_and_display_reply, query_gear_value
+from .gear_opcode import GearQueryCommandOpcode
 
 gear_address_option = click.option(
     "--adr",
@@ -12,10 +13,11 @@ gear_address_option = click.option(
 )
 
 
-@click.command(name="status", help="Gear status byte")
+@click.command(name="status", help="Query control gear status byte")
+@click.pass_obj
 @gear_address_option
-def status(adr):
-    result = query_gear_value(adr, QueryCommandOpcode.STATUS)
+def status(dali: DaliInterface, adr):
+    result = query_gear_value(dali, adr, GearQueryCommandOpcode.STATUS)
     if result is not None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
         click.echo("bit : description")
@@ -29,144 +31,166 @@ def status(adr):
         click.echo(f"  {(result >> 7 & 0x01)} : powerCycleSeen")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()
 
 
 @click.command(name="present", help="Control gear present")
+@click.pass_obj
 @gear_address_option
-def present(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.GEAR_PRESENT)
+def present(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.GEAR_PRESENT)
 
 
 @click.command(name="failure", help="Lamp failure")
+@click.pass_obj
 @gear_address_option
-def failure(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.LAMP_FAILURE)
+def failure(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.LAMP_FAILURE)
 
 
 @click.command(name="power", help="Gear lamp power on")
+@click.pass_obj
 @gear_address_option
-def power(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.LAMP_POWER_ON)
+def power(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.LAMP_POWER_ON)
 
 
 @click.command(name="limit", help="Limit error")
+@click.pass_obj
 @gear_address_option
-def limit(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.LIMIT_ERROR)
+def limit(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.LIMIT_ERROR)
 
 
 @click.command(name="reset", help="Reset state")
+@click.pass_obj
 @gear_address_option
-def reset(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.RESET_STATE)
+def reset(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.RESET_STATE)
 
 
 @click.command(name="missing", help="Missing short address")
+@click.pass_obj
 @gear_address_option
-def missing(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.MISSING_SHORT_ADDRESS)
+def missing(dali: DaliInterface, adr):
+    query_gear_and_display_reply(
+        dali, adr, GearQueryCommandOpcode.MISSING_SHORT_ADDRESS
+    )
 
 
 @click.command(name="version", help="Version number")
+@click.pass_obj
 @gear_address_option
-def version(adr):
-    result = query_gear_value(adr, QueryCommandOpcode.VERSION_NUMBER)
+def version(dali: DaliInterface, adr):
+    result = query_gear_value(dali, adr, GearQueryCommandOpcode.VERSION_NUMBER)
     if result is not None:
         click.echo(f"Version: {result} = 0x{result:02X} = {result:08b}b")
         click.echo(f" equals: {(result>>2)}.{(result&0x3)}")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()
 
 
 @click.command(name="dtr0", help="Content DTR0")
+@click.pass_obj
 @gear_address_option
-def dtr0(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.CONTENT_DTR0)
+def dtr0(context: DaliInterface, adr):
+    query_gear_and_display_reply(context, adr, GearQueryCommandOpcode.CONTENT_DTR0)
 
 
 @click.command(name="dt", help="Device type")
+@click.pass_obj
 @gear_address_option
-def device_type(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.DEVICE_TYPE)
+def device_type(dali, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.DEVICE_TYPE)
 
 
 @click.command(name="next", help="Next device type")
+@click.pass_obj
 @gear_address_option
-def next_device_type(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.NEXT_DEVICE_TYPE)
+def next_device_type(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.NEXT_DEVICE_TYPE)
 
 
 @click.command(name="phm", help="Physical minimum")
+@click.pass_obj
 @gear_address_option
-def phm(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.PHYSICAL_MINIMUM)
+def phm(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.PHYSICAL_MINIMUM)
 
 
 @click.command(name="power_cycle", help="Power cycle seen")
+@click.pass_obj
 @gear_address_option
-def power_cycles(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.POWER_FAILURE)
+def power_cycles(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.POWER_FAILURE)
 
 
 @click.command(name="dtr1", help="Content DTR1")
+@click.pass_obj
 @gear_address_option
-def dtr1(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.CONTENT_DTR1)
+def dtr1(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.CONTENT_DTR1)
 
 
 @click.command(name="dtr2", help="Content DTR2")
+@click.pass_obj
 @gear_address_option
-def dtr2(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.CONTENT_DTR2)
+def dtr2(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.CONTENT_DTR2)
 
 
 @click.command(name="op", help="Operating mode")
+@click.pass_obj
 @gear_address_option
-def op_mode(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.OPERATING_MODE)
+def op_mode(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.OPERATING_MODE)
 
 
 @click.command(name="light", help="Light source type")
+@click.pass_obj
 @gear_address_option
-def light_source(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.LIGHT_SOURCE_TYPE)
+def light_source(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.LIGHT_SOURCE_TYPE)
 
 
 @click.command(name="actual", help="Actual level")
+@click.pass_obj
 @gear_address_option
-def actual_level(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.ACTUAL_LEVEL)
+def actual_level(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.ACTUAL_LEVEL)
 
 
 @click.command(name="max", help="Maximum light level")
+@click.pass_obj
 @gear_address_option
-def max_level(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.MAX_LEVEL)
+def max_level(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.MAX_LEVEL)
 
 
 @click.command(name="min", help="Minimum light level")
+@click.pass_obj
 @gear_address_option
-def min_level(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.MIN_LEVEL)
+def min_level(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.MIN_LEVEL)
 
 
 @click.command(name="on", help="Power on light level")
+@click.pass_obj
 @gear_address_option
-def power_level(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.POWER_ON_LEVEL)
+def power_level(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.POWER_ON_LEVEL)
 
 
 @click.command(name="fail", help="System failure light level")
+@click.pass_obj
 @gear_address_option
-def failure_level(adr):
-    query_gear_and_display_reply(adr, QueryCommandOpcode.SYSTEM_FAILURE_LEVEL)
+def failure_level(dali: DaliInterface, adr):
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.SYSTEM_FAILURE_LEVEL)
 
 
 @click.command(name="fade", help="Fade rate and fade time")
+@click.pass_obj
 @gear_address_option
-def fade(adr):
+def fade(dali: DaliInterface, adr):
     fade_time = (
         "use extended fade time",
         "0.7 s",
@@ -190,7 +214,7 @@ def fade(adr):
         "358 steps/s",
         "253 steps/s",
         "179 steps/s",
-        "127 stes/s",
+        "127 steps/s",
         "89.4 steps/s",
         "63.3 steps/s",
         "44.7 steps/s",
@@ -203,11 +227,10 @@ def fade(adr):
         "4.0 steps/s",
         "2.8 steps/s",
     )
-    result = query_gear_value(adr, QueryCommandOpcode.FADE_TIME_RATE)
+    result = query_gear_value(dali, adr, GearQueryCommandOpcode.FADE_TIME_RATE)
     if result is not None:
         click.echo(f"Result: {result} = 0x{result:02X} = {result:08b}b")
         click.echo(f" fade time: {fade_time[(result >> 4) &0xF]}")
         click.echo(f" fade rate: {fade_rate[(result & 0xF)]}")
     else:
         click.echo("timeout - NO")
-    dali.connection.close()

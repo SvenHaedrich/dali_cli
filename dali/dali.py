@@ -1,45 +1,23 @@
+"""Implement the main object of the DALI command line interface."""
+
 import logging
+
 import click
-from typing import Final
-
-from DALI.dali_interface.dali_interface import DaliInterface, DaliFrame
-from DALI.dali_interface.serial import DaliSerial
-from DALI.dali_interface.hid import DaliUsb
-from DALI.dali_interface.mock import DaliMock
-
-
-from DALI.gear import query as gear_query_cmd
-from DALI.gear import level as level_cmd
-from DALI.gear import summary as gear_summary_cmd
-from DALI.gear import list as gear_list_cmd
-from DALI.gear import dump as gear_dump_cmd
-from DALI.gear import configure as gear_conf_cmd
-from DALI.gear import special as gear_special_cmd
-from DALI.gear import clear as gear_clear_cmd
-
 from DALI.device import device_dump as device_dump_cmd
 from DALI.device import device_query as device_query_cmd
+from DALI.gear import gear_clear as gear_clear_cmd
+from DALI.gear import gear_configure as gear_conf_cmd
+from DALI.gear import gear_dump as gear_dump_cmd
+from DALI.gear import gear_level as level_cmd
+from DALI.gear import gear_list as gear_list_cmd
+from DALI.gear import gear_query as gear_query_cmd
+from DALI.gear import gear_special as gear_special_cmd
+from DALI.gear import gear_summary as gear_summary_cmd
+from DALI.system.connection import dali_connection
 
-# global data
-connection = None
-timeout_sec = 0.2
-
-# global const
-MAX_GROUP: Final[int] = 0x10
-MAX_SCENE: Final[int] = 0x10
-MAX_VALUE: Final[int] = 0x100
-MAX_ADR: Final[int] = 0x40
-MAX_BANK: Final[int] = 0x100
-
-class DaliNone(DaliInterface):
-    def __init__(self):
-        super().__init__(start_receive=False)
-
-    def transmit(self,frame: DaliFrame, block: bool = False) -> None:
-        print("no interface defined -- command lost")    
 
 @click.group(name="dali")
-@click.version_option("0.0.9")
+@click.version_option("0.2.0")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -70,27 +48,23 @@ def cli(ctx, serial_port, hid, mock, debug):
     if debug:
         logging.basicConfig(level=logging.DEBUG)
 
-    global connection
-    connection = DaliNone()
-    try:
-        if serial_port and not hid and not mock:
-            connection = DaliSerial(portname=serial_port)
+    dali_interface = "None"
+    if serial_port and not hid and not mock:
+        dali_interface = "Serial"
 
-        if hid and not serial_port and not mock:
-            connection = DaliUsb()
+    if hid and not serial_port and not mock:
+        dali_interface = "Usb"
 
-        if mock and not serial_port and not hid:
-            connection = DaliMock()
-
-    except Exception:
-        raise click.BadArgumentUsage("can not open connection.")
+    if mock and not serial_port and not hid:
+        dali_interface = "Mock"
+    ctx.obj = ctx.with_resource(dali_connection(dali_interface, serial_port))
 
 
 cli.add_command(level_cmd.off)
 cli.add_command(level_cmd.up)
 cli.add_command(level_cmd.down)
-cli.add_command(level_cmd.max)
-cli.add_command(level_cmd.min)
+cli.add_command(level_cmd.max_level)
+cli.add_command(level_cmd.min_level)
 cli.add_command(level_cmd.dapc)
 cli.add_command(level_cmd.goto)
 
@@ -103,7 +77,7 @@ def gear():
 
 
 gear.add_command(gear_summary_cmd.summary)
-gear.add_command(gear_list_cmd.list)
+gear.add_command(gear_list_cmd.gear_list)
 gear.add_command(gear_dump_cmd.dump)
 gear.add_command(gear_clear_cmd.clear)
 
@@ -112,9 +86,9 @@ gear.add_command(gear_conf_cmd.reset)
 gear.add_command(gear_conf_cmd.actual)
 gear.add_command(gear_conf_cmd.op)
 gear.add_command(gear_conf_cmd.reset_mem)
-gear.add_command(gear_conf_cmd.id)
-gear.add_command(gear_conf_cmd.max)
-gear.add_command(gear_conf_cmd.min)
+gear.add_command(gear_conf_cmd.identify)
+gear.add_command(gear_conf_cmd.max_level)
+gear.add_command(gear_conf_cmd.min_level)
 gear.add_command(gear_conf_cmd.fail)
 gear.add_command(gear_conf_cmd.on)
 gear.add_command(gear_conf_cmd.time)
@@ -150,6 +124,7 @@ def gear_query():
     pass
 
 
+# ---- query commands
 gear_query.add_command(gear_query_cmd.status)
 gear_query.add_command(gear_query_cmd.present)
 gear_query.add_command(gear_query_cmd.failure)
@@ -175,17 +150,25 @@ gear_query.add_command(gear_query_cmd.failure_level)
 gear_query.add_command(gear_query_cmd.fade)
 gear_query.add_command(gear_special_cmd.short)
 
+
 #
-# ---- gear commands
+# ---- device commands
 @cli.group(name="device", help="Control device commands.")
 def device():
     pass
 
+
 device.add_command(device_dump_cmd.dump)
+
 
 @device.group(name="query", help="Query device status commands")
 def device_query():
     pass
 
-device_query.add_command(device_query_cmd.status)
 
+device_query.add_command(device_query_cmd.capabilities)
+device_query.add_command(device_query_cmd.dtr0)
+device_query.add_command(device_query_cmd.dtr1)
+device_query.add_command(device_query_cmd.dtr2)
+device_query.add_command(device_query_cmd.status)
+device_query.add_command(device_query_cmd.version)

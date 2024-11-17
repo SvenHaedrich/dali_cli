@@ -1,0 +1,46 @@
+# MegaLinter GitHub Action configuration file
+# More info at https://megalinter.io
+name: MegaLinter
+
+# Trigger mega-linter at every push. Action will also be visible from
+# Pull Requests to main
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  APPLY_FIXES: none
+  APPLY_FIXES_EVENT: pull_request
+  APPLY_FIXES_MODE: commit
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  megalinter:
+    name: MegaLinter
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      # Git Checkout
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+
+      # MegaLinter
+      - name: MegaLinter
+        uses: oxsecurity/megalinter/flavors/python@v8.1.0
+        id: ml
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEGALINTER_CONFIG: .github/megalinter/mega-linter.yml
+

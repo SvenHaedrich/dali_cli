@@ -1,0 +1,18 @@
+[MAIN]
+# line length is checked by the format tool
+max-line-length=999
+py-version=3.12
+
+[LOGGING]
+logging-format-style=new
+
+[MESSAGES CONTROL]
+disable=
+    logging-fstring-interpolation,
+    import-error,
+    relative-beyond-top-level,
+    broad-exception-raised,
+    broad-exception-caught,
+    missing-function-docstring,
+    no-name-in-module, 
+    duplicate-code
