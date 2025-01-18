@@ -60,3 +60,18 @@ def set_device_dtr1(
         raise click.BadParameter(
             f"needs to be between 0 and {DaliMax.VALUE}.", param_hint=parameter_hint
         )
+
+
+@typechecked
+def write_device_frame(
+    dali: DaliInterface,
+    address_byte: int = 0,
+    instance_byte: int = 0,
+    opcode_byte: int = 0,
+    send_twice: bool = False,
+) -> None:
+    logger.debug("write_device_frame")
+    frame = address_byte << 16 | instance_byte << 8 | opcode_byte
+    dali.transmit(
+        DaliFrame(length=DaliFrameLength.DEVICE, data=frame, send_twice=send_twice)
+    )

@@ -11,6 +11,7 @@ class DaliMax(IntEnum):
     VALUE = 0x100
     ADR = 0x40
     BANK = 0x100
+    PRIORITY = 5
 
 
 class DaliTimeout(Enum):

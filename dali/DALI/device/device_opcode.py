@@ -48,6 +48,7 @@ class DeviceSpecialCommandOpcode(IntEnum):
     DTR1 = 0x31
     DTR2 = 0x32
     SEND_TESTFRAME = 0x33
+    SPECIAL_CMD = 0xC1
     DIRECT_WRITE_MEMORY = 0xC5
     DTR1_DTR0 = 0xC7
     DTR2_DTR1 = 0xC9
