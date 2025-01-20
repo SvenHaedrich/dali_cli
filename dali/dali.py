@@ -19,7 +19,7 @@ from DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")
-@click.version_option("0.2.0")
+@click.version_option("0.2.1")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -45,7 +45,7 @@ from DALI.system.connection import dali_connection
 def cli(ctx, serial_port, hid, mock, debug):
     """
     Command line interface for DALI systems.
-    SevenLabs 2024
+    SevenLabs 2025
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
