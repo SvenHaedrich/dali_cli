@@ -75,3 +75,7 @@ def write_device_frame(
     dali.transmit(
         DaliFrame(length=DaliFrameLength.DEVICE, data=frame, send_twice=send_twice)
     )
+
+@typechecked
+def set_device_dtr2_dtr1 (dali: DaliInterface, dtr2: int, dtr1:int) -> None:
+    write_device_frame(dali, DeviceSpecialCommandOpcode.DTR2_DTR1, dtr2, dtr1)

@@ -3,6 +3,7 @@
 import logging
 
 import click
+from DALI.device import device_configure as device_configure_cmd
 from DALI.device import device_dump as device_dump_cmd
 from DALI.device import device_query as device_query_cmd
 from DALI.device import device_special as device_special_cmd
@@ -165,6 +166,11 @@ device.add_command(device_special_cmd.dtr1)
 device.add_command(device_special_cmd.dtr2)
 device.add_command(device_special_cmd.testframe)
 
+#
+# ---- configure commands
+device.add_command(device_configure_cmd.add)
+device.add_command(device_configure_cmd.ungroup)
+
 
 @device.group(name="query", help="Query device status commands")
 def device_query():
@@ -176,5 +182,6 @@ device_query.add_command(device_query_cmd.capabilities)
 device_query.add_command(device_query_cmd.dtr0)
 device_query.add_command(device_query_cmd.dtr1)
 device_query.add_command(device_query_cmd.dtr2)
+device_query.add_command(device_query_cmd.groups)
 device_query.add_command(device_query_cmd.status)
 device_query.add_command(device_query_cmd.version)

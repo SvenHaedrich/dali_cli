@@ -6,7 +6,8 @@ from enum import Enum, IntEnum
 class DaliMax(IntEnum):
     """Maximum values from the DALI standards"""
 
-    GROUP = 0x10
+    GEAR_GROUP = 0x10
+    DEVICE_GROUP = 0x20
     SCENE = 0x10
     VALUE = 0x100
     ADR = 0x40

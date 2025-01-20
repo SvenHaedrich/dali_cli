@@ -8,7 +8,7 @@ from .device_action import write_device_frame
 from .device_opcode import DeviceSpecialCommandOpcode
 
 
-@click.command(name="dtr0", help="Set data transfer register 0")
+@click.command(name="dtr0", help="Set data transfer register 0.")
 @click.pass_obj
 @click.argument("data", type=click.INT)
 def dtr0(dali: DaliInterface, data):
@@ -25,7 +25,7 @@ def dtr0(dali: DaliInterface, data):
         )
 
 
-@click.command(name="dtr1", help="Set data transfer register 1")
+@click.command(name="dtr1", help="Set data transfer register 1.")
 @click.pass_obj
 @click.argument("data", type=click.INT)
 def dtr1(dali: DaliInterface, data):
@@ -42,7 +42,7 @@ def dtr1(dali: DaliInterface, data):
         )
 
 
-@click.command(name="dtr2", help="Set data transfer register 2")
+@click.command(name="dtr2", help="Set data transfer register 2.")
 @click.pass_obj
 @click.argument("data", type=click.INT)
 def dtr2(dali: DaliInterface, data):
@@ -59,7 +59,7 @@ def dtr2(dali: DaliInterface, data):
         )
 
 
-@click.command(name="testframe", help="Send a test frame")
+@click.command(name="testframe", help="Send a test frame.")
 @click.pass_obj
 @click.argument("priority", type=click.INT, default=5)
 @click.argument("repeat", type=click.INT, default=0)

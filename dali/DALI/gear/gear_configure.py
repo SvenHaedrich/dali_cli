@@ -135,13 +135,15 @@ def ext(dali, adr, value):
 @click.argument("level", type=click.INT)
 @click.pass_obj
 def scene(dali, adr, number, level):
-    if number in range(0x10):
+    if 0 <= number < DaliMax.SCENE:
         set_dtr0(dali, level, "LEVEL")
         gear_send_forward_frame(
             dali, adr, (GearConfigureCommandOpcode.SET_SCENE + number), True
         )
     else:
-        raise click.BadParameter("needs to be between 0 and 15", param_hint="NUMBER")
+        raise click.BadParameter(
+            f"needs to be between 0 and {DaliMax.SCENE-1}", param_hint="NUMBER"
+        )
 
 
 @click.command(name="remove", help="Remove from scene.")
@@ -149,12 +151,14 @@ def scene(dali, adr, number, level):
 @gear_address_option
 @click.argument("number", type=click.INT)
 def remove(dali, adr, number):
-    if number in range(0x10):
+    if 0 <= number < DaliMax.SCENE:
         gear_send_forward_frame(
             dali, adr, (GearConfigureCommandOpcode.REMOVE_SCENE + number), True
         )
     else:
-        raise click.BadParameter("needs to be between 0 and 15", param_hint="NUMBER")
+        raise click.BadParameter(
+            f"needs to be between 0 and {DaliMax.SCENE-1}", param_hint="NUMBER"
+        )
 
 
 @click.command(name="add", help="Add to group.")
@@ -162,12 +166,14 @@ def remove(dali, adr, number):
 @gear_address_option
 @click.argument("group", type=click.INT)
 def add(dali, adr, group):
-    if group in range(0x10):
+    if 0 <= group < DaliMax.GEAR_GROUP:
         gear_send_forward_frame(
             dali, adr, (GearConfigureCommandOpcode.ADD_GROUP + group), True
         )
     else:
-        raise click.BadParameter("needs to be between 0 and 15", param_hint="GROUP")
+        raise click.BadParameter(
+            f"needs to be between 0 and {DaliMax.GEAR_GROUP-1}", param_hint="NUMBER"
+        )
 
 
 @click.command(name="ungroup", help="Remove from group.")
@@ -175,12 +181,14 @@ def add(dali, adr, group):
 @gear_address_option
 @click.argument("group", type=click.INT)
 def ungroup(dali, adr, group):
-    if group in range(0x10):
+    if 0 <= group < DaliMax.GEAR_GROUP:
         gear_send_forward_frame(
             dali, adr, (GearConfigureCommandOpcode.REMOVE_GROUP + group), True
         )
     else:
-        raise click.BadParameter("needs to be between 0 and 15", param_hint="GROUP")
+        raise click.BadParameter(
+            f"needs to be between 0 and {DaliMax.GEAR_GROUP-1}", param_hint="NUMBER"
+        )
 
 
 @click.command(name="short", help="Set short address to ADDRESS.")
