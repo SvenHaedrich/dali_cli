@@ -112,6 +112,18 @@ def dtr2(dali: DaliInterface, adr):
     else:
         click.echo("timeout - NO")
 
+
+@click.command(name="quiescent", help="Query content of DTR2.")
+@click.pass_obj
+@device_address_option
+def quiescent(dali: DaliInterface, adr):
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_QUIESCENT_MODE)
+    if result is not None:
+        click.echo(f"{result} = 0x{result:02X} = {result:08b}b")
+    else:
+        click.echo("timeout - NO")
+
+
 @click.command(name="groups", help="Query device group settings.")
 @click.pass_obj
 @device_address_option

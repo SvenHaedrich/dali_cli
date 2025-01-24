@@ -169,7 +169,10 @@ device.add_command(device_special_cmd.testframe)
 #
 # ---- configure commands
 device.add_command(device_configure_cmd.add)
+device.add_command(device_configure_cmd.start)
+device.add_command(device_configure_cmd.stop)
 device.add_command(device_configure_cmd.ungroup)
+
 
 
 @device.group(name="query", help="Query device status commands")
@@ -183,5 +186,6 @@ device_query.add_command(device_query_cmd.dtr0)
 device_query.add_command(device_query_cmd.dtr1)
 device_query.add_command(device_query_cmd.dtr2)
 device_query.add_command(device_query_cmd.groups)
+device_query.add_command(device_query_cmd.quiescent)
 device_query.add_command(device_query_cmd.status)
 device_query.add_command(device_query_cmd.version)

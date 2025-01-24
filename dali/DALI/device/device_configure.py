@@ -15,6 +15,36 @@ device_address_option = click.option(
 )
 
 
+@click.command(name="start", help="Start quiescent mode.")
+@click.pass_obj
+@device_address_option
+def start(dali: DaliInterface, adr: str):
+    address = DaliDeviceAddressByte()
+    instance = 0xFE
+    if address.arg(adr):
+        write_device_frame(
+            dali,
+            address.byte,
+            instance,
+            DeviceConfigureCommandOpcode.START_QUIESCENT_MODE,
+            True,
+        )
+
+@click.command(name="stop", help="Stop quiescent mode.")
+@click.pass_obj
+@device_address_option
+def stop(dali: DaliInterface, adr: str):
+    address = DaliDeviceAddressByte()
+    instance = 0xFE
+    if address.arg(adr):
+        write_device_frame(
+            dali,
+            address.byte,
+            instance,
+            DeviceConfigureCommandOpcode.STOP_QUIESCENT_MODE,
+            True,
+        )
+
 @click.command(name="add", help="Add to group.")
 @click.pass_obj
 @device_address_option
@@ -43,7 +73,7 @@ def add(dali: DaliInterface, adr: str, group: int):
                     True,
                 )
             elif 16 <= group < 24:
-                set_device_dtr2_dtr1(dali, 0, 1 << (group-16))
+                set_device_dtr2_dtr1(dali, 0, 1 << (group - 16))
                 write_device_frame(
                     dali,
                     address.byte,
@@ -52,7 +82,7 @@ def add(dali: DaliInterface, adr: str, group: int):
                     True,
                 )
             else:
-                set_device_dtr2_dtr1(dali, 0, 1 << (group-24))
+                set_device_dtr2_dtr1(dali, 0, 1 << (group - 24))
                 write_device_frame(
                     dali,
                     address.byte,
@@ -94,7 +124,7 @@ def ungroup(dali: DaliInterface, adr: str, group: int):
                     True,
                 )
             elif 16 <= group < 24:
-                set_device_dtr2_dtr1(dali, 0, 1 << (group-16))
+                set_device_dtr2_dtr1(dali, 0, 1 << (group - 16))
                 write_device_frame(
                     dali,
                     address.byte,
@@ -103,7 +133,7 @@ def ungroup(dali: DaliInterface, adr: str, group: int):
                     True,
                 )
             else:
-                set_device_dtr2_dtr1(dali, 1 << (group-24), 0)
+                set_device_dtr2_dtr1(dali, 1 << (group - 24), 0)
                 write_device_frame(
                     dali,
                     address.byte,
