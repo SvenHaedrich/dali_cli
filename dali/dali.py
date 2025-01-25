@@ -5,6 +5,7 @@ import logging
 import click
 from DALI.device import device_configure as device_configure_cmd
 from DALI.device import device_dump as device_dump_cmd
+from DALI.device import device_numerate as device_numerate_cmd
 from DALI.device import device_query as device_query_cmd
 from DALI.device import device_special as device_special_cmd
 from DALI.gear import gear_clear as gear_clear_cmd
@@ -173,6 +174,7 @@ device.add_command(device_configure_cmd.start)
 device.add_command(device_configure_cmd.stop)
 device.add_command(device_configure_cmd.ungroup)
 
+device.add_command(device_numerate_cmd.numerate)
 
 
 @device.group(name="query", help="Query device status commands")

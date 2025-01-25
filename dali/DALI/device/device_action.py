@@ -36,7 +36,11 @@ def set_device_dtr0(
 ) -> None:
     logger.debug("set_device_dtr0")
     if 0 <= value < DaliMax.VALUE:
-        command = 0xC1 << 16 | DeviceSpecialCommandOpcode.DTR0 << 8 | value
+        command = (
+            DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
+            | DeviceSpecialCommandOpcode.DTR0 << 8
+            | value
+        )
         dali.transmit(
             DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True
         )
@@ -52,7 +56,11 @@ def set_device_dtr1(
 ) -> None:
     logger.debug("set_device_dtr1")
     if 0 <= value < DaliMax.VALUE:
-        command = 0xC1 << 16 | DeviceSpecialCommandOpcode.DTR1 << 8 | value
+        command = (
+            DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
+            | DeviceSpecialCommandOpcode.DTR1 << 8
+            | value
+        )
         dali.transmit(
             DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True
         )
@@ -73,9 +81,11 @@ def write_device_frame(
     logger.debug("write_device_frame")
     frame = address_byte << 16 | instance_byte << 8 | opcode_byte
     dali.transmit(
-        DaliFrame(length=DaliFrameLength.DEVICE, data=frame, send_twice=send_twice)
+        DaliFrame(length=DaliFrameLength.DEVICE, data=frame, send_twice=send_twice),
+        block=True,
     )
 
+
 @typechecked
-def set_device_dtr2_dtr1 (dali: DaliInterface, dtr2: int, dtr1:int) -> None:
+def set_device_dtr2_dtr1(dali: DaliInterface, dtr2: int, dtr1: int) -> None:
     write_device_frame(dali, DeviceSpecialCommandOpcode.DTR2_DTR1, dtr2, dtr1)

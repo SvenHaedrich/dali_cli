@@ -117,7 +117,9 @@ def dtr2(dali: DaliInterface, adr):
 @click.pass_obj
 @device_address_option
 def quiescent(dali: DaliInterface, adr):
-    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_QUIESCENT_MODE)
+    result = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_QUIESCENT_MODE
+    )
     if result is not None:
         click.echo(f"{result} = 0x{result:02X} = {result:08b}b")
     else:
@@ -128,22 +130,30 @@ def quiescent(dali: DaliInterface, adr):
 @click.pass_obj
 @device_address_option
 def groups(dali: DaliInterface, adr):
-    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_0_7)
+    result = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_0_7
+    )
     if result is None:
         click.echo("timeout - NO")
         return
     click.echo(f"GROUPS  0- 7: {result} = 0x{result:02X} = {result:08b}b")
-    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_8_15)
+    result = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_8_15
+    )
     if result is None:
         click.echo("timeout - NO")
         return
     click.echo(f"GROUPS  8-15: {result} = 0x{result:02X} = {result:08b}b")
-    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_16_23)
+    result = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_16_23
+    )
     if result is None:
         click.echo("timeout - NO")
         return
     click.echo(f"GROUPS 16-23: {result} = 0x{result:02X} = {result:08b}b")
-    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_24_31)
+    result = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_GROUPS_24_31
+    )
     if result is None:
         click.echo("timeout - NO")
         return

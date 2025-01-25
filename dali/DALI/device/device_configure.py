@@ -2,9 +2,9 @@
 
 import click
 
-from ..system.constants import DaliMax
 from ..dali_interface.dali_interface import DaliInterface
-from .device_action import write_device_frame, set_device_dtr2_dtr1
+from ..system.constants import DaliMax
+from .device_action import set_device_dtr2_dtr1, write_device_frame
 from .device_address import DaliDeviceAddressByte
 from .device_opcode import DeviceConfigureCommandOpcode
 
@@ -30,6 +30,7 @@ def start(dali: DaliInterface, adr: str):
             True,
         )
 
+
 @click.command(name="stop", help="Stop quiescent mode.")
 @click.pass_obj
 @device_address_option
@@ -44,6 +45,7 @@ def stop(dali: DaliInterface, adr: str):
             DeviceConfigureCommandOpcode.STOP_QUIESCENT_MODE,
             True,
         )
+
 
 @click.command(name="add", help="Add to group.")
 @click.pass_obj
