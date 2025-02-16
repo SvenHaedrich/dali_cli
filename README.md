@@ -73,7 +73,17 @@ bit : description
 
 * Lunatone 241 389 23DO
 * BEGA 71024
-* Serial based SevenLab Hardware
+* [Serial based SevenLab Hardware](https://github.com/SvenHaedrich/dali_usb_lpc1114)
+
+## Tests
+
+This script:
+```bash
+./test_dali_cli.sh
+```
+prepares a vritual environment, and then runs the tests. Optionally you can
+add `--log-level=debug` for more detailled logging.
+
 
 ## Install from github
 
@@ -88,26 +98,3 @@ python3 -m build
 python3 -m pip install --editable .
 ```
 
-## Building a Distribution
-
-The `dali` command is distributed as a python package. [Setuptools](https://setuptools.pypa.io) is used to create the package. To build a new package, execute the following steps:
-
-Install the latest version of `setuptools` using [pip](https://pypi.org/project/pip/)
-
-```shell
-pip install --upgrade setuptools
-```
-
-Now you can build the distribution package
-
-```shell
-cd dali_cli
-python3 -m build
-```
-
-Probably, you want to use the dali package in development mode. Here's how to do it:
-
-```shell
-cd dali_cli
-python3 -m pip install --editable .
-```
