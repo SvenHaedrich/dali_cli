@@ -3,18 +3,15 @@
 import click
 
 from ..dali_interface.dali_interface import DaliFrame, DaliInterface
-from ..system.constants import DaliFrameLength
+from ..system.constants import DaliFrameLength, DaliMax
 from .device_action import set_device_dtr0, set_device_dtr2_dtr1
-from .device_address import DaliDeviceAddressByte
+from .device_address import DeviceAddress, InstanceAddress
 from .device_opcode import DeviceConfigureCommandOpcode, DeviceSpecialCommandOpcode
 
 
 def prepare_bus(dali: DaliInterface) -> None:
-    data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-        | DeviceSpecialCommandOpcode.INITIALISE << 8
-        | 0xFF
-    )
+    address = DeviceAddress("SPECIAL")
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.INITIALISE << 8 | 0xFF
     dali.transmit(
         DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
     )
@@ -22,10 +19,13 @@ def prepare_bus(dali: DaliInterface) -> None:
 
 def clear_short_addresses(dali: DaliInterface) -> None:
     set_device_dtr0(dali, 0xFF)
-    address = DaliDeviceAddressByte()
-    address.broadcast()
+    address = DeviceAddress()
+    instance = InstanceAddress()
+    instance.device()
     data = (
-        address.byte << 16 | 0xFE << 8 | DeviceConfigureCommandOpcode.SET_SHORT_ADDRESS
+        address.byte << 16
+        | instance.byte << 8
+        | DeviceConfigureCommandOpcode.SET_SHORT_ADDRESS
     )
     dali.transmit(
         DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
@@ -34,66 +34,58 @@ def clear_short_addresses(dali: DaliInterface) -> None:
 
 def remove_from_all_groups(dali: DaliInterface) -> None:
     set_device_dtr2_dtr1(dali, 0xFF, 0xFF)
-    address = DaliDeviceAddressByte()
-    address.broadcast()
+    address = DeviceAddress()
+    instance = InstanceAddress()
+    instance.device()
     data = (
         address.byte << 16
-        | 0xFE << 8
+        | instance.byte << 8
         | DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_0_15
     )
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True))
     data = (
         address.byte << 16
-        | 0xFE << 8
+        | instance.byte << 8
         | DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_16_31
     )
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True))
 
 
 def request_new_random_addresses(dali: DaliInterface) -> None:
-    data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-        | DeviceSpecialCommandOpcode.RANDOMISE << 8
-    )
+    address = DeviceAddress("SPECIAL")
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.RANDOMISE << 8
     dali.transmit(
         DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
     )
 
 
 def set_search_address(dali: DaliInterface, search: int) -> None:
+    address = DeviceAddress("SPECIAL")
     data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-        | DeviceSpecialCommandOpcode.SEARCHADDRL << 8
-        | search & 0xFF
+        address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRL << 8 | search & 0xFF
     )
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
     search = search >> 8
     data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-        | DeviceSpecialCommandOpcode.SEARCHADDRM << 8
-        | search & 0xFF
+        address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRM << 8 | search & 0xFF
     )
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
     search = search >> 8
     data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-        | DeviceSpecialCommandOpcode.SEARCHADDRH << 8
-        | search & 0xFF
+        address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRH << 8 | search & 0xFF
     )
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
 
 
 def compare(dali: DaliInterface) -> bool:
-    data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-        | DeviceSpecialCommandOpcode.COMPARE << 8
-    )
+    address = DeviceAddress("SPECIAL")
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.COMPARE << 8
     result = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=data))
     return result.length == DaliFrameLength.BACKWARD
 
 
 def binary_search(dali: DaliInterface) -> int | None:
-    search = 0xFFFFFF
+    search = DaliMax.RANDOM_ADR - 1
     set_search_address(dali, search)
     if compare(dali):
         position = 23
@@ -108,33 +100,29 @@ def binary_search(dali: DaliInterface) -> int | None:
 
 
 def set_short_address(dali: DaliInterface, new_short_address: int) -> bool:
+    address = DeviceAddress("SPECIAL")
     data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
+        address.byte << 16
         | DeviceSpecialCommandOpcode.PROGRAM_SHORT_ADDRESS << 8
         | new_short_address & 0xFF
     )
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
     data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
+        address.byte << 16
         | DeviceSpecialCommandOpcode.VERIFY_SHORT_ADDRESS << 8
         | new_short_address & 0xFF
     )
     result = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=data))
     if result.length == DaliFrameLength.BACKWARD:
-        data = (
-            DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-            | DeviceSpecialCommandOpcode.WITHDRAW << 8
-        )
+        data = address.byte << 16 | DeviceSpecialCommandOpcode.WITHDRAW << 8
         dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
         return True
     return False
 
 
 def finish_work(dali: DaliInterface) -> None:
-    data = (
-        DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
-        | DeviceSpecialCommandOpcode.TERMINATE << 8
-    )
+    address = DeviceAddress("SPECIAL")
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.TERMINATE << 8
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
 
 

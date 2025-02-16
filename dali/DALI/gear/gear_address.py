@@ -23,7 +23,7 @@ class DaliAddressByte:
             self.mode = DaliAddressingMode.SHORT
 
     def group(self, group: int = 0) -> None:
-        if 0 <= group < DaliMax.GROUP:
+        if 0 <= group < DaliMax.GEAR_GROUP:
             self.byte &= 0x01
             self.byte |= group << 1
             self.byte |= 0x80
@@ -61,7 +61,7 @@ class DaliAddressByte:
             return True
         if text[0] == "G":
             g = int(text[1:3])
-            if g in range(16):
+            if 0 <= g < DaliMax.GEAR_GROUP:
                 self.group(g)
                 return True
             return False

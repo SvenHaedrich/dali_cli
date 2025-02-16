@@ -7,7 +7,7 @@ from typeguard import typechecked
 
 from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength, DaliMax
-from .device_address import DaliDeviceAddressByte
+from .device_address import DeviceAddress, InstanceAddress
 from .device_opcode import DeviceSpecialCommandOpcode
 
 logger = logging.getLogger(__name__)
@@ -18,10 +18,11 @@ def query_device_value(
     dali: DaliInterface, adr_parameter: str, opcode: int
 ) -> int | None:
     logger.debug("query_device_value")
-    address = DaliDeviceAddressByte()
-    instance = 0xFE
-    if address.arg(adr_parameter):
-        command = (address.byte << 16) | (instance << 8) | opcode
+    address = DeviceAddress(adr_parameter)
+    instance = InstanceAddress()
+    instance.device()
+    if address.isvalid():
+        command = (address.byte << 16) | (instance.byte << 8) | opcode
         reply = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=command))
         if reply.length == DaliFrameLength.BACKWARD:
             return reply.data
@@ -36,8 +37,10 @@ def set_device_dtr0(
 ) -> None:
     logger.debug("set_device_dtr0")
     if 0 <= value < DaliMax.VALUE:
+        address = DeviceAddress()
+        address.special()
         command = (
-            DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
+            address.byte << 16
             | DeviceSpecialCommandOpcode.DTR0 << 8
             | value
         )
@@ -56,8 +59,10 @@ def set_device_dtr1(
 ) -> None:
     logger.debug("set_device_dtr1")
     if 0 <= value < DaliMax.VALUE:
+        address = DeviceAddress()
+        address.special()
         command = (
-            DeviceSpecialCommandOpcode.SPECIAL_CMD << 16
+            address.byte << 16
             | DeviceSpecialCommandOpcode.DTR1 << 8
             | value
         )

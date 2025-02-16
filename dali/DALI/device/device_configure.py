@@ -5,7 +5,7 @@ import click
 from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .device_action import set_device_dtr2_dtr1, write_device_frame
-from .device_address import DaliDeviceAddressByte
+from .device_address import DeviceAddress, InstanceAddress
 from .device_opcode import DeviceConfigureCommandOpcode
 
 device_address_option = click.option(
@@ -19,13 +19,13 @@ device_address_option = click.option(
 @click.pass_obj
 @device_address_option
 def start(dali: DaliInterface, adr: str):
-    address = DaliDeviceAddressByte()
-    instance = 0xFE
-    if address.arg(adr):
+    address = DeviceAddress(adr)
+    instance = InstanceAddress()
+    if address.isvalid():
         write_device_frame(
             dali,
             address.byte,
-            instance,
+            instance.byte,
             DeviceConfigureCommandOpcode.START_QUIESCENT_MODE,
             True,
         )
@@ -35,13 +35,13 @@ def start(dali: DaliInterface, adr: str):
 @click.pass_obj
 @device_address_option
 def stop(dali: DaliInterface, adr: str):
-    address = DaliDeviceAddressByte()
-    instance = 0xFE
-    if address.arg(adr):
+    address = DeviceAddress(adr)
+    instance = InstanceAddress()
+    if address.isvalid():
         write_device_frame(
             dali,
             address.byte,
-            instance,
+            instance.byte,
             DeviceConfigureCommandOpcode.STOP_QUIESCENT_MODE,
             True,
         )
@@ -53,15 +53,15 @@ def stop(dali: DaliInterface, adr: str):
 @click.argument("group", type=click.INT)
 def add(dali: DaliInterface, adr: str, group: int):
     if 0 <= group < DaliMax.DEVICE_GROUP:
-        address = DaliDeviceAddressByte()
-        instance = 0xFE
-        if address.arg(adr):
+        address = DeviceAddress(adr)
+        instance = InstanceAddress()
+        if address.isvalid():
             if 0 <= group < 8:
                 set_device_dtr2_dtr1(dali, 0, 1 << group)
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.ADD_TO_DEVICE_GROUPS_0_15,
                     True,
                 )
@@ -70,7 +70,7 @@ def add(dali: DaliInterface, adr: str, group: int):
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.ADD_TO_DEVICE_GROUPS_0_15,
                     True,
                 )
@@ -79,16 +79,16 @@ def add(dali: DaliInterface, adr: str, group: int):
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.ADD_TO_DEVICE_GROUPS_16_31,
                     True,
                 )
             else:
-                set_device_dtr2_dtr1(dali, 0, 1 << (group - 24))
+                set_device_dtr2_dtr1(dali, 1 << (group - 24), 0)
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.ADD_TO_DEVICE_GROUPS_16_31,
                     True,
                 )
@@ -104,15 +104,15 @@ def add(dali: DaliInterface, adr: str, group: int):
 @click.argument("group", type=click.INT)
 def ungroup(dali: DaliInterface, adr: str, group: int):
     if 0 <= group < DaliMax.DEVICE_GROUP:
-        address = DaliDeviceAddressByte()
-        instance = 0xFE
-        if address.arg(adr):
+        address = DeviceAddress(adr)
+        instance = InstanceAddress()
+        if address.isvalid():
             if 0 <= group < 8:
                 set_device_dtr2_dtr1(dali, 0, 1 << group)
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_0_15,
                     True,
                 )
@@ -121,7 +121,7 @@ def ungroup(dali: DaliInterface, adr: str, group: int):
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_0_15,
                     True,
                 )
@@ -130,7 +130,7 @@ def ungroup(dali: DaliInterface, adr: str, group: int):
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_16_31,
                     True,
                 )
@@ -139,7 +139,7 @@ def ungroup(dali: DaliInterface, adr: str, group: int):
                 write_device_frame(
                     dali,
                     address.byte,
-                    instance,
+                    instance.byte,
                     DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_16_31,
                     True,
                 )
