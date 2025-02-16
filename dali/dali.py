@@ -3,7 +3,9 @@
 import logging
 
 import click
+from DALI.device import device_configure as device_configure_cmd
 from DALI.device import device_dump as device_dump_cmd
+from DALI.device import device_numerate as device_numerate_cmd
 from DALI.device import device_query as device_query_cmd
 from DALI.device import device_special as device_special_cmd
 from DALI.gear import gear_clear as gear_clear_cmd
@@ -18,7 +20,7 @@ from DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")
-@click.version_option("0.2.0")
+@click.version_option("0.2.1")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -44,7 +46,7 @@ from DALI.system.connection import dali_connection
 def cli(ctx, serial_port, hid, mock, debug):
     """
     Command line interface for DALI systems.
-    SevenLabs 2024
+    SevenLabs 2025
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -165,6 +167,15 @@ device.add_command(device_special_cmd.dtr1)
 device.add_command(device_special_cmd.dtr2)
 device.add_command(device_special_cmd.testframe)
 
+#
+# ---- configure commands
+device.add_command(device_configure_cmd.add)
+device.add_command(device_configure_cmd.start)
+device.add_command(device_configure_cmd.stop)
+device.add_command(device_configure_cmd.ungroup)
+
+device.add_command(device_numerate_cmd.numerate)
+
 
 @device.group(name="query", help="Query device status commands")
 def device_query():
@@ -176,5 +187,7 @@ device_query.add_command(device_query_cmd.capabilities)
 device_query.add_command(device_query_cmd.dtr0)
 device_query.add_command(device_query_cmd.dtr1)
 device_query.add_command(device_query_cmd.dtr2)
+device_query.add_command(device_query_cmd.groups)
+device_query.add_command(device_query_cmd.quiescent)
 device_query.add_command(device_query_cmd.status)
 device_query.add_command(device_query_cmd.version)

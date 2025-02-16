@@ -14,7 +14,7 @@ from dali import cli
         ("enable", 0x81),
     ],
 )
-def test_simple_configure_command(command, opcode):
+def test_simple_gear_configure_command(command, opcode):
     runner = CliRunner()
     # test broadcast
     result = runner.invoke(cli, ["--mock", "gear", command])

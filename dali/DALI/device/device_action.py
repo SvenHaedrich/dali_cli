@@ -6,8 +6,8 @@ import click
 from typeguard import typechecked
 
 from ..dali_interface.dali_interface import DaliFrame, DaliInterface
-from ..system.constants import DaliFrameLength, DaliMax
-from .device_address import DaliDeviceAddressByte
+from ..system.constants import DaliFrameLength
+from .device_address import DeviceAddress, InstanceAddress
 from .device_opcode import DeviceSpecialCommandOpcode
 
 logger = logging.getLogger(__name__)
@@ -17,11 +17,13 @@ logger = logging.getLogger(__name__)
 def query_device_value(
     dali: DaliInterface, adr_parameter: str, opcode: int
 ) -> int | None:
+    """Query a value from a control device"""
     logger.debug("query_device_value")
-    address = DaliDeviceAddressByte()
-    instance = 0xFE
-    if address.arg(adr_parameter):
-        command = (address.byte << 16) | (instance << 8) | opcode
+    address = DeviceAddress(adr_parameter)
+    instance = InstanceAddress()
+    instance.device()
+    if address.isvalid():
+        command = (address.byte << 16) | (instance.byte << 8) | opcode
         reply = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=command))
         if reply.length == DaliFrameLength.BACKWARD:
             return reply.data
@@ -31,35 +33,21 @@ def query_device_value(
 
 
 @typechecked
-def set_device_dtr0(
-    dali: DaliInterface, value: int, parameter_hint: str = "UNKNOWN"
-) -> None:
+def set_device_dtr0(dali: DaliInterface, value: int) -> None:
+    """Set control device data transfer register 0"""
     logger.debug("set_device_dtr0")
-    if 0 <= value < DaliMax.VALUE:
-        command = 0xC1 << 16 | DeviceSpecialCommandOpcode.DTR0 << 8 | value
-        dali.transmit(
-            DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True
-        )
-    else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE}.", param_hint=parameter_hint
-        )
+    address = DeviceAddress("SPECIAL")
+    command = address.byte << 16 | DeviceSpecialCommandOpcode.DTR0 << 8 | value
+    dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True)
 
 
 @typechecked
-def set_device_dtr1(
-    dali: DaliInterface, value: int, parameter_hint: str = "UNKNOWN"
-) -> None:
+def set_device_dtr1(dali: DaliInterface, value: int) -> None:
+    """Set control device data transfer register 1"""
     logger.debug("set_device_dtr1")
-    if 0 <= value < DaliMax.VALUE:
-        command = 0xC1 << 16 | DeviceSpecialCommandOpcode.DTR1 << 8 | value
-        dali.transmit(
-            DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True
-        )
-    else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE}.", param_hint=parameter_hint
-        )
+    address = DeviceAddress("SPECIAL")
+    command = address.byte << 16 | DeviceSpecialCommandOpcode.DTR1 << 8 | value
+    dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True)
 
 
 @typechecked
@@ -70,8 +58,16 @@ def write_device_frame(
     opcode_byte: int = 0,
     send_twice: bool = False,
 ) -> None:
+    """Assemble a control device frame and transmit it"""
     logger.debug("write_device_frame")
     frame = address_byte << 16 | instance_byte << 8 | opcode_byte
     dali.transmit(
-        DaliFrame(length=DaliFrameLength.DEVICE, data=frame, send_twice=send_twice)
+        DaliFrame(length=DaliFrameLength.DEVICE, data=frame, send_twice=send_twice),
+        block=True,
     )
+
+
+@typechecked
+def set_device_dtr2_dtr1(dali: DaliInterface, dtr2: int, dtr1: int) -> None:
+    """Set control device data transfer registers 0 and 1 simultaneously"""
+    write_device_frame(dali, DeviceSpecialCommandOpcode.DTR2_DTR1, dtr2, dtr1)

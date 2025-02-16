@@ -5,17 +5,18 @@ import click
 from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .device_action import write_device_frame
+from .device_address import DeviceAddress
 from .device_opcode import DeviceSpecialCommandOpcode
 
 
-@click.command(name="dtr0", help="Set data transfer register 0")
+@click.command(name="dtr0", help="Set data transfer register 0.")
 @click.pass_obj
 @click.argument("data", type=click.INT)
 def dtr0(dali: DaliInterface, data):
     if 0 <= data < DaliMax.VALUE:
         write_device_frame(
             dali,
-            DeviceSpecialCommandOpcode.SPECIAL_CMD,
+            DeviceAddress("SPECIAL").byte,
             DeviceSpecialCommandOpcode.DTR0,
             data,
         )
@@ -25,14 +26,14 @@ def dtr0(dali: DaliInterface, data):
         )
 
 
-@click.command(name="dtr1", help="Set data transfer register 1")
+@click.command(name="dtr1", help="Set data transfer register 1.")
 @click.pass_obj
 @click.argument("data", type=click.INT)
 def dtr1(dali: DaliInterface, data):
     if 0 <= data < DaliMax.VALUE:
         write_device_frame(
             dali,
-            DeviceSpecialCommandOpcode.SPECIAL_CMD,
+            DeviceAddress("SPECIAL").byte,
             DeviceSpecialCommandOpcode.DTR1,
             data,
         )
@@ -42,14 +43,14 @@ def dtr1(dali: DaliInterface, data):
         )
 
 
-@click.command(name="dtr2", help="Set data transfer register 2")
+@click.command(name="dtr2", help="Set data transfer register 2.")
 @click.pass_obj
 @click.argument("data", type=click.INT)
 def dtr2(dali: DaliInterface, data):
     if 0 <= data < DaliMax.VALUE:
         write_device_frame(
             dali,
-            DeviceSpecialCommandOpcode.SPECIAL_CMD,
+            DeviceAddress("SPECIAL").byte,
             DeviceSpecialCommandOpcode.DTR2,
             data,
         )
@@ -59,7 +60,7 @@ def dtr2(dali: DaliInterface, data):
         )
 
 
-@click.command(name="testframe", help="Send a test frame")
+@click.command(name="testframe", help="Send a test frame.")
 @click.pass_obj
 @click.argument("priority", type=click.INT, default=5)
 @click.argument("repeat", type=click.INT, default=0)
@@ -67,7 +68,7 @@ def dtr2(dali: DaliInterface, data):
 def testframe(dali: DaliInterface, priority, repeat, gear):
     if not 0 < priority <= DaliMax.PRIORITY:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.PRIORITY}.", param_hint="PRIORITY"
+            f"needs to be between 1 and {DaliMax.PRIORITY}.", param_hint="PRIORITY"
         )
     if not 0 <= repeat <= 3:
         raise click.BadParameter("needs to be between 0 and 3.", param_hint="REPEAT")
@@ -76,7 +77,7 @@ def testframe(dali: DaliInterface, priority, repeat, gear):
         data = data | 0x20
     write_device_frame(
         dali,
-        DeviceSpecialCommandOpcode.SPECIAL_CMD,
+        DeviceAddress("SPECIAL").byte,
         DeviceSpecialCommandOpcode.SEND_TESTFRAME,
         data,
     )
