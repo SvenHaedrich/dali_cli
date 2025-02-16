@@ -10,6 +10,7 @@ logging-format-style=new
 disable=
     logging-fstring-interpolation,
     import-error,
+    wrong-import-order,
     relative-beyond-top-level,
     broad-exception-raised,
     broad-exception-caught,

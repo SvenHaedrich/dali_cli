@@ -97,7 +97,7 @@ class DeviceAddress:
         if self.mode == DeviceAddressing.GROUP:
             group_address = (self.byte >> 1) & 0xF
             return f"DG{group_address:02}"
-        return self.mode.value
+        return str(self.mode.value)
 
 
 @unique
@@ -139,10 +139,10 @@ class InstanceAddress:
             self.byte = group | 0x80
             self.mode = InstanceAddressing.INSTANCE_NUMBER
 
-    def instance_type(self, type: int = 0) -> None:
+    def instance_type(self, instance_type: int = 0) -> None:
         """Instance type addressing"""
-        if 0 <= type < DaliMax.INSTANCE_TYPES:
-            self.byte = type | 0xC0
+        if 0 <= instance_type < DaliMax.INSTANCE_TYPES:
+            self.byte = instance_type | 0xC0
             self.mode = InstanceAddressing.INSTANCE_TYPE
 
     def device(self) -> None:

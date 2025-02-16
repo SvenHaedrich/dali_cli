@@ -17,8 +17,8 @@ from .device_opcode import DeviceQueryCommandOpcode
     help="Address, can be a short address (0..63) or group address (G0..G15).",
 )
 def dump(dali: DaliInterface, adr, bank):
-    set_device_dtr1(dali, bank, "BANK")
-    set_device_dtr0(dali, 0, "LOCATION")
+    set_device_dtr1(dali, bank)
+    set_device_dtr0(dali, 0)
     last_accessible_location = query_device_value(
         dali, adr, DeviceQueryCommandOpcode.READ_MEMORY
     )
