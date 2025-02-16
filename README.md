@@ -81,8 +81,8 @@ This script:
 ```bash
 ./test_dali_cli.sh
 ```
-prepares a vritual environment, and then runs the tests. Optionally you can
-add `--log-level=debug` for more detailled logging.
+prepares a virtual environment, and then runs the tests. Optionally you can
+add `--log-level=debug` for more detailed logging.
 
 
 ## Install from github
@@ -93,8 +93,5 @@ cd dali_cli
 git submodule update --init
 python3 -m venv --prompt dali .venv
 source .venv/bin/activate
-python3 -m pip install --upgrade pip setuptools
-python3 -m build
-python3 -m pip install --editable .
 ```
 

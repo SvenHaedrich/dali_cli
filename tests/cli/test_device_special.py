@@ -1,9 +1,8 @@
-"""Test control device speical commands."""
+"""Test control device special commands."""
 
 import pytest
 from click.testing import CliRunner
 from dali import cli
-from DALI.system.constants import DaliMax
 
 
 @pytest.mark.parametrize(

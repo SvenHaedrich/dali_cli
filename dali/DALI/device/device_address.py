@@ -1,6 +1,7 @@
 """Control device addressing class."""
 
 from enum import Enum, unique
+
 from typeguard import typechecked
 
 from ..system.constants import DaliMax
@@ -8,7 +9,7 @@ from ..system.constants import DaliMax
 
 @unique
 class DeviceAddressing(Enum):
-    """Addressing modes for device commands, see iec 62386-103:2022 Table 1"""
+    """Addressing modes for control device commands, see iec 62386-103:2022 Table 1"""
 
     INVALID = 0
     SHORT = 1
@@ -33,7 +34,7 @@ class DeviceAddress:
         raise ValueError("invalid addressing mode")
 
     def short(self, address: int = 0) -> None:
-        """Short adressing"""
+        """Short addressing"""
         if 0 <= address < DaliMax.ADR:
             self.byte = 0x01
             self.byte |= address << 1
@@ -65,6 +66,7 @@ class DeviceAddress:
             self.mode = DeviceAddressing.SPECIAL
 
     def isvalid(self) -> bool:
+        """Check if control device addressing mode is valid"""
         return self.mode != DeviceAddressing.INVALID
 
     def arg(self, text: str = "") -> bool:
@@ -102,6 +104,7 @@ class DeviceAddress:
 class InstanceAddressing(Enum):
     """Addressing modes for device instances, see iec 62386-103:2022 Table 2"""
 
+    INVALID = 0
     INSTANCE_NUMBER = 1
     INSTANCE_GROUP = 2
     INSTANCE_TYPE = 3
@@ -120,22 +123,27 @@ class InstanceAddress:
     """Interfaces between DALI addressing representation and command addressing format"""
 
     def __init__(self) -> None:
+        self.mode = InstanceAddressing.INVALID
+        self.byte = 0
         self.device()
 
     def instance_number(self, number: int = 0) -> None:
+        """Instance number addressing"""
         if 0 <= number < DaliMax.INSTANCE_NUMBER:
             self.byte = number
             self.mode = InstanceAddressing.INSTANCE_NUMBER
 
     def instance_group(self, group: int = 0) -> None:
+        """Instance group addressing"""
         if 0 <= group < DaliMax.INSTANCE_GROUP:
             self.byte = group | 0x80
             self.mode = InstanceAddressing.INSTANCE_NUMBER
 
     def instance_type(self, type: int = 0) -> None:
+        """Instance type addressing"""
         if 0 <= type < DaliMax.INSTANCE_TYPES:
             self.byte = type | 0xC0
-            self.mode = InstanceAddressing.SHORT
+            self.mode = InstanceAddressing.INSTANCE_TYPE
 
     def device(self) -> None:
         self.byte = 0xFE

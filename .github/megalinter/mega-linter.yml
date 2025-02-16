@@ -9,6 +9,8 @@ ENABLE_LINTERS:
   - BASH_SHELLCHECK
   - BASH_SHFMT
   - COPYPASTE_JSCPD
+  - C_CPPLINT
+  - C_CLANG_FORMAT
   - SPELL_CSPELL
   - SPELL_LYCHEE
   - PYTHON_RUFF
@@ -30,8 +32,9 @@ ENABLE_LINTERS:
   - YAML_V8R
 
 COPYPASTE_JSCPD_CONFIG_FILE: .github/megalinter/jscpd.json
+C_CPPLINT_ARGUMENTS: --filter=-whitespace,-legal,-readability/casting --linelength=999
 SPELL_CSPELL_CONFIG_FILE: .github/megalinter/cspell.json
-SPELL_CSPELL_FILTER_REGEX_EXCLUDE: (.megalinter.*|.gitignore)
+SPELL_CSPELL_FILTER_REGEX_EXCLUDE: (.mega-linter.*|.gitignore)
 PYTHON_PYLINT_CONFIG_FILE: .github/megalinter/pylintrc
 PYTHON_PYRIGHT_CONFIG_FILE: .github/megalinter/pyrightconfig.json
 YAML_V8R_FILTER_REGEX_EXCLUDE: (.mega-linter.*)
@@ -43,3 +46,4 @@ DISABLE_ERRORS: false
 IGNORE_GITIGNORE_FILES: true
 EXCLUDED_DIRECTORIES:
   - .github
+  - dali_102

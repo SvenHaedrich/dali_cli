@@ -12,7 +12,4 @@ disable=
     import-error,
     relative-beyond-top-level,
     broad-exception-raised,
-    broad-exception-caught,
-    missing-function-docstring,
-    no-name-in-module, 
-    duplicate-code
+    broad-exception-caught
