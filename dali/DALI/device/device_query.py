@@ -5,6 +5,7 @@ import click
 from ..dali_interface.dali_interface import DaliInterface
 from .device_action import query_device_value
 from .device_opcode import DeviceQueryCommandOpcode
+from ..system.constants import DaliMax
 
 device_address_option = click.option(
     "--adr",
@@ -78,6 +79,19 @@ def capabilities(dali: DaliInterface, adr):
         click.echo(f"  {(result >> 7 & 0x01)} : unused")
     else:
         click.echo("timeout - NO")
+
+
+@click.command(name="reset", help="Query the reset state of all variables.")
+@click.pass_obj
+@device_address_option
+def reset(dali: DaliInterface, adr):
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_RESET_STATE)
+    if result is None:
+        click.echo("timeout - NO")
+    elif result == DaliMax.MASK:
+        click.echo("YES")
+    else:
+        click.echo(f"{result} = 0x{result:02X} = {result:08b}b")
 
 
 @click.command(name="dtr0", help="Query content of DTR0.")

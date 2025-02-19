@@ -47,6 +47,22 @@ def stop(dali: DaliInterface, adr: str):
         )
 
 
+@click.command(name="reset", help="Reset all variables.")
+@click.pass_obj
+@device_address_option
+def reset(dali: DaliInterface, adr: str):
+    address = DeviceAddress(adr)
+    instance = InstanceAddress()
+    if address.isvalid():
+        write_device_frame(
+            dali,
+            address.byte,
+            instance.byte,
+            DeviceConfigureCommandOpcode.RESET,
+            True,
+        )
+
+
 @click.command(name="add", help="Add to group.")
 @click.pass_obj
 @device_address_option
