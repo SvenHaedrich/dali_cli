@@ -165,6 +165,8 @@ device.add_command(device_dump_cmd.dump)
 device.add_command(device_special_cmd.dtr0)
 device.add_command(device_special_cmd.dtr1)
 device.add_command(device_special_cmd.dtr2)
+device.add_command(device_special_cmd.init)
+device.add_command(device_special_cmd.rand)
 device.add_command(device_special_cmd.testframe)
 
 #
@@ -174,7 +176,7 @@ device.add_command(device_configure_cmd.start)
 device.add_command(device_configure_cmd.stop)
 device.add_command(device_configure_cmd.reset)
 device.add_command(device_configure_cmd.ungroup)
-
+device.add_command(device_configure_cmd.short)
 device.add_command(device_numerate_cmd.numerate)
 
 
@@ -191,5 +193,7 @@ device_query.add_command(device_query_cmd.dtr2)
 device_query.add_command(device_query_cmd.groups)
 device_query.add_command(device_query_cmd.quiescent)
 device_query.add_command(device_query_cmd.status)
+device_query.add_command(device_query_cmd.short)
 device_query.add_command(device_query_cmd.version)
+device_query.add_command(device_query_cmd.random)
 device_query.add_command(device_query_cmd.reset)

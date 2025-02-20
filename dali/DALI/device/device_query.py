@@ -2,10 +2,11 @@
 
 import click
 
-from ..dali_interface.dali_interface import DaliInterface
+from ..dali_interface.dali_interface import DaliFrame, DaliInterface
+from ..system.constants import DaliFrameLength, DaliMax
 from .device_action import query_device_value
-from .device_opcode import DeviceQueryCommandOpcode
-from ..system.constants import DaliMax
+from .device_address import DeviceAddress
+from .device_opcode import DeviceQueryCommandOpcode, DeviceSpecialCommandOpcode
 
 device_address_option = click.option(
     "--adr",
@@ -16,7 +17,7 @@ device_address_option = click.option(
 
 @click.command(
     name="status",
-    help="Query control device status byte. The answer shall be the status, which is formed by a combination of control device properties.",
+    help="Control device status byte. The answer shall be the status, which is formed by a combination of control device properties.",
 )
 @click.pass_obj
 @device_address_option
@@ -37,7 +38,7 @@ def status(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="version", help="Query control device version number.")
+@click.command(name="version", help="Control device version number.")
 @click.pass_obj
 @device_address_option
 def version(dali: DaliInterface, adr):
@@ -56,7 +57,7 @@ def version(dali: DaliInterface, adr):
 
 @click.command(
     name="capabilities",
-    help="Query control device capabilities. The answer shall be a combination of control device capabilities.",
+    help="Control device capabilities. The answer shall be a combination of control device capabilities.",
 )
 @click.pass_obj
 @device_address_option
@@ -81,7 +82,7 @@ def capabilities(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="reset", help="Query the reset state of all variables.")
+@click.command(name="reset", help="Reset state of all variables.")
 @click.pass_obj
 @device_address_option
 def reset(dali: DaliInterface, adr):
@@ -94,7 +95,7 @@ def reset(dali: DaliInterface, adr):
         click.echo(f"{result} = 0x{result:02X} = {result:08b}b")
 
 
-@click.command(name="dtr0", help="Query content of DTR0.")
+@click.command(name="dtr0", help="Content of DTR0.")
 @click.pass_obj
 @device_address_option
 def dtr0(dali: DaliInterface, adr):
@@ -105,7 +106,7 @@ def dtr0(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="dtr1", help="Query content of DTR1.")
+@click.command(name="dtr1", help="Content of DTR1.")
 @click.pass_obj
 @device_address_option
 def dtr1(dali: DaliInterface, adr):
@@ -116,7 +117,7 @@ def dtr1(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="dtr2", help="Query content of DTR2.")
+@click.command(name="dtr2", help="Content of DTR2.")
 @click.pass_obj
 @device_address_option
 def dtr2(dali: DaliInterface, adr):
@@ -127,7 +128,45 @@ def dtr2(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="quiescent", help="Query content of DTR2.")
+@click.command(name="short", help="shortAddress.")
+@click.pass_obj
+def short(dali: DaliInterface):
+    address = DeviceAddress("SPECIAL")
+    data = (address.byte << 16) | (DeviceSpecialCommandOpcode.QUERY_SHORT_ADDRESS << 8)
+    reply = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=data))
+    if reply.length == DaliFrameLength.BACKWARD:
+        click.echo(
+            f"short address: {reply.data} = 0x{reply.data:02X} = {reply.data:08b}b"
+        )
+    else:
+        click.echo("timeout - NO")
+
+
+@click.command(name="random", help="randomAddress.")
+@click.pass_obj
+@device_address_option
+def random(dali: DaliInterface, adr):
+    random_h = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_RANDOM_ADDRESS_H
+    )
+    random_m = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_RANDOM_ADDRESS_M
+    )
+    random_l = query_device_value(
+        dali, adr, DeviceQueryCommandOpcode.QUERY_RANDOM_ADDRESS_L
+    )
+    if (random_h is None) or (random_m is None) or (random_l is None):
+        click.echo("timeout - NO")
+    else:
+        random_address = random_h << 16 | random_m << 8 | random_l
+        click.echo(
+            f"Random address: 0x{random_address:06X} = "
+            f"{random_address:024b}b = "
+            f"{random_address}"
+        )
+
+
+@click.command(name="quiescent", help="Content of DTR2.")
 @click.pass_obj
 @device_address_option
 def quiescent(dali: DaliInterface, adr):
@@ -140,7 +179,7 @@ def quiescent(dali: DaliInterface, adr):
         click.echo("timeout - NO")
 
 
-@click.command(name="groups", help="Query device group settings.")
+@click.command(name="groups", help="Device group settings.")
 @click.pass_obj
 @device_address_option
 def groups(dali: DaliInterface, adr):

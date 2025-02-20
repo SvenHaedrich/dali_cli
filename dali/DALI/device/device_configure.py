@@ -4,7 +4,7 @@ import click
 
 from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
-from .device_action import set_device_dtr2_dtr1, write_device_frame
+from .device_action import set_device_dtr0, set_device_dtr2_dtr1, write_device_frame
 from .device_address import DeviceAddress, InstanceAddress
 from .device_opcode import DeviceConfigureCommandOpcode
 
@@ -61,6 +61,29 @@ def reset(dali: DaliInterface, adr: str):
             DeviceConfigureCommandOpcode.RESET,
             True,
         )
+
+
+@click.command(name="short", help="Set short address to ADDRESS.")
+@click.pass_obj
+@device_address_option
+@click.argument("address", type=click.INT)
+def short(dali, adr, address):
+    if 0 <= address < DaliMax.ADR:
+        address = (address * 2) + 1
+    elif address != 255:
+        raise click.BadParameter(
+            f"needs to be between 0 and {DaliMax.ADR-1}", param_hint="ADDRESS"
+        )
+    addressing = DeviceAddress(adr)
+    instance = InstanceAddress()
+    set_device_dtr0(dali, address)
+    write_device_frame(
+        dali,
+        addressing.byte,
+        instance.byte,
+        DeviceConfigureCommandOpcode.SET_SHORT_ADDRESS,
+        True,
+    )
 
 
 @click.command(name="add", help="Add to group.")
