@@ -10,6 +10,7 @@ class DaliMax(IntEnum):
     DEVICE_GROUP = 0x20
     SCENE = 0x10
     VALUE = 0x100
+    MASK = 0xFF
     ADR = 0x40
     BANK = 0x100
     PRIORITY = 5

@@ -9,6 +9,47 @@ from .device_address import DeviceAddress
 from .device_opcode import DeviceSpecialCommandOpcode
 
 
+@click.command(
+    name="init", help="Enable initialisation mode. Argument device=(ALL|UN|0..63)"
+)
+@click.pass_obj
+@click.argument("device", type=click.STRING)
+def init(dali: DaliInterface, device):
+    try:
+        if device.upper() == "ALL":
+            data = DaliMax.MASK
+        elif device.upper() == "UN":
+            data = 0x7F
+        else:
+            if int(device) in range(DaliMax.ADR):
+                data = int(device)
+            else:
+                raise ValueError
+        write_device_frame(
+            dali,
+            DeviceAddress("SPECIAL").byte,
+            DeviceSpecialCommandOpcode.INITIALISE,
+            data,
+            True,
+        )
+    except ValueError as error:
+        raise click.BadParameter(
+            "use ALL, UN or valid short address", param_hint="DEVICE"
+        ) from error
+
+
+@click.command(name="rand", help="Generate new randomAddress.")
+@click.pass_obj
+def rand(dali: DaliInterface):
+    write_device_frame(
+        dali,
+        DeviceAddress("SPECIAL").byte,
+        DeviceSpecialCommandOpcode.RANDOMISE,
+        0,
+        True,
+    )
+
+
 @click.command(name="dtr0", help="Set data transfer register 0.")
 @click.pass_obj
 @click.argument("data", type=click.INT)

@@ -19,6 +19,38 @@ def test_command_with_data(command, opcode):
         assert result.output == f"S2 18 {expect:X}\n"
 
 
+@pytest.mark.parametrize(
+    "command,opcode,send_twice",
+    [("rand", 0x02, True)],
+)
+def test_simple_command(command, opcode, send_twice):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["--mock", "device", command])
+    if send_twice:
+        expect = f"S2 18+{(0xC10000 + (opcode << 8)):06X}\n"
+    else:
+        expect = f"S2 18 {(0xC10000 + (opcode << 8)):06X}\n"
+    assert result.exit_code == 0
+    assert result.output == expect
+
+
+def test_initialise():
+    runner = CliRunner()
+    # all
+    result = runner.invoke(cli, ["--mock", "device", "init", "ALL"])
+    assert result.exit_code == 0
+    assert result.output == "S2 18+C101FF\n"
+    # unaddressed
+    result = runner.invoke(cli, ["--mock", "device", "init", "UN"])
+    assert result.exit_code == 0
+    assert result.output == "S2 18+C1017F\n"
+    # address
+    for address in range(0x40):
+        result = runner.invoke(cli, ["--mock", "device", "init", str(address)])
+        assert result.exit_code == 0
+        assert result.output == f"S2 18+C101{address:02X}\n"
+
+
 def test_command_testframe():
     runner = CliRunner()
     # default values

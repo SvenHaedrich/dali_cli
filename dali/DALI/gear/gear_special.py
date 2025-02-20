@@ -46,11 +46,11 @@ def init(ctx: DaliInterface, device):
                 data = (int(device) << 1) + 1
             else:
                 raise ValueError
+        write_gear_frame(ctx, GearSpecialCommandOpcode.INITIALISE, data, True)
     except ValueError as error:
         raise click.BadParameter(
             "use ALL, UN or valid short address", param_hint="DEVICE"
         ) from error
-    write_gear_frame(ctx, GearSpecialCommandOpcode.INITIALISE, data, True)
 
 
 @click.command(name="rand", help="Generate new randomAddress.")
