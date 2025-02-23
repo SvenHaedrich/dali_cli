@@ -127,7 +127,7 @@ def finish_work(dali: DaliInterface) -> None:
 
 
 @click.command(
-    name="numerate", help="Clear and re-program short addresses of all devices."
+    name="numerate", help="Clear and re-program short addresses of all control devices."
 )
 @click.pass_obj
 def numerate(dali: DaliInterface):
