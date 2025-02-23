@@ -46,7 +46,7 @@ from DALI.system.connection import dali_connection
 def cli(ctx, serial_port, hid, mock, debug):
     """
     Command line interface for DALI systems.
-    SevenLabs 2025
+    SevenLab 2025
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
