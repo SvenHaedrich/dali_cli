@@ -1,4 +1,4 @@
-"""Control device discovery and numerate."""
+"""Control device discovery and enumerate."""
 
 import click
 
@@ -12,6 +12,16 @@ from .device_opcode import DeviceConfigureCommandOpcode, DeviceSpecialCommandOpc
 def prepare_bus(dali: DaliInterface) -> None:
     address = DeviceAddress("SPECIAL")
     data = address.byte << 16 | DeviceSpecialCommandOpcode.INITIALISE << 8 | 0xFF
+    dali.transmit(
+        DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
+    )
+    address = DeviceAddress()
+    instance = InstanceAddress()
+    data = (
+        address.byte << 16
+        | instance.byte << 8
+        | DeviceConfigureCommandOpcode.START_QUIESCENT_MODE
+    )
     dali.transmit(
         DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
     )
@@ -124,13 +134,23 @@ def finish_work(dali: DaliInterface) -> None:
     address = DeviceAddress("SPECIAL")
     data = address.byte << 16 | DeviceSpecialCommandOpcode.TERMINATE << 8
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
+    address = DeviceAddress()
+    instance = InstanceAddress()
+    data = (
+        address.byte << 16
+        | instance.byte << 8
+        | DeviceConfigureCommandOpcode.START_QUIESCENT_MODE
+    )
+    dali.transmit(
+        DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
+    )
 
 
 @click.command(
-    name="numerate", help="Clear and re-program short addresses of all control devices."
+    name="enum", help="Clear and re-program short addresses of all control devices."
 )
 @click.pass_obj
-def numerate(dali: DaliInterface):
+def device_enumerate(dali: DaliInterface):
     prepare_bus(dali)
     clear_short_addresses(dali)
     remove_from_all_groups(dali)

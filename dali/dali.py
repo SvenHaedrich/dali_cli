@@ -5,12 +5,13 @@ import logging
 import click
 from DALI.device import device_configure as device_configure_cmd
 from DALI.device import device_dump as device_dump_cmd
-from DALI.device import device_numerate as device_numerate_cmd
+from DALI.device import device_enumerate as device_enumerate_cmd
 from DALI.device import device_query as device_query_cmd
 from DALI.device import device_special as device_special_cmd
 from DALI.gear import gear_clear as gear_clear_cmd
 from DALI.gear import gear_configure as gear_conf_cmd
 from DALI.gear import gear_dump as gear_dump_cmd
+from DALI.gear import gear_enumerate as gear_enumerate_cmd
 from DALI.gear import gear_level as level_cmd
 from DALI.gear import gear_list as gear_list_cmd
 from DALI.gear import gear_query as gear_query_cmd
@@ -20,7 +21,7 @@ from DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")
-@click.version_option("0.2.2")
+@click.version_option("0.2.3")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -36,6 +37,16 @@ from DALI.system.connection import dali_connection
     is_flag=True,
 )
 @click.option(
+    "--on",
+    help="Enable power supply (if available).",
+    is_flag=True,
+)
+@click.option(
+    "--off",
+    help="Disable power supply (if available).",
+    is_flag=True,
+)
+@click.option(
     "--mock",
     help="Mock DALI interface for testing.",
     hidden=True,
@@ -43,7 +54,9 @@ from DALI.system.connection import dali_connection
 )
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.pass_context
-def cli(ctx, serial_port, hid, mock, debug):
+def cli(
+    ctx, serial_port, hid, mock, debug, on, off
+):  # pylint: disable=locally-disabled, too-many-arguments, too-many-positional-arguments
     """
     Command line interface for DALI systems.
     SevenLab 2025
@@ -61,6 +74,13 @@ def cli(ctx, serial_port, hid, mock, debug):
     if mock and not serial_port and not hid:
         dali_interface = "Mock"
     ctx.obj = ctx.with_resource(dali_connection(dali_interface, serial_port))
+
+    if hid and on:
+        logging.debug("Enable power supply")
+        ctx.obj.power(True)
+    if hid and off:
+        logging.debug("Disable power supply")
+        ctx.obj.power(False)
 
 
 cli.add_command(level_cmd.off)
@@ -103,6 +123,8 @@ gear.add_command(gear_conf_cmd.add)
 gear.add_command(gear_conf_cmd.ungroup)
 gear.add_command(gear_conf_cmd.short)
 gear.add_command(gear_conf_cmd.enable)
+gear.add_command(gear_enumerate_cmd.gear_enumerate)
+
 
 # ---- special commands
 gear.add_command(gear_special_cmd.term)
@@ -177,7 +199,7 @@ device.add_command(device_configure_cmd.stop)
 device.add_command(device_configure_cmd.reset)
 device.add_command(device_configure_cmd.ungroup)
 device.add_command(device_configure_cmd.short)
-device.add_command(device_numerate_cmd.numerate)
+device.add_command(device_enumerate_cmd.device_enumerate)
 
 
 @device.group(name="query", help="Query device status commands")
@@ -190,6 +212,7 @@ device_query.add_command(device_query_cmd.capabilities)
 device_query.add_command(device_query_cmd.dtr0)
 device_query.add_command(device_query_cmd.dtr1)
 device_query.add_command(device_query_cmd.dtr2)
+device_query.add_command(device_query_cmd.extended)
 device_query.add_command(device_query_cmd.groups)
 device_query.add_command(device_query_cmd.quiescent)
 device_query.add_command(device_query_cmd.status)

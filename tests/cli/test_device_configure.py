@@ -8,7 +8,7 @@ from DALI.system.constants import DaliMax
 
 @pytest.mark.parametrize(
     "command,opcode",
-    [("start", 0x1D), ("stop", 0x1E)],
+    [("start", 0x1D), ("stop", 0x1E), ("reset", 0x10)],
 )
 def test_simple_device_configure_command(command, opcode):
     runner = CliRunner()

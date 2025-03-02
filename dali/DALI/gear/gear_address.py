@@ -6,7 +6,7 @@ from ..system.constants import DaliAddressingMode, DaliMax
 
 
 @typechecked
-class DaliAddressByte:
+class GearAddress:
     """Class for control gear addressing."""
 
     def __init__(self, dapc: bool = False) -> None:

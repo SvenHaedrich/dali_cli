@@ -72,6 +72,7 @@ bit : description
 ## Supported Hardware
 
 * Lunatone 241 389 23DO
+* Lunatone 241 389 23-30
 * BEGA 71024
 * [Serial based SevenLab Hardware](https://github.com/SvenHaedrich/dali_usb_lpc1114)
 
@@ -93,5 +94,6 @@ cd dali_cli
 git submodule update --init
 python3 -m venv --prompt dali .venv
 source .venv/bin/activate
+python3 -m pip install -e .
 ```
 

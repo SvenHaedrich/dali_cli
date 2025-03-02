@@ -3,7 +3,7 @@
 import click
 
 from ..system.constants import DaliMax
-from .gear_action import gear_send_forward_frame, set_dtr0
+from .gear_action import gear_send_forward_frame, set_gear_dtr0
 from .gear_opcode import GearConfigureCommandOpcode
 
 gear_address_option = click.option(
@@ -36,7 +36,7 @@ def actual(dali, adr):
 @gear_address_option
 @click.argument("mode", type=click.INT)
 def op(dali, adr, mode):
-    set_dtr0(dali, mode, "MODE")
+    set_gear_dtr0(dali, mode, "MODE")
     gear_send_forward_frame(
         dali, adr, GearConfigureCommandOpcode.SET_OPERATION_MODE, True
     )
@@ -47,7 +47,7 @@ def op(dali, adr, mode):
 @gear_address_option
 @click.argument("bank", type=click.INT)
 def reset_mem(dali, adr, bank):
-    set_dtr0(dali, bank, "BANK")
+    set_gear_dtr0(dali, bank, "BANK")
     gear_send_forward_frame(
         dali, adr, GearConfigureCommandOpcode.RESET_MEMORY_BANK, True
     )
@@ -65,7 +65,7 @@ def identify(dali, adr):
 @gear_address_option
 @click.argument("level", type=click.INT)
 def max_level(dali, adr, level):
-    set_dtr0(dali, level, "LEVEL")
+    set_gear_dtr0(dali, level, "LEVEL")
     gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_MAX_LEVEL, True)
 
 
@@ -74,7 +74,7 @@ def max_level(dali, adr, level):
 @gear_address_option
 @click.argument("level", type=click.INT)
 def min_level(dali, adr, level):
-    set_dtr0(dali, level, "LEVEL")
+    set_gear_dtr0(dali, level, "LEVEL")
     gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_MIN_LEVEL, True)
 
 
@@ -83,7 +83,7 @@ def min_level(dali, adr, level):
 @gear_address_option
 @click.argument("level", type=click.INT)
 def fail(dali, adr, level):
-    set_dtr0(dali, level, "LEVEL")
+    set_gear_dtr0(dali, level, "LEVEL")
     gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_FAIL_LEVEL, True)
 
 
@@ -92,7 +92,7 @@ def fail(dali, adr, level):
 @gear_address_option
 @click.argument("level", type=click.INT)
 def on(dali, adr, level):
-    set_dtr0(dali, level, "LEVEL")
+    set_gear_dtr0(dali, level, "LEVEL")
     gear_send_forward_frame(
         dali, adr, GearConfigureCommandOpcode.SET_POWER_ON_LEVEL, True
     )
@@ -103,7 +103,7 @@ def on(dali, adr, level):
 @click.pass_obj
 @click.argument("value", type=click.INT)
 def time(dali, adr, value):
-    set_dtr0(dali, value, "VALUE")
+    set_gear_dtr0(dali, value, "VALUE")
     gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_FADE_TIME, True)
 
 
@@ -112,7 +112,7 @@ def time(dali, adr, value):
 @click.pass_obj
 @click.argument("value", type=click.INT)
 def rate(dali, adr, value):
-    set_dtr0(dali, value, "VALUE")
+    set_gear_dtr0(dali, value, "VALUE")
     gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_FADE_RATE, True)
 
 
@@ -121,7 +121,7 @@ def rate(dali, adr, value):
 @click.pass_obj
 @click.argument("value", type=click.INT)
 def ext(dali, adr, value):
-    set_dtr0(dali, value, "VALUE")
+    set_gear_dtr0(dali, value, "VALUE")
     gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_EXT_FADE, True)
 
 
@@ -136,7 +136,7 @@ def ext(dali, adr, value):
 @click.pass_obj
 def scene(dali, adr, number, level):
     if 0 <= number < DaliMax.SCENE:
-        set_dtr0(dali, level, "LEVEL")
+        set_gear_dtr0(dali, level, "LEVEL")
         gear_send_forward_frame(
             dali, adr, (GearConfigureCommandOpcode.SET_SCENE + number), True
         )
@@ -198,9 +198,9 @@ def ungroup(dali, adr, group):
 def short(dali, adr, address):
     if 0 <= address < DaliMax.ADR:
         address = (address * 2) + 1
-        set_dtr0(dali, address, "ADDRESS")
+        set_gear_dtr0(dali, address, "ADDRESS")
         gear_send_forward_frame(
-            dali, adr, GearConfigureCommandOpcode.SET_SHORT_ADR, True
+            dali, adr, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True
         )
     else:
         raise click.BadParameter(
