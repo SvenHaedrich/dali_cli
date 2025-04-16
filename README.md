@@ -2,6 +2,9 @@
 
 Command line interface to control a DALI system.
 
+> [!IMPORTANT]
+> This application is still in development. Use with caution. Give ample feedback.
+
 DALI is the digital addressable lighting interface as described [here](https://www.dali-alliance.org).
 
 ## Usage
