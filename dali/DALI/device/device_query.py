@@ -5,7 +5,7 @@ import click
 from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength, DaliMax
 from .device_action import query_device_value, query_instance_value, set_device_dtr0
-from .device_address import DeviceAddress, InstanceAddress
+from .device_address import DeviceAddress
 from .device_opcode import (
     DeviceInstanceQueryOpcode,
     DeviceQueryCommandOpcode,
@@ -32,9 +32,7 @@ instance_address_option = click.option(
 @click.pass_obj
 @device_address_option
 def status(dali: DaliInterface, adr):
-    result = query_device_value(
-        dali, adr, DeviceQueryCommandOpcode.QUERY_STATUS
-    )
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_STATUS)
     if result is not None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
         click.echo("bit : description")

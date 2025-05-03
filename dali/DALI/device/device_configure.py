@@ -76,16 +76,16 @@ def reset(dali: DaliInterface, adr: str):
 @instance_address_option
 def scheme(dali: DaliInterface, adr: str, instance: str, mode):
     address = DeviceAddress(adr)
-    instance = InstanceAddress(instance)
+    instance_object = InstanceAddress(instance)
     if mode < 0 or mode > 4:
         click.echo("invalid scheme")
         return
-    if address.isvalid() and instance.isvalid():
+    if address.isvalid() and instance_object.isvalid():
         set_device_dtr0(dali, mode)
         write_device_frame(
             dali,
             address.byte,
-            instance.byte,
+            instance_object.byte,
             DeviceInstanceConfigureOpcode.SET_EVENT_SCHEME,
             True,
         )
@@ -98,16 +98,16 @@ def scheme(dali: DaliInterface, adr: str, instance: str, mode):
 @instance_address_option
 def primary(dali: DaliInterface, adr: str, instance: str, group):
     address = DeviceAddress(adr)
-    instance = InstanceAddress(instance)
+    instance_object = InstanceAddress(instance)
     if group < 0 or group > DaliMax.INSTANCE_GROUP:
         click.echo("invalid group")
         return
-    if address.isvalid() and instance.isvalid():
+    if address.isvalid() and instance_object.isvalid():
         set_device_dtr0(dali, group)
         write_device_frame(
             dali,
             address.byte,
-            instance.byte,
+            instance_object.byte,
             DeviceInstanceConfigureOpcode.SET_PRIMARY_INSTANCE_GROUP,
             True,
         )

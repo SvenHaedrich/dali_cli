@@ -56,7 +56,7 @@ def test_query_device_command(command, opcode):
         ("istatus", 0x83),
         ("primary", 0x88),
         ("resolution", 0x81),
-        ("scheme", 0x8B)
+        ("scheme", 0x8B),
     ],
 )
 def test_query_device_instance_command(command, opcode):

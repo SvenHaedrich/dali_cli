@@ -120,7 +120,8 @@ def test_instance_device_configure_command(command, opcode, argument):
     # test instance number
     for instance in range(DaliMax.INSTANCE_NUMBER):
         result = runner.invoke(
-            cli, ["--mock", "device", command, str(argument), "--instance", str(instance)]
+            cli,
+            ["--mock", "device", command, str(argument), "--instance", str(instance)],
         )
         instance_byte = instance << 8
         expect = 0xFF0000 + instance_byte + opcode
