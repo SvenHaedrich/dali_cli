@@ -6,7 +6,7 @@ from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .device_action import set_device_dtr0, set_device_dtr2_dtr1, write_device_frame
 from .device_address import DeviceAddress, InstanceAddress
-from .device_opcode import DeviceConfigureCommandOpcode
+from .device_opcode import DeviceConfigureCommandOpcode, DeviceInstanceConfigureOpcode
 
 device_address_option = click.option(
     "--adr",
@@ -14,6 +14,11 @@ device_address_option = click.option(
     help="Address, can be short address (0..63), group address (G0..G15), broadcast BC, or unaddressed BCU",
 )
 
+instance_address_option = click.option(
+    "--instance",
+    default="BC",
+    help="Instance address, can be instance number (0..31), group (G0..G31), type (T0..T31), or broadcast BC",
+)
 
 @click.command(name="start", help="Start quiescent mode.")
 @click.pass_obj
@@ -63,27 +68,70 @@ def reset(dali: DaliInterface, adr: str):
         )
 
 
+@click.command(name="scheme", help="Set eventScheme.")
+@click.pass_obj
+@click.argument("scheme", type=click.INT)
+@device_address_option
+@instance_address_option
+def scheme(dali: DaliInterface, adr: str, instance: str, scheme):
+    address = DeviceAddress(adr)
+    instance = InstanceAddress(instance)
+    if scheme < 0 or scheme > 4:
+        click.echo(f"invalid scheme")
+        return
+    if address.isvalid() and instance.isvalid():
+        set_device_dtr0(dali, scheme)
+        write_device_frame(
+            dali,
+            address.byte,
+            instance.byte,
+            DeviceInstanceConfigureOpcode.SET_EVENT_SCHEME,
+            True,
+        )
+
+
+@click.command(name="primary", help="Set primary instance group.")
+@click.pass_obj
+@click.argument("group", type=click.INT)
+@device_address_option
+@instance_address_option
+def primary(dali: DaliInterface, adr: str, instance: str, group):
+    address = DeviceAddress(adr)
+    instance = InstanceAddress(instance)
+    if group < 0 or group > DaliMax.INSTANCE_GROUP:
+        click.echo(f"invalid group")
+        return
+    if address.isvalid() and instance.isvalid():
+        set_device_dtr0(dali, group)
+        write_device_frame(
+            dali,
+            address.byte,
+            instance.byte,
+            DeviceInstanceConfigureOpcode.SET_PRIMARY_INSTANCE_GROUP,
+            True,
+        )
+
+
 @click.command(name="short", help="Set short address to ADDRESS.")
 @click.pass_obj
 @device_address_option
 @click.argument("address", type=click.INT)
 def short(dali, adr, address):
     if 0 <= address < DaliMax.ADR:
-        address = (address * 2) + 1
-    elif address != 255:
+        addressing = DeviceAddress(adr)
+        instance = InstanceAddress()
+        set_device_dtr0(dali, address)
+        write_device_frame(
+            dali,
+            addressing.byte,
+            instance.byte,
+            DeviceConfigureCommandOpcode.SET_SHORT_ADDRESS,
+            True,
+        )
+    else:
         raise click.BadParameter(
             f"needs to be between 0 and {DaliMax.ADR-1}", param_hint="ADDRESS"
         )
-    addressing = DeviceAddress(adr)
-    instance = InstanceAddress()
-    set_device_dtr0(dali, address)
-    write_device_frame(
-        dali,
-        addressing.byte,
-        instance.byte,
-        DeviceConfigureCommandOpcode.SET_SHORT_ADDRESS,
-        True,
-    )
 
 
 @click.command(name="add", help="Add to group.")

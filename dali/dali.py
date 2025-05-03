@@ -21,7 +21,7 @@ from DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")
-@click.version_option("0.2.3")
+@click.version_option("0.2.4")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -199,6 +199,8 @@ device.add_command(device_configure_cmd.stop)
 device.add_command(device_configure_cmd.reset)
 device.add_command(device_configure_cmd.ungroup)
 device.add_command(device_configure_cmd.short)
+device.add_command(device_configure_cmd.scheme)
+device.add_command(device_configure_cmd.primary)
 device.add_command(device_enumerate_cmd.device_enumerate)
 
 
@@ -220,3 +222,10 @@ device_query.add_command(device_query_cmd.short)
 device_query.add_command(device_query_cmd.version)
 device_query.add_command(device_query_cmd.random)
 device_query.add_command(device_query_cmd.reset)
+device_query.add_command(device_query_cmd.scheme)
+device_query.add_command(device_query_cmd.type)
+device_query.add_command(device_query_cmd.resolution)
+device_query.add_command(device_query_cmd.error)
+device_query.add_command(device_query_cmd.istatus)
+device_query.add_command(device_query_cmd.enabled)
+device_query.add_command(device_query_cmd.primary)
