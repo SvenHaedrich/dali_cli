@@ -21,7 +21,7 @@ from DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")
-@click.version_option("0.2.4")
+@click.version_option("0.2.5")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
