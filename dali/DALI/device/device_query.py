@@ -4,7 +4,7 @@ import click
 
 from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength, DaliMax
-from .device_action import query_device_value, set_device_dtr0, query_instance_value
+from .device_action import query_device_value, query_instance_value, set_device_dtr0
 from .device_address import DeviceAddress, InstanceAddress
 from .device_opcode import (
     DeviceInstanceQueryOpcode,
@@ -33,7 +33,7 @@ instance_address_option = click.option(
 @device_address_option
 def status(dali: DaliInterface, adr):
     result = query_device_value(
-        dali, adr, "DEVICE", DeviceQueryCommandOpcode.QUERY_STATUS
+        dali, adr, DeviceQueryCommandOpcode.QUERY_STATUS
     )
     if result is not None:
         click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
@@ -286,7 +286,7 @@ def scheme(dali: DaliInterface, adr: str, instance: str):
 @click.pass_obj
 @device_address_option
 @instance_address_option
-def type(dali: DaliInterface, adr: str, instance: str):
+def itype(dali: DaliInterface, adr: str, instance: str):
     """11.9.2 QUERY INSTANCE TYPE"""
     result = query_instance_value(
         dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INSTANCE_TYPE

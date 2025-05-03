@@ -161,29 +161,23 @@ class InstanceAddress:
         """Check if instance addressing mode is valid"""
         return self.mode != InstanceAddressing.INVALID
 
-    def arg(self, text:str="") -> bool:
+    def arg(self, text: str = "") -> bool:
         """Scan instance addressing from command line parameter"""
         text = text.upper()
         if text == "BC":
             self.instance_broadcast()
-            return True
-        if text == "DEVICE":
+        elif text == "DEVICE":
             self.device()
-            return True
-        if text[0] == "G":
+        elif text[0] == "G":
             g = int(text[1:3])
             if 0 <= g <= DaliMax.INSTANCE_GROUP:
                 self.instance_group(g)
-                return True
-            return False
-        if text[0] == "T":
+        elif text[0] == "T":
             t = int(text[1:3])
             if 0 <= t <= DaliMax.INSTANCE_TYPES:
-                self.instance_type(g)
-                return True
-            return False
-        s = int(text)
-        if 0 <= s < DaliMax.INSTANCE_NUMBER:
-            self.instance_number(s)
-            return True
-        return False
+                self.instance_type(t)
+        else:
+            s = int(text)
+            if 0 <= s < DaliMax.INSTANCE_NUMBER:
+                self.instance_number(s)
+        return self.isvalid()

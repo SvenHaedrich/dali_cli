@@ -20,6 +20,7 @@ instance_address_option = click.option(
     help="Instance address, can be instance number (0..31), group (G0..G31), type (T0..T31), or broadcast BC",
 )
 
+
 @click.command(name="start", help="Start quiescent mode.")
 @click.pass_obj
 @device_address_option
@@ -70,17 +71,17 @@ def reset(dali: DaliInterface, adr: str):
 
 @click.command(name="scheme", help="Set eventScheme.")
 @click.pass_obj
-@click.argument("scheme", type=click.INT)
+@click.argument("mode", type=click.INT)
 @device_address_option
 @instance_address_option
-def scheme(dali: DaliInterface, adr: str, instance: str, scheme):
+def scheme(dali: DaliInterface, adr: str, instance: str, mode):
     address = DeviceAddress(adr)
     instance = InstanceAddress(instance)
-    if scheme < 0 or scheme > 4:
-        click.echo(f"invalid scheme")
+    if mode < 0 or mode > 4:
+        click.echo("invalid scheme")
         return
     if address.isvalid() and instance.isvalid():
-        set_device_dtr0(dali, scheme)
+        set_device_dtr0(dali, mode)
         write_device_frame(
             dali,
             address.byte,
@@ -99,7 +100,7 @@ def primary(dali: DaliInterface, adr: str, instance: str, group):
     address = DeviceAddress(adr)
     instance = InstanceAddress(instance)
     if group < 0 or group > DaliMax.INSTANCE_GROUP:
-        click.echo(f"invalid group")
+        click.echo("invalid group")
         return
     if address.isvalid() and instance.isvalid():
         set_device_dtr0(dali, group)
