@@ -4,7 +4,7 @@ import click
 
 from ..dali_interface.dali_interface import DaliInterface
 from ..system.membank_annotation import MemoryBankItemWithAnnotation
-from .gear_action import query_gear_value, set_dtr0, set_dtr1
+from .gear_action import query_gear_value, set_gear_dtr0, set_gear_dtr1
 from .gear_opcode import GearQueryCommandOpcode
 
 
@@ -17,8 +17,8 @@ from .gear_opcode import GearQueryCommandOpcode
     help="Address, can be a short address (0..63) or group address (G0..G15).",
 )
 def dump(dali: DaliInterface, adr, bank):
-    set_dtr1(dali, bank, "BANK")
-    set_dtr0(dali, 0, "LOCATION")
+    set_gear_dtr1(dali, bank, "BANK")
+    set_gear_dtr0(dali, 0, "LOCATION")
     last_accessible_location = query_gear_value(
         dali, adr, GearQueryCommandOpcode.READ_MEMORY
     )

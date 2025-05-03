@@ -4,14 +4,14 @@ import click
 
 from ..dali_interface.dali_interface import DaliFrame, DaliInterface, DaliStatus
 from ..system.constants import DaliFrameLength, DaliMax
-from .gear_address import DaliAddressByte
+from .gear_address import GearAddress
 from .gear_opcode import GearQueryCommandOpcode
 
 
 @click.command(name="list", help="List available short addresses.")
 @click.pass_obj
 def gear_list(context: DaliInterface) -> None:
-    address = DaliAddressByte()
+    address = GearAddress()
     address.broadcast()
     command = address.byte << 8 | GearQueryCommandOpcode.GEAR_PRESENT
     with context as dali:

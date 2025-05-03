@@ -33,7 +33,7 @@ class GearConfigureCommandOpcode(IntEnum):
     REMOVE_SCENE = 0x50
     ADD_GROUP = 0x60
     REMOVE_GROUP = 0x70
-    SET_SHORT_ADR = 0x80
+    SET_SHORT_ADDRESS = 0x80
     ENABLE_WRITE = 0x81
 
 

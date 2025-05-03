@@ -7,7 +7,7 @@ from typeguard import typechecked
 
 from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength, DaliMax, DaliTimeout
-from .gear_address import DaliAddressByte
+from .gear_address import GearAddress
 from .gear_opcode import GearSpecialCommandOpcode
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ def gear_send_forward_frame(
     dali: DaliInterface, adr_parameter: str, opcode: int, send_twice: bool = False
 ):
     logger.debug("gear_send_forward_frame")
-    address = DaliAddressByte()
+    address = GearAddress()
     if address.arg(adr_parameter):
         command = address.byte << 8 | opcode
         dali.transmit(
@@ -33,7 +33,7 @@ def query_gear_value(
     dali: DaliInterface, adr_parameter: str, opcode: int
 ) -> int | None:
     logger.debug("gear_query_value")
-    address = DaliAddressByte()
+    address = GearAddress()
     if address.arg(adr_parameter):
         command = address.byte << 8 | opcode
         reply = dali.query_reply(DaliFrame(length=DaliFrameLength.GEAR, data=command))
@@ -49,7 +49,7 @@ def query_gear_and_display_reply(
     dali: DaliInterface, adr_parameter: str, opcode: int
 ) -> None:
     logger.debug("gear_query_and_display_reply")
-    address = DaliAddressByte()
+    address = GearAddress()
     address.arg(adr_parameter)
     command = address.byte << 8 | opcode
     reply = dali.query_reply(DaliFrame(length=DaliFrameLength.GEAR, data=command))
@@ -60,7 +60,9 @@ def query_gear_and_display_reply(
 
 
 @typechecked
-def set_dtr0(dali: DaliInterface, value: int, parameter_hint: str = "UNKNOWN") -> None:
+def set_gear_dtr0(
+    dali: DaliInterface, value: int, parameter_hint: str = "UNKNOWN"
+) -> None:
     logger.debug("set_dtr0")
     if 0 <= value < DaliMax.VALUE:
         command = GearSpecialCommandOpcode.DTR0 << 8 | value
@@ -72,7 +74,9 @@ def set_dtr0(dali: DaliInterface, value: int, parameter_hint: str = "UNKNOWN") -
 
 
 @typechecked
-def set_dtr1(dali: DaliInterface, value: int, parameter_hint: str = "UNKNOWN") -> None:
+def set_gear_dtr1(
+    dali: DaliInterface, value: int, parameter_hint: str = "UNKNOWN"
+) -> None:
     logger.debug("set_dtr1")
     if 0 <= value < DaliMax.VALUE:
         command = GearSpecialCommandOpcode.DTR1 << 8 | value

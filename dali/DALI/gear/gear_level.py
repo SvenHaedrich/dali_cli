@@ -5,7 +5,7 @@ import click
 from ..dali_interface.dali_interface import DaliFrame
 from ..system.constants import DaliMax
 from .gear_action import gear_send_forward_frame
-from .gear_address import DaliAddressByte
+from .gear_address import GearAddress
 from .gear_opcode import GearLevelCommandOpcode
 
 gear_address_option = click.option(
@@ -61,7 +61,7 @@ def min_level(dali, adr):
 @gear_address_option
 def dapc(dali, adr, level):
     if level in range(DaliMax.VALUE):
-        address = DaliAddressByte(dapc=True)
+        address = GearAddress(dapc=True)
         if address.arg(adr):
             command = address.byte << 8 | level
             dali.transmit(DaliFrame(length=16, data=command))
