@@ -31,7 +31,7 @@ class DeviceAddress:
             return
         if self.arg(mode):
             return
-        raise ValueError("invalid addressing mode")
+        raise ValueError("invalid device addressing mode")
 
     def short(self, address: int = 0) -> None:
         """Short addressing"""
@@ -70,7 +70,7 @@ class DeviceAddress:
         return self.mode != DeviceAddressing.INVALID
 
     def arg(self, text: str = "") -> bool:
-        """Scan from command line parameter"""
+        """Scan device address from command line parameter"""
         text = text.upper()
         if text == "BC":
             self.broadcast()
@@ -122,10 +122,12 @@ class InstanceAddressing(Enum):
 class InstanceAddress:
     """Interfaces between DALI addressing representation and command addressing format"""
 
-    def __init__(self) -> None:
+    def __init__(self, mode="DEVICE") -> None:
         self.mode = InstanceAddressing.INVALID
         self.byte = 0
-        self.device()
+        if self.arg(mode):
+            return
+        raise ValueError("invalid instance addressing mode")
 
     def instance_number(self, number: int = 0) -> None:
         """Instance number addressing"""
@@ -146,5 +148,42 @@ class InstanceAddress:
             self.mode = InstanceAddressing.INSTANCE_TYPE
 
     def device(self) -> None:
+        """Device addressing"""
         self.byte = 0xFE
         self.mode = InstanceAddressing.DEVICE
+
+    def instance_broadcast(self) -> None:
+        """Instance broadcast addressing"""
+        self.byte = 0xFF
+        self.mode = InstanceAddressing.INSTANCE_BROADCAST
+
+    def isvalid(self) -> bool:
+        """Check if instance addressing mode is valid"""
+        return self.mode != InstanceAddressing.INVALID
+
+    def arg(self, text:str="") -> bool:
+        """Scan instance addressing from command line parameter"""
+        text = text.upper()
+        if text == "BC":
+            self.instance_broadcast()
+            return True
+        if text == "DEVICE":
+            self.device()
+            return True
+        if text[0] == "G":
+            g = int(text[1:3])
+            if 0 <= g <= DaliMax.INSTANCE_GROUP:
+                self.instance_group(g)
+                return True
+            return False
+        if text[0] == "T":
+            t = int(text[1:3])
+            if 0 <= t <= DaliMax.INSTANCE_TYPES:
+                self.instance_type(g)
+                return True
+            return False
+        s = int(text)
+        if 0 <= s < DaliMax.INSTANCE_NUMBER:
+            self.instance_number(s)
+            return True
+        return False
