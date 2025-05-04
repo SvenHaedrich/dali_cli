@@ -200,7 +200,7 @@ def random(dali: DaliInterface, adr):
         )
 
 
-@click.command(name="quiescent", help="Content of DTR2.")
+@click.command(name="quiescent", help="Quiescent mode status.")
 @click.pass_obj
 @device_address_option
 def quiescent(dali: DaliInterface, adr):
@@ -252,32 +252,27 @@ def groups(dali: DaliInterface, adr):
 @device_address_option
 @instance_address_option
 def scheme(dali: DaliInterface, adr: str, instance: str):
-    address = DeviceAddress(adr)
-    instance = InstanceAddress(instance)
-    if address.isvalid() and instance.isvalid():
-        result = query_device_value(
-            dali, adr, DeviceInstanceQueryOpcode.QUERY_EVENT_SCHEME
-        )
-        if result is not None:
-            click.echo(f"event scheme {result} = 0x{result:02X} = {result:08b}b")
-            if result == 0:
-                click.echo("Instance addressing, using instance type and number.")
-            elif result == 1:
-                click.echo("Device addressing, using short address and instance type.")
-            elif result == 2:
-                click.echo(
-                    "Device and instance addressing, using short address and instance number."
-                )
-            elif result == 3:
-                click.echo(
-                    "Device group addressing, using device group and instance type."
-                )
-            elif result == 4:
-                click.echo("Instance group addressing, using instance group and type.")
-            else:
-                click.echo("Invalid event scheme.")
+    result = query_instance_value(
+        dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_EVENT_SCHEME
+    )
+    if result is not None:
+        click.echo(f"event scheme {result} = 0x{result:02X} = {result:08b}b")
+        if result == 0:
+            click.echo("Instance addressing, using instance type and number.")
+        elif result == 1:
+            click.echo("Device addressing, using short address and instance type.")
+        elif result == 2:
+            click.echo(
+                "Device and instance addressing, using short address and instance number."
+            )
+        elif result == 3:
+            click.echo("Device group addressing, using device group and instance type.")
+        elif result == 4:
+            click.echo("Instance group addressing, using instance group and type.")
         else:
-            click.echo("timeout - NO")
+            click.echo("Invalid event scheme.")
+    else:
+        click.echo("timeout - NO")
 
 
 @click.command(name="type", help="Instance type.")
