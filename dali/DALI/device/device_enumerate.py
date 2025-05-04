@@ -139,7 +139,7 @@ def finish_work(dali: DaliInterface) -> None:
     data = (
         address.byte << 16
         | instance.byte << 8
-        | DeviceConfigureCommandOpcode.START_QUIESCENT_MODE
+        | DeviceConfigureCommandOpcode.STOP_QUIESCENT_MODE
     )
     dali.transmit(
         DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True

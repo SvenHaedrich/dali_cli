@@ -51,6 +51,40 @@ class DeviceQueryCommandOpcode(IntEnum):
     QUERY_APPLICATION_CONTROLLER_ALWAYS_ACTIVE = 0x49
 
 
+class DeviceInstanceConfigureOpcode(IntEnum):
+    """Control device instance configuration instructions opcodes IEC 62386-103:2022 11.8"""
+
+    SET_PRIMARY_INSTANCE_GROUP = 0x64
+    SET_INSTANCE_GROUP_1 = 0x65
+    SET_INSTANCE_GROUP_2 = 0x66
+    SET_EVENT_SCHEME = 0x67
+    SET_EVENT_FILTER = 0x68
+
+
+class DeviceInstanceQueryOpcode(IntEnum):
+    """Control device instance query instruction opcodes IEC 62386-103:2022 11.9"""
+
+    QUERY_INSTANCE_TYPE = 0x80
+    QUERY_RESOLUTION = 0x81
+    QUERY_INSTANCE_ERROR = 0x82
+    QUERY_INSTANCE_STATUS = 0x83
+    QUERY_EVENT_PRIORITY = 0x84
+    QUERY_INSTANCE_ENABLED = 0x86
+    QUERY_PRIMARY_INSTANCE_GROUP = 0x88
+    QUERY_INSTANCE_GROUP_1 = 0x89
+    QUERY_INSTANCE_GROUP_2 = 0x8A
+    QUERY_EVENT_SCHEME = 0x8B
+    QUERY_INPUT_VALUE = 0x8C
+    QUERY_INPUT_VALUE_LATCH = 0x8D
+    QUERY_FEATURE_TYPE = 0x8E
+    QUERY_NEXT_FEATURE_TYPE = 0x8F
+    QUERY_EVENT_FILTER_0_7 = 0x90
+    QUERY_EVENT_FILTER_8_15 = 0x91
+    QUERY_EVENT_FILTER_16_23 = 0x92
+    QUERY_INSTANCE_CONFIGURATION = 0x93
+    QUERY_AVAILABLE_INSTANCE_TYPES = 0x94
+
+
 class DeviceSpecialCommandOpcode(IntEnum):
     """Control device special command opcodes IEC 62386-103:2022 11.10"""
 

@@ -14,22 +14,29 @@ logger = logging.getLogger(__name__)
 
 
 @typechecked
+def query_instance_value(
+    dali: DaliInterface, adr_parameter: str, instance_parameter: str, opcode: int
+) -> int | None:
+    """Query a value from a control device instance"""
+    address = DeviceAddress(adr_parameter)
+    instance = InstanceAddress(instance_parameter)
+    if not instance.isvalid():
+        raise click.BadOptionUsage("instance", "invalid instance option.")
+    if not address.isvalid():
+        raise click.BadOptionUsage("adr", "invalid address option.")
+    command = (address.byte << 16) | (instance.byte << 8) | opcode
+    reply = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=command))
+    if reply.length == DaliFrameLength.BACKWARD:
+        return reply.data
+    return None
+
+
+@typechecked
 def query_device_value(
     dali: DaliInterface, adr_parameter: str, opcode: int
 ) -> int | None:
     """Query a value from a control device"""
-    logger.debug("query_device_value")
-    address = DeviceAddress(adr_parameter)
-    instance = InstanceAddress()
-    instance.device()
-    if address.isvalid():
-        command = (address.byte << 16) | (instance.byte << 8) | opcode
-        reply = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=command))
-        if reply.length == DaliFrameLength.BACKWARD:
-            return reply.data
-    else:
-        raise click.BadOptionUsage("adr", "invalid address option.")
-    return None
+    return query_instance_value(dali, adr_parameter, "DEVICE", opcode)
 
 
 @typechecked
