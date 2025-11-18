@@ -3,10 +3,10 @@
 from contextlib import contextmanager
 
 import click
-from DALI.dali_interface.dali_interface import DaliFrame, DaliInterface
-from DALI.dali_interface.hid import DaliUsb
-from DALI.dali_interface.mock import DaliMock
-from DALI.dali_interface.serial import DaliSerial
+from ..dali_interface.dali_interface import DaliFrame, DaliInterface
+from ..dali_interface.hid import DaliUsb
+from ..dali_interface.mock import DaliMock
+from ..dali_interface.serial import DaliSerial
 
 
 class DaliNone(DaliInterface):

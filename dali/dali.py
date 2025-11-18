@@ -3,21 +3,21 @@
 import logging
 
 import click
-from DALI.device import device_configure as device_configure_cmd
-from DALI.device import device_dump as device_dump_cmd
-from DALI.device import device_enumerate as device_enumerate_cmd
-from DALI.device import device_query as device_query_cmd
-from DALI.device import device_special as device_special_cmd
-from DALI.gear import gear_clear as gear_clear_cmd
-from DALI.gear import gear_configure as gear_conf_cmd
-from DALI.gear import gear_dump as gear_dump_cmd
-from DALI.gear import gear_enumerate as gear_enumerate_cmd
-from DALI.gear import gear_level as level_cmd
-from DALI.gear import gear_list as gear_list_cmd
-from DALI.gear import gear_query as gear_query_cmd
-from DALI.gear import gear_special as gear_special_cmd
-from DALI.gear import gear_summary as gear_summary_cmd
-from DALI.system.connection import dali_connection
+from .DALI.device import device_configure as device_configure_cmd
+from .DALI.device import device_dump as device_dump_cmd
+from .DALI.device import device_enumerate as device_enumerate_cmd
+from .DALI.device import device_query as device_query_cmd
+from .DALI.device import device_special as device_special_cmd
+from .DALI.gear import gear_clear as gear_clear_cmd
+from .DALI.gear import gear_configure as gear_conf_cmd
+from .DALI.gear import gear_dump as gear_dump_cmd
+from .DALI.gear import gear_enumerate as gear_enumerate_cmd
+from .DALI.gear import gear_level as level_cmd
+from .DALI.gear import gear_list as gear_list_cmd
+from .DALI.gear import gear_query as gear_query_cmd
+from .DALI.gear import gear_special as gear_special_cmd
+from .DALI.gear import gear_summary as gear_summary_cmd
+from .DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")

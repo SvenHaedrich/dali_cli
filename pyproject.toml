@@ -14,8 +14,8 @@ dependencies = [
 ]
 
 [project.scripts]
-dali = "dali:cli"
+dali = "dali.dali:cli"
 
 [tool.setuptools.packages.find]
-where = ["dali"]
-exclude = ["tests"]
+where = ["."]
+include = ["dali*"]
