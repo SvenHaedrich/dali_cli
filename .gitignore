@@ -1,4 +1,5 @@
 .venv/
+.zed/
 venv/
 *.pyc
 __pycache__

@@ -19,3 +19,10 @@ dali = "dali.dali_cli:cli"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["dali*"]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+no_sections = true
