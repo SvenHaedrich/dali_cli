@@ -2,7 +2,9 @@
 
 import pytest
 from click.testing import CliRunner
-from dali import cli
+
+from dali.DALI.system.constants import DaliMax
+from dali.dali_cli import cli
 
 
 def test_version():

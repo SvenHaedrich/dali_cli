@@ -1,8 +1,8 @@
 """Control device configure commands implementation."""
 
 import click
+from dali_interface import DaliInterface
 
-from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .device_action import set_device_dtr0, set_device_dtr2_dtr1, write_device_frame
 from .device_address import DeviceAddress, InstanceAddress

@@ -1,8 +1,8 @@
 """Control gear list available short addresses."""
 
 import click
+from dali_interface import DaliFrame, DaliInterface, DaliStatus
 
-from ..dali_interface.dali_interface import DaliFrame, DaliInterface, DaliStatus
 from ..system.constants import DaliFrameLength, DaliMax
 from .gear_address import GearAddress
 from .gear_opcode import GearQueryCommandOpcode

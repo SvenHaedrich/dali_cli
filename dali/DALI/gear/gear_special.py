@@ -1,8 +1,8 @@
 """Control gear special commands implementation."""
 
 import click
+from dali_interface import DaliInterface
 
-from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .gear_action import (
     write_frame_and_show_answer,
@@ -26,7 +26,7 @@ def dtr0(ctx: DaliInterface, data):
         write_gear_frame(ctx, GearSpecialCommandOpcode.DTR0, data)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )
 
 
@@ -109,7 +109,7 @@ def program(ctx: DaliInterface, address):
         write_gear_frame(ctx, GearSpecialCommandOpcode.PROGRAM_SHORT_ADDRESS, 0xFF)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.ADR-1}.", param_hint="ADDRESS"
+            f"needs to be between 0 and {DaliMax.ADR - 1}.", param_hint="ADDRESS"
         )
 
 
@@ -123,7 +123,7 @@ def verify(ctx: DaliInterface, address):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.ADR-1}.", param_hint="ADDRESS"
+            f"needs to be between 0 and {DaliMax.ADR - 1}.", param_hint="ADDRESS"
         )
 
 
@@ -141,7 +141,7 @@ def dt(ctx: DaliInterface, devicetype):
         write_gear_frame(ctx, GearSpecialCommandOpcode.ENABLE_DEVICE_TYPE, devicetype)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DEVICETYPE"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DEVICETYPE"
         )
 
 
@@ -153,7 +153,7 @@ def dtr1(ctx: DaliInterface, data):
         write_gear_frame(ctx, GearSpecialCommandOpcode.DTR1, data)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )
 
 
@@ -165,7 +165,7 @@ def dtr2(ctx: DaliInterface, data):
         write_gear_frame(ctx, GearSpecialCommandOpcode.DTR2, data)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )
 
 
@@ -177,7 +177,7 @@ def write(ctx: DaliInterface, data):
         write_frame_and_show_answer(ctx, GearSpecialCommandOpcode.WRITE, data)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )
 
 
@@ -189,5 +189,5 @@ def noreply(ctx: DaliInterface, data):
         write_gear_frame(ctx, GearSpecialCommandOpcode.WRITE_NR, data)
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )

@@ -1,8 +1,8 @@
 """Control gear level command implementations."""
 
 import click
+from dali_interface import DaliFrame
 
-from ..dali_interface.dali_interface import DaliFrame
 from ..system.constants import DaliMax
 from .gear_action import gear_send_forward_frame
 from .gear_address import GearAddress

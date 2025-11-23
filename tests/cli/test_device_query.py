@@ -2,8 +2,9 @@
 
 import pytest
 from click.testing import CliRunner
-from dali import cli
-from DALI.system.constants import DaliMax
+
+from dali.DALI.system.constants import DaliMax
+from dali.dali_cli import cli
 
 
 @pytest.mark.parametrize(

@@ -3,6 +3,7 @@
 import logging
 
 import click
+
 from .DALI.device import device_configure as device_configure_cmd
 from .DALI.device import device_dump as device_dump_cmd
 from .DALI.device import device_enumerate as device_enumerate_cmd
@@ -54,9 +55,7 @@ from .DALI.system.connection import dali_connection
 )
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.pass_context
-def cli(
-    ctx, serial_port, hid, mock, debug, on, off
-):  # pylint: disable=locally-disabled, too-many-arguments, too-many-positional-arguments
+def cli(ctx, serial_port, hid, mock, debug, on, off):  # pylint: disable=locally-disabled, too-many-arguments, too-many-positional-arguments
     """
     Command line interface for DALI systems.
     SevenLab 2025
@@ -201,6 +200,8 @@ device.add_command(device_configure_cmd.ungroup)
 device.add_command(device_configure_cmd.short)
 device.add_command(device_configure_cmd.scheme)
 device.add_command(device_configure_cmd.primary)
+device.add_command(device_configure_cmd.application)
+device.add_command(device_configure_cmd.cycle)
 device.add_command(device_enumerate_cmd.device_enumerate)
 
 

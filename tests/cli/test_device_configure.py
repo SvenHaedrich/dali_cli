@@ -2,8 +2,9 @@
 
 import pytest
 from click.testing import CliRunner
-from dali import cli
-from DALI.system.constants import DaliMax
+
+from dali.DALI.system.constants import DaliMax
+from dali.dali_cli import cli
 
 
 def test_set_short_command():
@@ -39,7 +40,11 @@ def test_set_short_command():
 
 @pytest.mark.parametrize(
     "command,opcode",
-    [("start", 0x1D), ("stop", 0x1E), ("reset", 0x10)],
+    [
+        ("start", 0x1D),
+        ("stop", 0x1E),
+        ("reset", 0x10),
+    ],
 )
 def test_simple_device_configure_command(command, opcode):
     runner = CliRunner()
@@ -77,14 +82,14 @@ def test_instance_device_configure_command(command, opcode, argument):
     result = runner.invoke(cli, ["--mock", "device", command, str(argument)])
     expect = 0xFFFF00 + opcode
     assert result.exit_code == 0
-    assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+    assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test address broadcast unaddressed
     result = runner.invoke(
         cli, ["--mock", "device", command, str(argument), "--adr", "BCU"]
     )
     expect = 0xFDFF00 + opcode
     assert result.exit_code == 0
-    assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+    assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test address short address
     for short in range(DaliMax.ADR):
         result = runner.invoke(
@@ -92,7 +97,7 @@ def test_instance_device_configure_command(command, opcode, argument):
         )
         expect = 0x01FF00 + (short * 0x20000) + opcode
         assert result.exit_code == 0
-        assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+        assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test address group address
     for group in range(DaliMax.DEVICE_GROUP):
         result = runner.invoke(
@@ -100,7 +105,7 @@ def test_instance_device_configure_command(command, opcode, argument):
         )
         expect = 0x81FF00 + (group * 0x20000) + opcode
         assert result.exit_code == 0
-        assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+        assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test instance broadcast
     result = runner.invoke(
         cli, ["--mock", "device", command, str(argument), "--instance", "BC"]
@@ -108,7 +113,7 @@ def test_instance_device_configure_command(command, opcode, argument):
     instance_byte = 0xFF << 8
     expect = 0xFF0000 + instance_byte + opcode
     assert result.exit_code == 0
-    assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+    assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test instance device
     result = runner.invoke(
         cli, ["--mock", "device", command, str(argument), "--instance", "DEVICE"]
@@ -116,7 +121,7 @@ def test_instance_device_configure_command(command, opcode, argument):
     instance_byte = 0xFE << 8
     expect = 0xFF0000 + instance_byte + opcode
     assert result.exit_code == 0
-    assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+    assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test instance number
     for instance in range(DaliMax.INSTANCE_NUMBER):
         result = runner.invoke(
@@ -126,7 +131,7 @@ def test_instance_device_configure_command(command, opcode, argument):
         instance_byte = instance << 8
         expect = 0xFF0000 + instance_byte + opcode
         assert result.exit_code == 0
-        assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+        assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test instance groups
     for group in range(DaliMax.INSTANCE_GROUP):
         result = runner.invoke(
@@ -135,7 +140,7 @@ def test_instance_device_configure_command(command, opcode, argument):
         instance_byte = (group + 0x80) << 8
         expect = 0xFF0000 + instance_byte + opcode
         assert result.exit_code == 0
-        assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+        assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
     # test instance types
     for typ in range(DaliMax.INSTANCE_TYPES):
         result = runner.invoke(
@@ -144,7 +149,7 @@ def test_instance_device_configure_command(command, opcode, argument):
         instance_byte = (typ + 0xC0) << 8
         expect = 0xFF0000 + instance_byte + opcode
         assert result.exit_code == 0
-        assert result.output == f"S2 18 {(argument+0xC13000):X}\nS2 18+{expect:X}\n"
+        assert result.output == f"S2 18 {(argument + 0xC13000):X}\nS2 18+{expect:X}\n"
 
 
 @pytest.mark.parametrize(
@@ -194,3 +199,42 @@ def test_device_group_command(command, opcode, low, high):
             data_set = 0xC90000 + (1 << (group - low))
             data_cmd = 0x81FE00 + (group * 0x20000) + opcode
             assert result.output == f"S2 18 {data_set:X}\nS2 18+{data_cmd:X}\n"
+
+
+@pytest.mark.parametrize(
+    "command,argument,opcode",
+    [
+        ("application", "true", 0x16),
+        ("application", "false", 0x17),
+        ("cycle", "true", 0x1F),
+        ("cycle", "false", 0x20),
+    ],
+)
+def test_device_configure_command_w_argument(command, argument, opcode):
+    runner = CliRunner()
+    # test broadcast
+    result = runner.invoke(cli, ["--mock", "device", command, argument])
+    expect = 0xFFFE00 + opcode
+    assert result.exit_code == 0
+    assert result.output == f"S2 18+{expect:X}\n"
+    # test broadcast unaddressed
+    result = runner.invoke(cli, ["--mock", "device", command, argument, "--adr", "BCU"])
+    expect = 0xFDFE00 + opcode
+    assert result.exit_code == 0
+    assert result.output == f"S2 18+{expect:X}\n"
+    # test short address
+    for short in range(DaliMax.ADR):
+        result = runner.invoke(
+            cli, ["--mock", "device", command, argument, "--adr", str(short)]
+        )
+        expect = 0x01FE00 + (short * 0x20000) + opcode
+        assert result.exit_code == 0
+        assert result.output == f"S2 18+{expect:X}\n"
+    # test group address
+    for group in range(DaliMax.DEVICE_GROUP):
+        result = runner.invoke(
+            cli, ["--mock", "device", command, argument, "--adr", f"G{group}"]
+        )
+        expect = 0x81FE00 + (group * 0x20000) + opcode
+        assert result.exit_code == 0
+        assert result.output == f"S2 18+{expect:X}\n"

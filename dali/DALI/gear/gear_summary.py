@@ -1,9 +1,9 @@
 """Control gear setting summary."""
 
 import click
+from dali_interface import DaliInterface
 from typeguard import typechecked
 
-from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .gear_action import query_gear_value
 from .gear_opcode import GearQueryCommandOpcode

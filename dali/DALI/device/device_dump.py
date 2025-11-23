@@ -1,8 +1,8 @@
 """Control device dump memory bank content."""
 
 import click
+from dali_interface import DaliInterface
 
-from ..dali_interface.dali_interface import DaliInterface
 from ..system.membank_annotation import MemoryBankItemWithAnnotation
 from .device_action import query_device_value, set_device_dtr0, set_device_dtr1
 from .device_opcode import DeviceQueryCommandOpcode

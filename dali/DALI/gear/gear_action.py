@@ -3,9 +3,9 @@
 import logging
 
 import click
+from dali_interface import DaliFrame, DaliInterface
 from typeguard import typechecked
 
-from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength, DaliMax, DaliTimeout
 from .gear_address import GearAddress
 from .gear_opcode import GearSpecialCommandOpcode
@@ -54,7 +54,7 @@ def query_gear_and_display_reply(
     command = address.byte << 8 | opcode
     reply = dali.query_reply(DaliFrame(length=DaliFrameLength.GEAR, data=command))
     if reply.length == DaliFrameLength.BACKWARD:
-        click.echo(f"0x{reply.data:02X} = " f"{reply.data} = " f"{reply.data:08b}b")
+        click.echo(f"0x{reply.data:02X} = {reply.data} = {reply.data:08b}b")
     else:
         click.echo(reply.message)
 
@@ -127,6 +127,6 @@ def write_frame_and_show_answer(
     data = address_byte << 8 | opcode_byte
     reply = dali.query_reply(DaliFrame(length=DaliFrameLength.GEAR, data=data))
     if reply.length == DaliFrameLength.BACKWARD:
-        click.echo(f"{reply.data} = " f"0x{reply.data:02X} = " f"{reply.data:08b}b")
+        click.echo(f"{reply.data} = 0x{reply.data:02X} = {reply.data:08b}b")
     else:
         click.echo(reply.message)
