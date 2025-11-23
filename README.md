@@ -91,9 +91,7 @@ add `--log-level=debug` for more detailed logging.
 ```shell
 git clone git@github.com:SvenHaedrich/dali_cli.git
 cd dali_cli
-git submodule update --init
-python3 -m venv --prompt dali .venv
-source .venv/bin/activate
+python3 -m venv --prompt dali venv
+source venv/bin/activate
 python3 -m pip install -e .
 ```
-
