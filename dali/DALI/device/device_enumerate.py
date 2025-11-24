@@ -1,8 +1,8 @@
 """Control device discovery and enumerate."""
 
 import click
+from dali_interface import DaliFrame, DaliInterface
 
-from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength, DaliMax
 from .device_action import set_device_dtr0, set_device_dtr2_dtr1
 from .device_address import DeviceAddress, InstanceAddress

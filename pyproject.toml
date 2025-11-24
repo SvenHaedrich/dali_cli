@@ -4,18 +4,25 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dali"
-version = "0.2.3"
+version = "0.2.4"
 description = "Command line interface to control a DALI system"
 authors = [
-    {name = "Sven Hädrich", email="sven.haedrich@sevenlab.de"}, 
+    {name = "Sven Hädrich", email="sven.haedrich@sevenlab.de"},
 ]
 dependencies = [
-    "click", "pyserial", "pyusb", "termcolor", "typeguard",
+    "click", "dali-interface @ git+https://github.com/sevenlab-de/dali_interface.git", "pyserial", "pyusb", "termcolor", "typeguard",
 ]
 
 [project.scripts]
-dali = "dali:cli"
+dali = "dali.dali_cli:cli"
 
 [tool.setuptools.packages.find]
-where = ["dali"]
-exclude = ["tests"]
+where = ["."]
+include = ["dali*"]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+no_sections = true

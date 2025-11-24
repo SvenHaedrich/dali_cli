@@ -1,8 +1,8 @@
 """Control device query commands implementation."""
 
 import click
+from dali_interface import DaliFrame, DaliInterface
 
-from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength, DaliMax
 from .device_action import query_device_value, query_instance_value, set_device_dtr0
 from .device_address import DeviceAddress
@@ -85,7 +85,7 @@ def extended(dali: DaliInterface, x, adr):
             click.echo("timeout - NO")
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="X"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="X"
         )
 
 

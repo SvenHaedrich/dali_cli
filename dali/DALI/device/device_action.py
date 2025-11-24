@@ -3,9 +3,9 @@
 import logging
 
 import click
+from dali_interface import DaliFrame, DaliInterface
 from typeguard import typechecked
 
-from ..dali_interface.dali_interface import DaliFrame, DaliInterface
 from ..system.constants import DaliFrameLength
 from .device_address import DeviceAddress, InstanceAddress
 from .device_opcode import DeviceSpecialCommandOpcode

@@ -1,8 +1,8 @@
 """Control gear query command implementations."""
 
 import click
+from dali_interface import DaliInterface
 
-from ..dali_interface.dali_interface import DaliInterface
 from .gear_action import query_gear_and_display_reply, query_gear_value
 from .gear_opcode import GearQueryCommandOpcode
 
@@ -84,7 +84,7 @@ def version(dali: DaliInterface, adr):
     result = query_gear_value(dali, adr, GearQueryCommandOpcode.VERSION_NUMBER)
     if result is not None:
         click.echo(f"Version: {result} = 0x{result:02X} = {result:08b}b")
-        click.echo(f" equals: {(result>>2)}.{(result&0x3)}")
+        click.echo(f" equals: {(result >> 2)}.{(result & 0x3)}")
     else:
         click.echo("timeout - NO")
 
@@ -230,7 +230,7 @@ def fade(dali: DaliInterface, adr):
     result = query_gear_value(dali, adr, GearQueryCommandOpcode.FADE_TIME_RATE)
     if result is not None:
         click.echo(f"Result: {result} = 0x{result:02X} = {result:08b}b")
-        click.echo(f" fade time: {fade_time[(result >> 4) &0xF]}")
+        click.echo(f" fade time: {fade_time[(result >> 4) & 0xF]}")
         click.echo(f" fade rate: {fade_rate[(result & 0xF)]}")
     else:
         click.echo("timeout - NO")

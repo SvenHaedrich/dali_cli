@@ -1,8 +1,8 @@
 """Control device special commands implementation."""
 
 import click
+from dali_interface import DaliInterface
 
-from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .device_action import write_device_frame
 from .device_address import DeviceAddress
@@ -63,7 +63,7 @@ def dtr0(dali: DaliInterface, data):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )
 
 
@@ -80,7 +80,7 @@ def dtr1(dali: DaliInterface, data):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )
 
 
@@ -97,7 +97,7 @@ def dtr2(dali: DaliInterface, data):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE-1}.", param_hint="DATA"
+            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
         )
 
 

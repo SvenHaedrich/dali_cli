@@ -142,7 +142,7 @@ def scene(dali, adr, number, level):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.SCENE-1}", param_hint="NUMBER"
+            f"needs to be between 0 and {DaliMax.SCENE - 1}", param_hint="NUMBER"
         )
 
 
@@ -157,7 +157,7 @@ def remove(dali, adr, number):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.SCENE-1}", param_hint="NUMBER"
+            f"needs to be between 0 and {DaliMax.SCENE - 1}", param_hint="NUMBER"
         )
 
 
@@ -172,7 +172,7 @@ def add(dali, adr, group):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.GEAR_GROUP-1}", param_hint="NUMBER"
+            f"needs to be between 0 and {DaliMax.GEAR_GROUP - 1}", param_hint="NUMBER"
         )
 
 
@@ -187,7 +187,7 @@ def ungroup(dali, adr, group):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.GEAR_GROUP-1}", param_hint="NUMBER"
+            f"needs to be between 0 and {DaliMax.GEAR_GROUP - 1}", param_hint="NUMBER"
         )
 
 
@@ -204,7 +204,7 @@ def short(dali, adr, address):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.ADR-1}", param_hint="ADDRESS"
+            f"needs to be between 0 and {DaliMax.ADR - 1}", param_hint="ADDRESS"
         )
 
 

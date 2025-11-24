@@ -1,8 +1,8 @@
 """Control device configure commands implementation."""
 
 import click
+from dali_interface import DaliInterface
 
-from ..dali_interface.dali_interface import DaliInterface
 from ..system.constants import DaliMax
 from .device_action import set_device_dtr0, set_device_dtr2_dtr1, write_device_frame
 from .device_address import DeviceAddress, InstanceAddress
@@ -131,7 +131,57 @@ def short(dali, adr, address):
         )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.ADR-1}", param_hint="ADDRESS"
+            f"needs to be between 0 and {DaliMax.ADR - 1}", param_hint="ADDRESS"
+        )
+
+
+@click.command(name="application", help="enable or disable the application controller.")
+@click.pass_obj
+@device_address_option
+@click.argument("status", type=click.BOOL)
+def application(dali, adr, status):
+    addressing = DeviceAddress(adr)
+    instance = InstanceAddress()
+    if status:
+        write_device_frame(
+            dali,
+            addressing.byte,
+            instance.byte,
+            DeviceConfigureCommandOpcode.ENABLE_APPLICATION_CONTROLLER,
+            True,
+        )
+    else:
+        write_device_frame(
+            dali,
+            addressing.byte,
+            instance.byte,
+            DeviceConfigureCommandOpcode.DISABLE_APPLICATION_CONTROLLER,
+            True,
+        )
+
+
+@click.command(name="cycle", help="enable or disable power cycle notification.")
+@click.pass_obj
+@device_address_option
+@click.argument("status", type=click.BOOL)
+def cycle(dali, adr, status):
+    addressing = DeviceAddress(adr)
+    instance = InstanceAddress()
+    if status:
+        write_device_frame(
+            dali,
+            addressing.byte,
+            instance.byte,
+            DeviceConfigureCommandOpcode.ENABLE_POWER_CYCLE_NOTIFICATION,
+            True,
+        )
+    else:
+        write_device_frame(
+            dali,
+            addressing.byte,
+            instance.byte,
+            DeviceConfigureCommandOpcode.DISABLE_POWER_CYCLE_NOTIFICATION,
+            True,
         )
 
 
@@ -182,7 +232,7 @@ def add(dali: DaliInterface, adr: str, group: int):
                 )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.DEVICE_GROUP-1}", param_hint="GROUP"
+            f"needs to be between 0 and {DaliMax.DEVICE_GROUP - 1}", param_hint="GROUP"
         )
 
 
@@ -233,5 +283,5 @@ def ungroup(dali: DaliInterface, adr: str, group: int):
                 )
     else:
         raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.DEVICE_GROUP-1}", param_hint="GROUP"
+            f"needs to be between 0 and {DaliMax.DEVICE_GROUP - 1}", param_hint="GROUP"
         )

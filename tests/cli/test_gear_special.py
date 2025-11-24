@@ -2,7 +2,8 @@
 
 import pytest
 from click.testing import CliRunner
-from dali import cli
+
+from dali.dali_cli import cli
 
 
 @pytest.mark.parametrize(

@@ -1,8 +1,8 @@
 """Control gear dump memory bank contents."""
 
 import click
+from dali_interface import DaliInterface
 
-from ..dali_interface.dali_interface import DaliInterface
 from ..system.membank_annotation import MemoryBankItemWithAnnotation
 from .gear_action import query_gear_value, set_gear_dtr0, set_gear_dtr1
 from .gear_opcode import GearQueryCommandOpcode

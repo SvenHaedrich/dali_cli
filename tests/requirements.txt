@@ -1,7 +1,9 @@
-pyusb
-pytest
-termcolor
-click
 bitstring
-typeguard
+click
+dali-interface @ git+https://github.com/sevenlab-de/dali_interface.git
 pyserial
+pytest
+pyusb
+setuptools
+termcolor
+typeguard
