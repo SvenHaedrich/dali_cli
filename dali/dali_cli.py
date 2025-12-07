@@ -22,7 +22,7 @@ from .DALI.system.connection import dali_connection
 
 
 @click.group(name="dali")
-@click.version_option("0.2.5")
+@click.version_option("0.2.6")
 @click.option(
     "--serial-port",
     envvar="DALI_SERIAL_PORT",
@@ -55,7 +55,9 @@ from .DALI.system.connection import dali_connection
 )
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.pass_context
-def cli(ctx, serial_port, hid, mock, debug, on, off):  # pylint: disable=locally-disabled, too-many-arguments, too-many-positional-arguments
+def cli(
+    ctx, serial_port, hid, mock, debug, on, off
+):  # pylint: disable=locally-disabled, too-many-arguments, too-many-positional-arguments
     """
     Command line interface for DALI systems.
     SevenLab 2025

@@ -19,9 +19,7 @@ from .device_opcode import DeviceQueryCommandOpcode
 def dump(dali: DaliInterface, adr, bank):
     set_device_dtr1(dali, bank)
     set_device_dtr0(dali, 0)
-    last_accessible_location = query_device_value(
-        dali, adr, DeviceQueryCommandOpcode.READ_MEMORY
-    )
+    last_accessible_location = query_device_value(dali, adr, DeviceQueryCommandOpcode.READ_MEMORY)
     if last_accessible_location is None:
         click.echo(f"memory bank {bank} not implemented")
         return

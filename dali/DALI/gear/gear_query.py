@@ -72,9 +72,7 @@ def reset(dali: DaliInterface, adr):
 @click.pass_obj
 @gear_address_option
 def missing(dali: DaliInterface, adr):
-    query_gear_and_display_reply(
-        dali, adr, GearQueryCommandOpcode.MISSING_SHORT_ADDRESS
-    )
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.MISSING_SHORT_ADDRESS)
 
 
 @click.command(name="version", help="Version number.")

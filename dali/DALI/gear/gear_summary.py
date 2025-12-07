@@ -28,20 +28,12 @@ def gear_summary_item(dali: DaliInterface, adr: str, caption: str, opcode: int) 
 @typechecked
 def summary(dali: DaliInterface, adr: str) -> None:
     gear_summary_item(dali, adr, "Status", GearQueryCommandOpcode.STATUS)
-    gear_summary_item(
-        dali, adr, "Operation mode", GearQueryCommandOpcode.OPERATING_MODE
-    )
+    gear_summary_item(dali, adr, "Operation mode", GearQueryCommandOpcode.OPERATING_MODE)
     gear_summary_item(dali, adr, "Version", GearQueryCommandOpcode.VERSION_NUMBER)
     gear_summary_item(dali, adr, "Actual level", GearQueryCommandOpcode.ACTUAL_LEVEL)
-    gear_summary_item(
-        dali, adr, "Power on level", GearQueryCommandOpcode.POWER_ON_LEVEL
-    )
-    gear_summary_item(
-        dali, adr, "System failure level", GearQueryCommandOpcode.SYSTEM_FAILURE_LEVEL
-    )
-    gear_summary_item(
-        dali, adr, "Physical minimum", GearQueryCommandOpcode.PHYSICAL_MINIMUM
-    )
+    gear_summary_item(dali, adr, "Power on level", GearQueryCommandOpcode.POWER_ON_LEVEL)
+    gear_summary_item(dali, adr, "System failure level", GearQueryCommandOpcode.SYSTEM_FAILURE_LEVEL)
+    gear_summary_item(dali, adr, "Physical minimum", GearQueryCommandOpcode.PHYSICAL_MINIMUM)
     gear_summary_item(dali, adr, "Minimum level", GearQueryCommandOpcode.MIN_LEVEL)
     gear_summary_item(dali, adr, "Maximum level", GearQueryCommandOpcode.MAX_LEVEL)
     gear_summary_item(dali, adr, "Device type", GearQueryCommandOpcode.DEVICE_TYPE)
@@ -53,21 +45,13 @@ def summary(dali: DaliInterface, adr: str) -> None:
     random_l = query_gear_value(dali, adr, GearQueryCommandOpcode.RANDOM_ADDRESS_L)
     if (random_h is not None) and (random_m is not None) and (random_l is not None):
         random_address = random_h << 16 | random_m << 8 | random_l
-        click.echo(
-            f"Random address .....: 0x{random_address:06X} = "
-            f"{random_address:024b}b = "
-            f"{random_address}"
-        )
+        click.echo(f"Random address .....: 0x{random_address:06X} = " f"{random_address:024b}b = " f"{random_address}")
     else:
         click.echo("Random address .....: NO - timeout")
     gear_summary_item(dali, adr, "Groups 0-7", GearQueryCommandOpcode.GROUPS_0_7)
     gear_summary_item(dali, adr, "Groups 8-15", GearQueryCommandOpcode.GROUPS_8_15)
-    gear_summary_item(
-        dali, adr, "Fade time & rate", GearQueryCommandOpcode.FADE_TIME_RATE
-    )
-    gear_summary_item(
-        dali, adr, "Extended fade time", GearQueryCommandOpcode.EXTENDED_FADE_TIME
-    )
+    gear_summary_item(dali, adr, "Fade time & rate", GearQueryCommandOpcode.FADE_TIME_RATE)
+    gear_summary_item(dali, adr, "Extended fade time", GearQueryCommandOpcode.EXTENDED_FADE_TIME)
     for scene in range(DaliMax.SCENE):
         gear_summary_item(
             dali,
