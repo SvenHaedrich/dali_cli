@@ -111,12 +111,9 @@ def write_gear_frame_and_wait(
     logger.debug("write gear frame and wait for finish")
     frame = address_byte << 8 | opcode_byte
     dali.transmit(
-        DaliFrame(length=DaliFrameLength.GEAR, data=frame, send_twice=send_twice)
+        DaliFrame(length=DaliFrameLength.GEAR, data=frame, send_twice=send_twice),
+        block=True,
     )
-    dali.get(DaliTimeout.DEFAULT.value)
-    while True:
-        if dali.data == frame:
-            break
 
 
 @typechecked
