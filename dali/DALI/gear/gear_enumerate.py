@@ -3,7 +3,6 @@
 import click
 from dali_interface import DaliFrame, DaliInterface
 
-from ..device.device_opcode import DeviceSpecialCommandOpcode
 from ..system.constants import DaliFrameLength, DaliMax
 from .gear_action import set_gear_dtr0, write_gear_frame, write_gear_frame_and_wait
 from .gear_address import GearAddress
@@ -50,7 +49,7 @@ def set_search_address(dali: DaliInterface, search: int) -> None:
 
 def compare(dali: DaliInterface) -> bool:
     data = GearSpecialCommandOpcode.COMPARE << 8
-    result = dali.query_reply(DaliFrame(length=DaliFrameLength.Gear, data=data))
+    result = dali.query_reply(DaliFrame(length=DaliFrameLength.GEAR, data=data))
     return result.length == DaliFrameLength.BACKWARD
 
 
@@ -75,8 +74,8 @@ def set_short_address(dali: DaliInterface, new_short_address: int) -> bool:
         GearSpecialCommandOpcode.PROGRAM_SHORT_ADDRESS,
         ((new_short_address << 1) | 1),
     )
-    data = DeviceSpecialCommandOpcode.VERIFY_SHORT_ADDRESS << 8 + (
-        new_short_address & 0xFF
+    data = (GearSpecialCommandOpcode.VERIFY_SHORT_ADDRESS << 8) + (
+        ((new_short_address << 1) | 1) & 0xFF
     )
     result = dali.query_reply(DaliFrame(length=DaliFrameLength.GEAR, data=data))
     if result.length == DaliFrameLength.BACKWARD:
@@ -105,7 +104,7 @@ def gear_enumerate(dali: DaliInterface):
             break
         set_search_address(dali, search)
         if set_short_address(dali, next_short_address):
-            click.echo(f"assigned D{next_short_address:02}.")
+            click.echo(f"assigned G{next_short_address:02}.")
             next_short_address = next_short_address + 1
         else:
             click.echo("address search failed.")

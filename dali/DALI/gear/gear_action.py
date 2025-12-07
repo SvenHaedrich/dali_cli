@@ -6,7 +6,7 @@ import click
 from dali_interface import DaliFrame, DaliInterface
 from typeguard import typechecked
 
-from ..system.constants import DaliFrameLength, DaliMax, DaliTimeout
+from ..system.constants import DaliFrameLength, DaliMax
 from .gear_address import GearAddress
 from .gear_opcode import GearSpecialCommandOpcode
 
