@@ -130,9 +130,7 @@ def short(dali, adr, address):
             True,
         )
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.ADR - 1}", param_hint="ADDRESS"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.ADR - 1}", param_hint="ADDRESS")
 
 
 @click.command(name="application", help="enable or disable the application controller.")
@@ -231,9 +229,7 @@ def add(dali: DaliInterface, adr: str, group: int):
                     True,
                 )
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.DEVICE_GROUP - 1}", param_hint="GROUP"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.DEVICE_GROUP - 1}", param_hint="GROUP")
 
 
 @click.command(name="ungroup", help="Remove from group.")
@@ -282,6 +278,4 @@ def ungroup(dali: DaliInterface, adr: str, group: int):
                     True,
                 )
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.DEVICE_GROUP - 1}", param_hint="GROUP"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.DEVICE_GROUP - 1}", param_hint="GROUP")

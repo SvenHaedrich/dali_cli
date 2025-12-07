@@ -13,9 +13,7 @@ gear_address_option = click.option(
 )
 
 
-@click.command(
-    name="reset", help="Reset all control gear variables to their reset value."
-)
+@click.command(name="reset", help="Reset all control gear variables to their reset value.")
 @click.pass_obj
 @gear_address_option
 def reset(dali, adr):
@@ -26,9 +24,7 @@ def reset(dali, adr):
 @click.pass_obj
 @gear_address_option
 def actual(dali, adr):
-    gear_send_forward_frame(
-        dali, adr, GearConfigureCommandOpcode.STORE_ACTUAL_LEVEL, True
-    )
+    gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.STORE_ACTUAL_LEVEL, True)
 
 
 @click.command(name="op", help="Set operating mode.")
@@ -37,9 +33,7 @@ def actual(dali, adr):
 @click.argument("mode", type=click.INT)
 def op(dali, adr, mode):
     set_gear_dtr0(dali, mode, "MODE")
-    gear_send_forward_frame(
-        dali, adr, GearConfigureCommandOpcode.SET_OPERATION_MODE, True
-    )
+    gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_OPERATION_MODE, True)
 
 
 @click.command(name="reset_mem", help="Reset memory bank to reset value.")
@@ -48,9 +42,7 @@ def op(dali, adr, mode):
 @click.argument("bank", type=click.INT)
 def reset_mem(dali, adr, bank):
     set_gear_dtr0(dali, bank, "BANK")
-    gear_send_forward_frame(
-        dali, adr, GearConfigureCommandOpcode.RESET_MEMORY_BANK, True
-    )
+    gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.RESET_MEMORY_BANK, True)
 
 
 @click.command(name="id", help="Identify device.")
@@ -93,9 +85,7 @@ def fail(dali, adr, level):
 @click.argument("level", type=click.INT)
 def on(dali, adr, level):
     set_gear_dtr0(dali, level, "LEVEL")
-    gear_send_forward_frame(
-        dali, adr, GearConfigureCommandOpcode.SET_POWER_ON_LEVEL, True
-    )
+    gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_POWER_ON_LEVEL, True)
 
 
 @click.command(name="time", help="Set fade time.")
@@ -137,13 +127,9 @@ def ext(dali, adr, value):
 def scene(dali, adr, number, level):
     if 0 <= number < DaliMax.SCENE:
         set_gear_dtr0(dali, level, "LEVEL")
-        gear_send_forward_frame(
-            dali, adr, (GearConfigureCommandOpcode.SET_SCENE + number), True
-        )
+        gear_send_forward_frame(dali, adr, (GearConfigureCommandOpcode.SET_SCENE + number), True)
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.SCENE - 1}", param_hint="NUMBER"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.SCENE - 1}", param_hint="NUMBER")
 
 
 @click.command(name="remove", help="Remove from scene.")
@@ -152,13 +138,9 @@ def scene(dali, adr, number, level):
 @click.argument("number", type=click.INT)
 def remove(dali, adr, number):
     if 0 <= number < DaliMax.SCENE:
-        gear_send_forward_frame(
-            dali, adr, (GearConfigureCommandOpcode.REMOVE_SCENE + number), True
-        )
+        gear_send_forward_frame(dali, adr, (GearConfigureCommandOpcode.REMOVE_SCENE + number), True)
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.SCENE - 1}", param_hint="NUMBER"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.SCENE - 1}", param_hint="NUMBER")
 
 
 @click.command(name="add", help="Add to group.")
@@ -167,13 +149,9 @@ def remove(dali, adr, number):
 @click.argument("group", type=click.INT)
 def add(dali, adr, group):
     if 0 <= group < DaliMax.GEAR_GROUP:
-        gear_send_forward_frame(
-            dali, adr, (GearConfigureCommandOpcode.ADD_GROUP + group), True
-        )
+        gear_send_forward_frame(dali, adr, (GearConfigureCommandOpcode.ADD_GROUP + group), True)
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.GEAR_GROUP - 1}", param_hint="NUMBER"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.GEAR_GROUP - 1}", param_hint="NUMBER")
 
 
 @click.command(name="ungroup", help="Remove from group.")
@@ -182,13 +160,9 @@ def add(dali, adr, group):
 @click.argument("group", type=click.INT)
 def ungroup(dali, adr, group):
     if 0 <= group < DaliMax.GEAR_GROUP:
-        gear_send_forward_frame(
-            dali, adr, (GearConfigureCommandOpcode.REMOVE_GROUP + group), True
-        )
+        gear_send_forward_frame(dali, adr, (GearConfigureCommandOpcode.REMOVE_GROUP + group), True)
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.GEAR_GROUP - 1}", param_hint="NUMBER"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.GEAR_GROUP - 1}", param_hint="NUMBER")
 
 
 @click.command(name="short", help="Set short address to ADDRESS.")
@@ -199,13 +173,9 @@ def short(dali, adr, address):
     if 0 <= address < DaliMax.ADR:
         address = (address * 2) + 1
         set_gear_dtr0(dali, address, "ADDRESS")
-        gear_send_forward_frame(
-            dali, adr, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True
-        )
+        gear_send_forward_frame(dali, adr, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True)
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.ADR - 1}", param_hint="ADDRESS"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.ADR - 1}", param_hint="ADDRESS")
 
 
 @click.command(name="enable", help="Enable write access.")

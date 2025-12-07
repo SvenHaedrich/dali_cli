@@ -9,9 +9,7 @@ from .device_address import DeviceAddress
 from .device_opcode import DeviceSpecialCommandOpcode
 
 
-@click.command(
-    name="init", help="Enable initialisation mode. Argument device=(ALL|UN|0..63)"
-)
+@click.command(name="init", help="Enable initialisation mode. Argument device=(ALL|UN|0..63)")
 @click.pass_obj
 @click.argument("device", type=click.STRING)
 def init(dali: DaliInterface, device):
@@ -33,9 +31,7 @@ def init(dali: DaliInterface, device):
             True,
         )
     except ValueError as error:
-        raise click.BadParameter(
-            "use ALL, UN or valid short address", param_hint="DEVICE"
-        ) from error
+        raise click.BadParameter("use ALL, UN or valid short address", param_hint="DEVICE") from error
 
 
 @click.command(name="rand", help="Generate new randomAddress.")
@@ -62,9 +58,7 @@ def dtr0(dali: DaliInterface, data):
             data,
         )
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA")
 
 
 @click.command(name="dtr1", help="Set data transfer register 1.")
@@ -79,9 +73,7 @@ def dtr1(dali: DaliInterface, data):
             data,
         )
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA")
 
 
 @click.command(name="dtr2", help="Set data transfer register 2.")
@@ -96,9 +88,7 @@ def dtr2(dali: DaliInterface, data):
             data,
         )
     else:
-        raise click.BadParameter(
-            f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA"
-        )
+        raise click.BadParameter(f"needs to be between 0 and {DaliMax.VALUE - 1}.", param_hint="DATA")
 
 
 @click.command(name="testframe", help="Send a test frame.")
@@ -108,9 +98,7 @@ def dtr2(dali: DaliInterface, data):
 @click.argument("gear", type=click.BOOL, default=False)
 def testframe(dali: DaliInterface, priority, repeat, gear):
     if not 0 < priority <= DaliMax.PRIORITY:
-        raise click.BadParameter(
-            f"needs to be between 1 and {DaliMax.PRIORITY}.", param_hint="PRIORITY"
-        )
+        raise click.BadParameter(f"needs to be between 1 and {DaliMax.PRIORITY}.", param_hint="PRIORITY")
     if not 0 <= repeat <= 3:
         raise click.BadParameter("needs to be between 0 and 3.", param_hint="REPEAT")
     data = priority | repeat << 3

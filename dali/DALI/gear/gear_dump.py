@@ -19,9 +19,7 @@ from .gear_opcode import GearQueryCommandOpcode
 def dump(dali: DaliInterface, adr, bank):
     set_gear_dtr1(dali, bank, "BANK")
     set_gear_dtr0(dali, 0, "LOCATION")
-    last_accessible_location = query_gear_value(
-        dali, adr, GearQueryCommandOpcode.READ_MEMORY
-    )
+    last_accessible_location = query_gear_value(dali, adr, GearQueryCommandOpcode.READ_MEMORY)
     if last_accessible_location is None:
         click.echo(f"memory bank {bank} not implemented")
         return

@@ -156,9 +156,7 @@ class MemoryBankItemWithAnnotation:
         elif bank != 0 and location == 2:
             annotation = "memory lock byte (0x55 = write-enabled)"
         else:
-            annotation = MemoryBankItemWithAnnotation.annotations.get(
-                (bank, location), " "
-            )
+            annotation = MemoryBankItemWithAnnotation.annotations.get((bank, location), " ")
         if value is None:
             click.echo(f"0x{location:02X} : NO - timeout {annotation}")
         else:
@@ -166,6 +164,4 @@ class MemoryBankItemWithAnnotation:
                 ascii_presentation = chr(value)
             else:
                 ascii_presentation = chr(0x20)
-            click.echo(
-                f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii_presentation}´ {annotation}"
-            )
+            click.echo(f"0x{location:02X} : 0x{value:02X} = {value:3} = ´{ascii_presentation}´ {annotation}")
