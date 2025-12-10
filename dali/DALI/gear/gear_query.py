@@ -3,6 +3,8 @@
 import click
 from dali_interface import DaliInterface
 
+from dali.DALI.device.device_query import device_address_option
+
 from .gear_action import query_gear_and_display_reply, query_gear_value
 from .gear_opcode import GearQueryCommandOpcode
 
@@ -72,9 +74,7 @@ def reset(dali: DaliInterface, adr):
 @click.pass_obj
 @gear_address_option
 def missing(dali: DaliInterface, adr):
-    query_gear_and_display_reply(
-        dali, adr, GearQueryCommandOpcode.MISSING_SHORT_ADDRESS
-    )
+    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.MISSING_SHORT_ADDRESS)
 
 
 @click.command(name="version", help="Version number.")
@@ -234,3 +234,19 @@ def fade(dali: DaliInterface, adr):
         click.echo(f" fade rate: {fade_rate[(result & 0xF)]}")
     else:
         click.echo("timeout - NO")
+
+
+@click.command(name="groups", help="Gear group settings.")
+@click.pass_obj
+@device_address_option
+def groups(dali: DaliInterface, adr):
+    result = query_gear_value(dali, adr, GearQueryCommandOpcode.GROUPS_0_7)
+    if result is None:
+        click.echo("timeout - NO")
+        return
+    click.echo(f"groups 0- 7: {result:3} = 0x{result:02X} = {result:08b}b")
+    result = query_gear_value(dali, adr, GearQueryCommandOpcode.GROUPS_8_15)
+    if result is None:
+        click.echo("timeout - NO")
+        return
+    click.echo(f"groups 8-15: {result:3} = 0x{result:02X} = {result:08b}b")
