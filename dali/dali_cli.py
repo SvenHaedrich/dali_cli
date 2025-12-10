@@ -105,7 +105,7 @@ gear.add_command(gear_list_cmd.gear_list)
 gear.add_command(gear_dump_cmd.dump)
 gear.add_command(gear_clear_cmd.clear)
 
-# ---- configure commands
+# ---- gear configure commands
 gear.add_command(gear_conf_cmd.reset)
 gear.add_command(gear_conf_cmd.actual)
 gear.add_command(gear_conf_cmd.op)
@@ -127,7 +127,7 @@ gear.add_command(gear_conf_cmd.enable)
 gear.add_command(gear_enumerate_cmd.gear_enumerate)
 
 
-# ---- special commands
+# ---- gear special commands
 gear.add_command(gear_special_cmd.term)
 gear.add_command(gear_special_cmd.dtr0)
 gear.add_command(gear_special_cmd.init)
@@ -150,7 +150,7 @@ def gear_query():
     pass
 
 
-# ---- query commands
+# ---- gear query commands
 gear_query.add_command(gear_query_cmd.status)
 gear_query.add_command(gear_query_cmd.present)
 gear_query.add_command(gear_query_cmd.failure)
@@ -175,6 +175,7 @@ gear_query.add_command(gear_query_cmd.power_level)
 gear_query.add_command(gear_query_cmd.failure_level)
 gear_query.add_command(gear_query_cmd.fade)
 gear_query.add_command(gear_special_cmd.short)
+gear_query.add_command(gear_query_cmd.groups)
 
 
 #
