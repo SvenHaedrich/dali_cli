@@ -12,19 +12,11 @@ from .device_opcode import DeviceConfigureCommandOpcode, DeviceSpecialCommandOpc
 def prepare_bus(dali: DaliInterface) -> None:
     address = DeviceAddress("SPECIAL")
     data = address.byte << 16 | DeviceSpecialCommandOpcode.INITIALISE << 8 | 0xFF
-    dali.transmit(
-        DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
-    )
+    dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True)
     address = DeviceAddress()
     instance = InstanceAddress()
-    data = (
-        address.byte << 16
-        | instance.byte << 8
-        | DeviceConfigureCommandOpcode.START_QUIESCENT_MODE
-    )
-    dali.transmit(
-        DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
-    )
+    data = address.byte << 16 | instance.byte << 8 | DeviceConfigureCommandOpcode.START_QUIESCENT_MODE
+    dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True)
 
 
 def clear_short_addresses(dali: DaliInterface) -> None:
@@ -32,14 +24,8 @@ def clear_short_addresses(dali: DaliInterface) -> None:
     address = DeviceAddress()
     instance = InstanceAddress()
     instance.device()
-    data = (
-        address.byte << 16
-        | instance.byte << 8
-        | DeviceConfigureCommandOpcode.SET_SHORT_ADDRESS
-    )
-    dali.transmit(
-        DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
-    )
+    data = address.byte << 16 | instance.byte << 8 | DeviceConfigureCommandOpcode.SET_SHORT_ADDRESS
+    dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True)
 
 
 def remove_from_all_groups(dali: DaliInterface) -> None:
@@ -47,43 +33,27 @@ def remove_from_all_groups(dali: DaliInterface) -> None:
     address = DeviceAddress()
     instance = InstanceAddress()
     instance.device()
-    data = (
-        address.byte << 16
-        | instance.byte << 8
-        | DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_0_15
-    )
+    data = address.byte << 16 | instance.byte << 8 | DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_0_15
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True))
-    data = (
-        address.byte << 16
-        | instance.byte << 8
-        | DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_16_31
-    )
+    data = address.byte << 16 | instance.byte << 8 | DeviceConfigureCommandOpcode.REMOVE_FROM_DEVICE_GROUPS_16_31
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True))
 
 
 def request_new_random_addresses(dali: DaliInterface) -> None:
     address = DeviceAddress("SPECIAL")
     data = address.byte << 16 | DeviceSpecialCommandOpcode.RANDOMISE << 8
-    dali.transmit(
-        DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
-    )
+    dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True)
 
 
 def set_search_address(dali: DaliInterface, search: int) -> None:
     address = DeviceAddress("SPECIAL")
-    data = (
-        address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRL << 8 | search & 0xFF
-    )
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRL << 8 | search & 0xFF
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
     search = search >> 8
-    data = (
-        address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRM << 8 | search & 0xFF
-    )
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRM << 8 | search & 0xFF
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
     search = search >> 8
-    data = (
-        address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRH << 8 | search & 0xFF
-    )
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.SEARCHADDRH << 8 | search & 0xFF
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
 
 
@@ -111,17 +81,9 @@ def binary_search(dali: DaliInterface) -> int | None:
 
 def set_short_address(dali: DaliInterface, new_short_address: int) -> bool:
     address = DeviceAddress("SPECIAL")
-    data = (
-        address.byte << 16
-        | DeviceSpecialCommandOpcode.PROGRAM_SHORT_ADDRESS << 8
-        | new_short_address & 0xFF
-    )
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.PROGRAM_SHORT_ADDRESS << 8 | new_short_address & 0xFF
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
-    data = (
-        address.byte << 16
-        | DeviceSpecialCommandOpcode.VERIFY_SHORT_ADDRESS << 8
-        | new_short_address & 0xFF
-    )
+    data = address.byte << 16 | DeviceSpecialCommandOpcode.VERIFY_SHORT_ADDRESS << 8 | new_short_address & 0xFF
     result = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=data))
     if result.length == DaliFrameLength.BACKWARD:
         data = address.byte << 16 | DeviceSpecialCommandOpcode.WITHDRAW << 8
@@ -136,19 +98,11 @@ def finish_work(dali: DaliInterface) -> None:
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data), block=True)
     address = DeviceAddress()
     instance = InstanceAddress()
-    data = (
-        address.byte << 16
-        | instance.byte << 8
-        | DeviceConfigureCommandOpcode.STOP_QUIESCENT_MODE
-    )
-    dali.transmit(
-        DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True
-    )
+    data = address.byte << 16 | instance.byte << 8 | DeviceConfigureCommandOpcode.STOP_QUIESCENT_MODE
+    dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=data, send_twice=True), block=True)
 
 
-@click.command(
-    name="enum", help="Clear and re-program short addresses of all control devices."
-)
+@click.command(name="enum", help="Clear and re-program short addresses of all control devices.")
 @click.pass_obj
 def device_enumerate(dali: DaliInterface):
     prepare_bus(dali)

@@ -14,9 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @typechecked
-def query_instance_value(
-    dali: DaliInterface, adr_parameter: str, instance_parameter: str, opcode: int
-) -> int | None:
+def query_instance_value(dali: DaliInterface, adr_parameter: str, instance_parameter: str, opcode: int) -> int | None:
     """Query a value from a control device instance"""
     address = DeviceAddress(adr_parameter)
     instance = InstanceAddress(instance_parameter)
@@ -32,9 +30,7 @@ def query_instance_value(
 
 
 @typechecked
-def query_device_value(
-    dali: DaliInterface, adr_parameter: str, opcode: int
-) -> int | None:
+def query_device_value(dali: DaliInterface, adr_parameter: str, opcode: int) -> int | None:
     """Query a value from a control device"""
     return query_instance_value(dali, adr_parameter, "DEVICE", opcode)
 

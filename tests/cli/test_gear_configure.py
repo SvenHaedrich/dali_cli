@@ -69,17 +69,13 @@ def test_set_dtr_to_configure(command, opcode):
     assert result.output == f"S2 10 A300\nS2 10+{expect:X}\n"
     # test short address
     for short in range(64):
-        result = runner.invoke(
-            cli, ["--mock", "gear", command, "0", "--adr", str(short)]
-        )
+        result = runner.invoke(cli, ["--mock", "gear", command, "0", "--adr", str(short)])
         expect = 0x0100 + (short * 0x200) + opcode
         assert result.exit_code == 0
         assert result.output == f"S2 10 A300\nS2 10+{expect:X}\n"
     # test group address
     for group in range(16):
-        result = runner.invoke(
-            cli, ["--mock", "gear", command, "0", "--adr", f"G{group}"]
-        )
+        result = runner.invoke(cli, ["--mock", "gear", command, "0", "--adr", f"G{group}"])
         expect = 0x8100 + (group * 0x200) + opcode
         assert result.exit_code == 0
 
@@ -100,17 +96,13 @@ def test_set_short_address():
     assert result.output == f"S2 10 A301\nS2 10+{expect:X}\n"
     # test short address
     for short in range(64):
-        result = runner.invoke(
-            cli, ["--mock", "gear", "short", "0", "--adr", str(short)]
-        )
+        result = runner.invoke(cli, ["--mock", "gear", "short", "0", "--adr", str(short)])
         expect = 0x0180 + (short * 0x200)
         assert result.exit_code == 0
         assert result.output == f"S2 10 A301\nS2 10+{expect:X}\n"
     # test group address
     for group in range(16):
-        result = runner.invoke(
-            cli, ["--mock", "gear", "short", "0", "--adr", f"G{group}"]
-        )
+        result = runner.invoke(cli, ["--mock", "gear", "short", "0", "--adr", f"G{group}"])
         expect = 0x8180 + (group * 0x200)
         assert result.exit_code == 0
         assert result.output == f"S2 10 A301\nS2 10+{expect:X}\n"
