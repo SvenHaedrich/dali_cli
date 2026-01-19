@@ -1,9 +1,8 @@
 """Control gear query command implementations."""
 
 import click
-from dali_interface import DaliInterface
-
 from dali.DALI.device.device_query import device_address_option
+from dali_interface import DaliInterface
 
 from .gear_action import query_gear_and_display_reply, query_gear_value
 from .gear_opcode import GearQueryCommandOpcode

@@ -11,18 +11,20 @@ from .gear_opcode import GearConfigureCommandOpcode, GearSpecialCommandOpcode
 
 def prepare_bus(dali: DaliInterface) -> None:
     # INITIALISE ALL
-    write_gear_frame_and_wait(dali, GearSpecialCommandOpcode.INITIALISE, 0, True)
+    write_gear_frame_and_wait(dali, GearSpecialCommandOpcode.INITIALISE, 0xFF, True)
 
 
 def clear_short_addresses(dali: DaliInterface) -> None:
     set_gear_dtr0(dali, 0xFF)
     address = GearAddress()
+    address.broadcast()
     write_gear_frame_and_wait(dali, address.byte, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True)
 
 
 def remove_from_all_groups(dali: DaliInterface) -> None:
     for group in range(DaliMax.GEAR_GROUP):
         address = GearAddress()
+        address.broadcast()
         write_gear_frame_and_wait(dali, address.byte, GearConfigureCommandOpcode.REMOVE_GROUP + group, True)
 
 
@@ -64,7 +66,7 @@ def set_short_address(dali: DaliInterface, new_short_address: int) -> bool:
         GearSpecialCommandOpcode.PROGRAM_SHORT_ADDRESS,
         ((new_short_address << 1) | 1),
     )
-    data = (GearSpecialCommandOpcode.VERIFY_SHORT_ADDRESS << 8) + (((new_short_address << 1) | 1) & 0xFF)
+    data = (GearSpecialCommandOpcode.VERIFY_SHORT_ADDRESS << 8) | ((new_short_address << 1) | 1)
     result = dali.query_reply(DaliFrame(length=DaliFrameLength.GEAR, data=data))
     if result.length == DaliFrameLength.BACKWARD:
         write_gear_frame(dali, GearSpecialCommandOpcode.WITHDRAW)
