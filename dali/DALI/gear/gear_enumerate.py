@@ -19,18 +19,14 @@ def clear_short_addresses(dali: DaliInterface) -> None:
     set_gear_dtr0(dali, 0xFF)
     address = GearAddress()
     address.broadcast()
-    write_gear_frame_and_wait(
-        dali, address.byte, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True
-    )
+    write_gear_frame_and_wait(dali, address.byte, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True)
 
 
 def remove_from_all_groups(dali: DaliInterface) -> None:
     for group in range(DaliMax.GEAR_GROUP):
         address = GearAddress()
         address.broadcast()
-        write_gear_frame_and_wait(
-            dali, address.byte, GearConfigureCommandOpcode.REMOVE_GROUP + group, True
-        )
+        write_gear_frame_and_wait(dali, address.byte, GearConfigureCommandOpcode.REMOVE_GROUP + group, True)
 
 
 def request_new_random_addresses(dali: DaliInterface) -> None:

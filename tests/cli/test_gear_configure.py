@@ -2,7 +2,6 @@
 
 import pytest
 from click.testing import CliRunner
-
 from dali.dali_cli import cli
 
 
