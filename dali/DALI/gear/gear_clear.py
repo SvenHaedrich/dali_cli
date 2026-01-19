@@ -20,17 +20,13 @@ def clear(dali: DaliInterface):
     set_gear_dtr0(dali, 0xFF)
     write_gear_frame_and_wait(dali, GearSpecialCommandOpcode.DTR0, opcode_byte=0xFF)
     address = "BC"
-    gear_send_forward_frame(
-        dali, address, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True
-    )
+    gear_send_forward_frame(dali, address, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, True)
     dali.get(DaliTimeout.DEFAULT.value)
     dali.get(DaliTimeout.DEFAULT.value)
     if not dali.data == dali.last_transmit:
         click.echo("transmit SET SHORT ADDRESS failed.")
     for group in range(DaliMax.GROUP):
-        gear_send_forward_frame(
-            dali, address, (GearConfigureCommandOpcode.REMOVE_GROUP + group), True
-        )
+        gear_send_forward_frame(dali, address, (GearConfigureCommandOpcode.REMOVE_GROUP + group), True)
         dali.get(DaliTimeout.DEFAULT.value)
         dali.get(DaliTimeout.DEFAULT.value)
         if not dali.data == dali.last_transmit:

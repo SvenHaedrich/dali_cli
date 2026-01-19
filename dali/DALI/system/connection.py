@@ -32,9 +32,7 @@ class DaliNone(DaliInterface):
 
 
 @contextmanager
-def dali_connection(
-    connection_type: str, serial_port: None | str = None
-):  # pylint disable=raise-missing-from
+def dali_connection(connection_type: str, serial_port: None | str = None):  # pylint disable=raise-missing-from
     try:
         if connection_type == "None":
             resource = DaliNone()

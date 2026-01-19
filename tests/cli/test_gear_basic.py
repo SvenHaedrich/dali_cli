@@ -26,9 +26,7 @@ def test_dapc_for_short_addresses():
     runner = CliRunner()
     for short in range(64):
         for level in range(0x100):
-            result = runner.invoke(
-                cli, ["--mock", "dapc", str(level), "--adr", str(short)]
-            )
+            result = runner.invoke(cli, ["--mock", "dapc", str(level), "--adr", str(short)])
             code = level + short * 0x200
             assert result.exit_code == 0
             assert result.output == f"S2 10 {code:X}\n"

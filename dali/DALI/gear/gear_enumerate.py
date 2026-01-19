@@ -3,7 +3,6 @@
 import click
 from dali_interface import DaliFrame, DaliInterface
 
-from ..device.device_opcode import DeviceSpecialCommandOpcode
 from ..system.constants import DaliFrameLength, DaliMax
 from .gear_action import set_gear_dtr0, write_gear_frame, write_gear_frame_and_wait
 from .gear_address import GearAddress
@@ -35,15 +34,9 @@ def request_new_random_addresses(dali: DaliInterface) -> None:
 
 def set_search_address(dali: DaliInterface, search: int) -> None:
     if 0 <= search < 0x1000000:
-        write_gear_frame_and_wait(
-            dali, GearSpecialCommandOpcode.SEARCHADDRH, (search >> 16) & 0xFF
-        )
-        write_gear_frame_and_wait(
-            dali, GearSpecialCommandOpcode.SEARCHADDRM, (search >> 8) & 0xFF
-        )
-        write_gear_frame_and_wait(
-            dali, GearSpecialCommandOpcode.SEARCHADDRL, search & 0xFF
-        )
+        write_gear_frame_and_wait(dali, GearSpecialCommandOpcode.SEARCHADDRH, (search >> 16) & 0xFF)
+        write_gear_frame_and_wait(dali, GearSpecialCommandOpcode.SEARCHADDRM, (search >> 8) & 0xFF)
+        write_gear_frame_and_wait(dali, GearSpecialCommandOpcode.SEARCHADDRL, search & 0xFF)
 
 
 def compare(dali: DaliInterface) -> bool:
@@ -85,9 +78,7 @@ def finish_work(dali: DaliInterface) -> None:
     write_gear_frame(dali, GearSpecialCommandOpcode.TERMINATE)
 
 
-@click.command(
-    name="enum", help="Clear and re-program short addresses of all control gears."
-)
+@click.command(name="enum", help="Clear and re-program short addresses of all control gears.")
 @click.pass_obj
 def gear_enumerate(dali: DaliInterface):
     prepare_bus(dali)
@@ -101,7 +92,7 @@ def gear_enumerate(dali: DaliInterface):
             break
         set_search_address(dali, search)
         if set_short_address(dali, next_short_address):
-            click.echo(f"assigned D{next_short_address:02}.")
+            click.echo(f"assigned G{next_short_address:02}.")
             next_short_address = next_short_address + 1
         else:
             click.echo("address search failed.")
