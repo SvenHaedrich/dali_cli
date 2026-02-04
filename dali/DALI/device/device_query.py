@@ -235,6 +235,23 @@ def scheme(dali: DaliInterface, adr: str, instance: str):
         click.echo("timeout - NO")
 
 
+@click.command(name="input", help="Input value. Read the immediate value and iterate the latched values. Present a single value.")
+@click.pass_obj
+@device_address_option
+@instance_address_option
+def input(dali: DaliInterface, adr: str, instance: str):
+    result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE)
+    value  = result
+    while result is not None:
+        result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE_LATCH)
+        if result is not None:
+            value = (value << 8) | result
+    if value is not None:
+        click.echo(f"input value {value} = 0x{value:X} = {value:b}b")
+    else:
+        click.echo("timeout - NO")
+
+
 @click.command(name="type", help="Instance type.")
 @click.pass_obj
 @device_address_option
