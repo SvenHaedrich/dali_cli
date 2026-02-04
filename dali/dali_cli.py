@@ -60,7 +60,7 @@ def cli(
 ):  # pylint: disable=locally-disabled, too-many-arguments, too-many-positional-arguments
     """
     Command line interface for DALI systems.
-    SevenLab 2025
+    SevenLab 2026
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
