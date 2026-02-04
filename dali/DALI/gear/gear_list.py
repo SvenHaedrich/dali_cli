@@ -8,7 +8,7 @@ from .gear_address import GearAddress
 from .gear_opcode import GearQueryCommandOpcode
 
 
-@click.command(name="list", help="List available short addresses.")
+@click.command(name="list", help="List used short addresses.")
 @click.pass_obj
 def gear_list(context: DaliInterface) -> None:
     address = GearAddress()
