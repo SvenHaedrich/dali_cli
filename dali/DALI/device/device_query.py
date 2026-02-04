@@ -235,6 +235,23 @@ def scheme(dali: DaliInterface, adr: str, instance: str):
         click.echo("timeout - NO")
 
 
+@click.command(name="input", help="Input value. Read the immediate value and iterate the latched values. Present a single value.")
+@click.pass_obj
+@device_address_option
+@instance_address_option
+def input(dali: DaliInterface, adr: str, instance: str):
+    result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE)
+    value  = result
+    while result is not None:
+        result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE_LATCH)
+        if result is not None:
+            value = (value << 8) | result
+    if value is not None:
+        click.echo(f"input value {value} = 0x{value:X} = {value:b}b")
+    else:
+        click.echo("timeout - NO")
+
+
 @click.command(name="type", help="Instance type.")
 @click.pass_obj
 @device_address_option
@@ -314,5 +331,81 @@ def primary(dali: DaliInterface, adr: str, instance: str):
     result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_PRIMARY_INSTANCE_GROUP)
     if result is not None:
         click.echo(f"primary group {result} = 0x{result:02X} = {result:08b}b")
+    else:
+        click.echo("timeout - NO")
+
+
+"""NOT IMPLEMENTED: IEC62386-103-2022
+11.9.8 QUERY INSTANCE GROUP 1
+11.9.9 QUERY INSTANCE GROUP 2
+"""
+
+
+@click.command(name="scheme", help="Event scheme setting.")
+@click.pass_obj
+@device_address_option
+@instance_address_option
+def scheme(dali: DaliInterface, adr: str, instance: str) -> None:
+    """IEC62386-103-2022 11.9.10 QUERY EVENT SCHEME"""
+    result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_EVENT_SCHEME)
+    if result is not None:
+        click.echo(f"event scheme {result} = 0x{result:02X} = {result:08b}b")
+        if result == 0:
+            click.echo("Instance addressing, using instance type and number.")
+        elif result == 1:
+            click.echo("Device addressing, using short address and instance type.")
+        elif result == 2:
+            click.echo("Device and instance addressing, using short address and instance number.")
+        elif result == 3:
+            click.echo("Device group addressing, using device group and instance type.")
+        elif result == 4:
+            click.echo("Instance group addressing, using instance group and type.")
+        else:
+            click.echo("Invalid event scheme.")
+    else:
+        click.echo("timeout - NO")
+
+
+@click.command(
+    name="input", help="Input value. Read the immediate value and iterate the latched values. Present a single value."
+)
+@click.pass_obj
+@device_address_option
+@instance_address_option
+def input_value(dali: DaliInterface, adr: str, instance: str) -> None:
+    """IEC62386-103-2022 11.9.11 QUERY INPUT VALUE, 11.9.12 QUERY INPUT VALUE LATCH"""
+    result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE)
+    if result is None:
+        click.echo("timeout - NO")
+    else:
+        value = result
+        while result is not None:
+            result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE_LATCH)
+            if result is not None:
+                value = (value << 8) | result
+        click.echo(f"input value {value} = 0x{value:X} = {value:b}b")
+
+
+"""NOT IMPLEMENTED: IEC62386-103-2022
+11.9.13 QUERY EVENT PRIORITY
+11.9.14 QUERY FEATURE TYPE
+11.9.15 QUERY NEXT FEATURE TYPE
+11.9.16 QUERY EVENT FILTER 0-7
+11.9.17 QUERY EVENT FILTER 8-15
+11.9.18 QUERY EVENT FILTER 16-23
+11.9.19 QUERY INSTANCE CONFIGURATION (DTR0)
+11.9.20 QUERY AVAILABLE INSTANCE TYPES
+"""
+
+
+@click.command(name="short", help="shortAddress.")
+@click.pass_obj
+def short(dali: DaliInterface) -> None:
+    """IEC62386-103-2022 11.10.12 QUERY SHORT ADDRESS"""
+    address = DeviceAddress("SPECIAL")
+    data = (address.byte << 16) | (DeviceSpecialCommandOpcode.QUERY_SHORT_ADDRESS << 8)
+    reply = dali.query_reply(DaliFrame(length=DaliFrameLength.DEVICE, data=data))
+    if reply.length == DaliFrameLength.BACKWARD:
+        click.echo(f"short address: {reply.data} = 0x{reply.data:02X} = {reply.data:08b}b")
     else:
         click.echo("timeout - NO")
