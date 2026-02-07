@@ -16,7 +16,14 @@ from .device_opcode import DeviceQueryCommandOpcode
     default="BC",
     help="Address, can be a short address (0..63) or group address (G0..G15).",
 )
-def dump(dali: DaliInterface, adr, bank):
+def dump(dali: DaliInterface, adr: str, bank: int) -> None:
+    """
+    Dump the contents of a memory bank
+
+    :param dali: DALI interface to use
+    :param adr: Address information
+    :param bank: Memory bank number
+    """
     set_device_dtr1(dali, bank)
     set_device_dtr0(dali, 0)
     last_accessible_location = query_device_value(dali, adr, DeviceQueryCommandOpcode.READ_MEMORY)

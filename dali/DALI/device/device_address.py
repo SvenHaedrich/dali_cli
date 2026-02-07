@@ -2,8 +2,6 @@
 
 from enum import Enum, unique
 
-from typeguard import typechecked
-
 from ..system.constants import DaliMax
 
 
@@ -19,11 +17,10 @@ class DeviceAddressing(Enum):
     SPECIAL = 5
 
 
-@typechecked
 class DeviceAddress:
     """Interfaces between DALI address mode and frame codes"""
 
-    def __init__(self, mode="BC") -> None:
+    def __init__(self, mode: str ="BC") -> None:
         self.mode = DeviceAddressing.INVALID
         self.byte = 0
         if mode == "SPECIAL":
@@ -118,11 +115,10 @@ class InstanceAddressing(Enum):
     DEVICE = 11
 
 
-@typechecked
 class InstanceAddress:
     """Interfaces between DALI addressing representation and command addressing format"""
 
-    def __init__(self, mode="DEVICE") -> None:
+    def __init__(self, mode: str="DEVICE") -> None:
         self.mode = InstanceAddressing.INVALID
         self.byte = 0
         if self.arg(mode):
