@@ -82,19 +82,41 @@ bit : description
 ## Tests
 
 This script:
+
 ```bash
 ./test_dali_cli.sh
 ```
+
 prepares a virtual environment, and then runs the tests. Optionally you can
 add `--log-level=debug` for more detailed logging.
-
 
 ## Install from github
 
 ```shell
-git clone git@github.com:SvenHaedrich/dali_cli.git
+git clone https://github.com/SvenHaedrich/dali_cli.git
 cd dali_cli
 python3 -m venv --prompt dali venv
 source venv/bin/activate
 python3 -m pip install -e .
 ```
+
+## HID-USB Support
+
+For the Lunatone USB adapter you need to copy the file `99-lunatone-dali.rules` into
+the `udev` folder and reload the `udev` rules.
+
+```shell
+    sudo cp 99-lunatone-dali.rules /etc/udev/rules.d/
+    sudo udevadm control --reload-rules
+```
+
+This file grants everyone read/write access.  If you want to restrict access,
+you should modify `MODE` to `0660`.  You can then grant access to specific user
+accounts by adding them to the plugdev group. Note that some Linux dirstibutions always
+require a per user permission. To grant permission to user named `<username>`:
+
+```shell
+    sudo usermod -a -G plugdev <username>
+```
+
+You will have to log out and then back in for the group change to take effect.
