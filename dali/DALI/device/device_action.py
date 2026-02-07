@@ -4,7 +4,6 @@ import logging
 
 import click
 from dali_interface import DaliFrame, DaliInterface
-from typeguard import typechecked
 
 from ..system.constants import DaliFrameLength
 from .device_address import DeviceAddress, InstanceAddress
@@ -13,7 +12,6 @@ from .device_opcode import DeviceSpecialCommandOpcode
 logger = logging.getLogger(__name__)
 
 
-@typechecked
 def query_instance_value(dali: DaliInterface, adr_parameter: str, instance_parameter: str, opcode: int) -> int | None:
     """Query a value from a control device instance"""
     address = DeviceAddress(adr_parameter)
@@ -29,13 +27,11 @@ def query_instance_value(dali: DaliInterface, adr_parameter: str, instance_param
     return None
 
 
-@typechecked
 def query_device_value(dali: DaliInterface, adr_parameter: str, opcode: int) -> int | None:
     """Query a value from a control device"""
     return query_instance_value(dali, adr_parameter, "DEVICE", opcode)
 
 
-@typechecked
 def set_device_dtr0(dali: DaliInterface, value: int) -> None:
     """Set control device data transfer register 0"""
     logger.debug("set_device_dtr0")
@@ -44,7 +40,6 @@ def set_device_dtr0(dali: DaliInterface, value: int) -> None:
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True)
 
 
-@typechecked
 def set_device_dtr1(dali: DaliInterface, value: int) -> None:
     """Set control device data transfer register 1"""
     logger.debug("set_device_dtr1")
@@ -53,7 +48,6 @@ def set_device_dtr1(dali: DaliInterface, value: int) -> None:
     dali.transmit(DaliFrame(length=DaliFrameLength.DEVICE, data=command), block=True)
 
 
-@typechecked
 def write_device_frame(
     dali: DaliInterface,
     address_byte: int = 0,
@@ -70,7 +64,6 @@ def write_device_frame(
     )
 
 
-@typechecked
 def set_device_dtr2_dtr1(dali: DaliInterface, dtr2: int, dtr1: int) -> None:
     """Set control device data transfer registers 0 and 1 simultaneously"""
     write_device_frame(dali, DeviceSpecialCommandOpcode.DTR2_DTR1, dtr2, dtr1)
