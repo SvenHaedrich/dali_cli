@@ -60,7 +60,7 @@ def cli(
 ):  # pylint: disable=locally-disabled, too-many-arguments, too-many-positional-arguments
     """
     Command line interface for DALI systems.
-    SevenLab 2025
+    SevenLab 2026
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -233,3 +233,7 @@ device_query.add_command(device_query_cmd.error)
 device_query.add_command(device_query_cmd.istatus)
 device_query.add_command(device_query_cmd.enabled)
 device_query.add_command(device_query_cmd.primary)
+device_query.add_command(device_query_cmd.input_value)
+device_query.add_command(device_query_cmd.application)
+device_query.add_command(device_query_cmd.cycle)
+device_query.add_command(device_query_cmd.missing)
