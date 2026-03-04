@@ -20,7 +20,7 @@ class DeviceAddressing(Enum):
 class DeviceAddress:
     """Interfaces between DALI address mode and frame codes"""
 
-    def __init__(self, mode: str ="BC") -> None:
+    def __init__(self, mode: str = "BC") -> None:
         self.mode = DeviceAddressing.INVALID
         self.byte = 0
         if mode == "SPECIAL":
@@ -118,7 +118,7 @@ class InstanceAddressing(Enum):
 class InstanceAddress:
     """Interfaces between DALI addressing representation and command addressing format"""
 
-    def __init__(self, mode: str="DEVICE") -> None:
+    def __init__(self, mode: str = "DEVICE") -> None:
         self.mode = InstanceAddressing.INVALID
         self.byte = 0
         if self.arg(mode):

@@ -37,10 +37,9 @@ jobs:
 
       # MegaLinter
       - name: MegaLinter
-        uses: oxsecurity/megalinter@v8.4.2
+        uses: oxsecurity/megalinter@v9
         id: ml
         env:
           VALIDATE_ALL_CODEBASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MEGALINTER_CONFIG: .github/megalinter/mega-linter.yml
-

@@ -73,11 +73,23 @@ def status(dali: DaliInterface, adr: str) -> None:
         click.echo("timeout - NO")
 
 
-"""NOT IMPLEMENTED: IEC62386-103-2022
-11.6.4 QUERY APPLICATION CONTROLLER ERROR
-11.6.5 QUERY INPUT DEVICE ERROR
-11.6.6 QUERY MISSING SHORT ADDRESS
-"""
+# NOT IMPLEMENTED: IEC62386-103-2022
+# 11.6.4 QUERY APPLICATION CONTROLLER ERROR
+# 11.6.5 QUERY INPUT DEVICE ERROR
+
+
+@click.command(name="missing", help="missing short address.")
+@click.pass_obj
+@device_address_option
+def missing(dali: DaliInterface, adr: str) -> None:
+    """IEC62386-103-2022 11.6.6 QUERY MISSING SHORT ADDRESS"""
+    result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_MISSING_SHORT_ADDRESS)
+    if result == DaliMax.MASK:
+        click.echo(f"missing: {result} = 0x{result:02X} = {result:08b}b = YES")
+    elif result is None:
+        click.echo("timeout - NO")
+    else:
+        click.echo(f"missing: {result} = 0x{result:02X} = {result:08b}b = undefined")
 
 
 @click.command(name="version", help="Control device version number.")
@@ -106,9 +118,8 @@ def dtr0(dali: DaliInterface, adr: str) -> None:
         click.echo("timeout - NO")
 
 
-"""NOT IMPLEMENTED: IEC62386-103-2022
-11.6.9 QUERY NUMBER OF INSTANCES
-"""
+# NOT IMPLEMENTED: IEC62386-103-2022
+# 11.6.9 QUERY NUMBER OF INSTANCES
 
 
 @click.command(name="dtr1", help="Content of DTR1.")
@@ -150,7 +161,8 @@ def random(dali: DaliInterface, adr: str) -> None:
         click.echo(f"random address: 0x{random_address:06X} = " f"{random_address:024b}b = " f"{random_address}")
 
 
-"""IEC62386-103-2022 11.6.15 READ MEMORY LOCATION (DTR1, DTR0)"""
+# NOT IMPLEMENTED: IEC62386-103-2022
+# 11.6.15 READ MEMORY LOCATION (DTR1, DTR0)
 
 
 @click.command(name="application", help="Application controller enabled status.")
@@ -165,10 +177,9 @@ def application(dali: DaliInterface, adr: str) -> None:
         click.echo("timeout - NO")
 
 
-"""NOT IMPLEMENTED: IEC62386-103-2022
-11.6.17 QUERY OPERATING MODE
-11.6.18 QUERY MANUFACTURER SPECIFIC MODE
-"""
+# NOT IMPLEMENTED: IEC62386-103-2022
+# 11.6.17 QUERY OPERATING MODE
+# 11.6.18 QUERY MANUFACTURER SPECIFIC MODE
 
 
 @click.command(name="quiescent", help="Quiescent mode status.")
@@ -255,12 +266,11 @@ def reset(dali: DaliInterface, adr: str) -> None:
         click.echo(f"{result} = 0x{result:02X} = {result:08b}b")
 
 
-"""NOT IMPLEMENTED: IEC62386-103-2022
-11.6.27 QUERY APPLICATION CONTROLLER ALWAYS ACTIVE
-11.6.28 QUERY FEATURE TYPE
-11.6.29 QUERY NEXT FEATURE TYPE
-11.6.30 QUERY EVENT PRIORITY
-"""
+# NOT IMPLEMENTED: IEC62386-103-2022
+# 11.6.27 QUERY APPLICATION CONTROLLER ALWAYS ACTIVE
+# 11.6.28 QUERY FEATURE TYPE
+# 11.6.29 QUERY NEXT FEATURE TYPE
+# 11.6.30 QUERY EVENT PRIORITY
 
 
 @click.command(name="type", help="Instance type.")
@@ -346,10 +356,9 @@ def primary(dali: DaliInterface, adr: str, instance: str) -> None:
         click.echo("timeout - NO")
 
 
-"""NOT IMPLEMENTED: IEC62386-103-2022
-11.9.8 QUERY INSTANCE GROUP 1
-11.9.9 QUERY INSTANCE GROUP 2
-"""
+# NOT IMPLEMENTED: IEC62386-103-2022
+# 11.9.8 QUERY INSTANCE GROUP 1
+# 11.9.9 QUERY INSTANCE GROUP 2
 
 
 @click.command(name="scheme", help="Event scheme setting.")
@@ -383,30 +392,29 @@ def scheme(dali: DaliInterface, adr: str, instance: str) -> None:
 @click.pass_obj
 @device_address_option
 @instance_address_option
-def input(dali: DaliInterface, adr: str, instance: str) -> None:
+def input_value(dali: DaliInterface, adr: str, instance: str) -> None:
     """IEC62386-103-2022 11.9.11 QUERY INPUT VALUE, 11.9.12 QUERY INPUT VALUE LATCH"""
     result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE)
-    value = result
-    while result is not None:
-        result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE_LATCH)
-        if result is not None:
-            value = (value << 8) | result
-    if value is not None:
-        click.echo(f"input value {value} = 0x{value:X} = {value:b}b")
-    else:
+    if result is None:
         click.echo("timeout - NO")
+    else:
+        value = result
+        while result is not None:
+            result = query_instance_value(dali, adr, instance, DeviceInstanceQueryOpcode.QUERY_INPUT_VALUE_LATCH)
+            if result is not None:
+                value = (value << 8) | result
+        click.echo(f"input value {value} = 0x{value:X} = {value:b}b")
 
 
-"""NOT IMPLEMENTED: IEC62386-103-2022
-11.9.13 QUERY EVENT PRIORITY
-11.9.14 QUERY FEATURE TYPE
-11.9.15 QUERY NEXT FEATURE TYPE
-11.9.16 QUERY EVENT FILTER 0-7
-11.9.17 QUERY EVENT FILTER 8-15
-11.9.18 QUERY EVENT FILTER 16-23
-11.9.19 QUERY INSTANCE CONFIGURATION (DTR0)
-11.9.20 QUERY AVAILABLE INSTANCE TYPES
-"""
+# NOT IMPLEMENTED: IEC62386-103-2022
+# 11.9.13 QUERY EVENT PRIORITY
+# 11.9.14 QUERY FEATURE TYPE
+# 11.9.15 QUERY NEXT FEATURE TYPE
+# 11.9.16 QUERY EVENT FILTER 0-7
+# 11.9.17 QUERY EVENT FILTER 8-15
+# 11.9.18 QUERY EVENT FILTER 16-23
+# 11.9.19 QUERY INSTANCE CONFIGURATION (DTR0)
+# 11.9.20 QUERY AVAILABLE INSTANCE TYPES
 
 
 @click.command(name="short", help="shortAddress.")

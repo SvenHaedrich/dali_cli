@@ -1,6 +1,8 @@
 """Command sequence to clear short addresses and group settings."""
 
 import click
+from dali_interface import DaliInterface
+
 from ..system.constants import DaliMax
 from .gear_action import set_gear_dtr0, write_gear_frame, write_gear_frame_and_wait
 from .gear_address import GearAddress
