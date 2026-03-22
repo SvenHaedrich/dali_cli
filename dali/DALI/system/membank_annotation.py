@@ -148,7 +148,7 @@ class MemoryBankItemWithAnnotation:
     }
 
     @staticmethod
-    def show(bank: int, location: int, value: int | None):
+    def show(bank: int, location: int, value: int | None) -> None:
         if bank != 0 and location == 0:
             annotation = MemoryBankItemWithAnnotation.annotations[(0, 0)]
         elif bank != 0 and location == 1:

@@ -9,13 +9,16 @@ from dali.dali_cli import cli
 @pytest.mark.parametrize(
     "command, opcode",
     [
-        ("capabilities", 0x46),
+        ("status", 0x30),
+        ("missing", 0x33),
+        ("version", 0x34),
         ("dtr0", 0x36),
         ("dtr1", 0x37),
         ("dtr2", 0x38),
+        ("application", 0x3D),
         ("quiescent", 0x40),
-        ("status", 0x30),
-        ("version", 0x34),
+        ("cycle", 0x45),
+        ("capabilities", 0x46),
     ],
 )
 def test_query_device_command(command, opcode):
@@ -53,6 +56,7 @@ def test_query_device_command(command, opcode):
         ("primary", 0x88),
         ("resolution", 0x81),
         ("scheme", 0x8B),
+        ("input", 0x8C),
     ],
 )
 def test_query_device_instance_command(command, opcode):
