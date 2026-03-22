@@ -110,10 +110,12 @@ the `udev` folder and reload the `udev` rules.
     sudo udevadm control --reload-rules
 ```
 
-This file grants everyone read/write access.  If you want to restrict access,
-you should modify `MODE` to `0660`.  You can then grant access to specific user
-accounts by adding them to the plugdev group. Note that some Linux distributions always
-require a per user permission. To grant permission to user named `<username>`:
+By default, this rule uses `MODE="0660"`, which grants read/write access only to root
+and members of the appropriate group (for example `plugdev`). If you really want to
+allow all users to access the device, you can change `MODE` to `0666`. You can grant
+access to specific user accounts by adding them to the `plugdev` group. Note that some
+Linux distributions always require per-user permission. To grant permission to a user
+named `<username>`:
 
 ```shell
     sudo usermod -a -G plugdev <username>
