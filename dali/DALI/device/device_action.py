@@ -65,5 +65,5 @@ def write_device_frame(
 
 
 def set_device_dtr2_dtr1(dali: DaliInterface, dtr2: int, dtr1: int) -> None:
-    """Set control device data transfer registers 0 and 1 simultaneously"""
+    """Set control device data transfer registers 2 and 1 simultaneously"""
     write_device_frame(dali, DeviceSpecialCommandOpcode.DTR2_DTR1, dtr2, dtr1)

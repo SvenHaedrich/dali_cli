@@ -13,7 +13,7 @@ from dali.dali_cli import cli
         ("missing", 0x96),
     ],
 )
-def test_query_device_command(command, opcode):
+def test_gear_query_command(command, opcode):
     runner = CliRunner()
     # test broadcast
     result = runner.invoke(cli, ["--mock", "gear", "query", command])
