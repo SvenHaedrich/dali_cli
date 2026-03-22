@@ -35,7 +35,7 @@ def capabilities(dali: DaliInterface, adr: str) -> None:
     """IEC62386-103-2022  11.6.2 QUERY DEVICE CAPABILITIES"""
     result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_DEVICE_CAPABILITIES)
     if result is not None:
-        click.echo(f"status: {result} = 0x{result:02X} = {result:08b}b")
+        click.echo(f"capabilities: {result} = 0x{result:02X} = {result:08b}b")
         click.echo("bit : description")
         click.echo(f"  {(result >> 0 & 0x01)} : applicationControllerPresent")
         click.echo(f"  {(result >> 1 & 0x01)} : numberOfInstances > 0")
@@ -239,7 +239,7 @@ def cycle(dali: DaliInterface, adr: str) -> None:
 @device_address_option
 def extended(dali: DaliInterface, x: int, adr: str) -> None:
     """IEC62386-103-2022 11.6.25 QUERY EXTENDED VERSION NUMBER(DTR0)"""
-    if 0 <= x <= DaliMax.VALUE:
+    if 0 <= x < DaliMax.VALUE:
         set_device_dtr0(dali, x)
         result = query_device_value(dali, adr, DeviceQueryCommandOpcode.QUERY_EXTENDED_VERSION_NUMBER)
         if result is not None:

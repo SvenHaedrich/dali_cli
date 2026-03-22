@@ -71,7 +71,7 @@ class GearAddress:
             return True
         return False
 
-    def __str__(self):  # -> str
+    def __str__(self) -> str:
         if self.mode == DaliAddressingMode.SHORT:
             short_address = (self.byte >> 1) & 0x3F
             return f"G{short_address:02}"

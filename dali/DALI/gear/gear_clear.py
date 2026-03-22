@@ -18,5 +18,7 @@ def clear(dali: DaliInterface):
     address.arg("BC")
     write_gear_frame_and_wait(dali, address.byte, GearConfigureCommandOpcode.SET_SHORT_ADDRESS, send_twice=True)
     for group in range(DaliMax.GEAR_GROUP):
-        write_gear_frame_and_wait(dali, address.byte, (GearConfigureCommandOpcode.REMOVE_GROUP + group), True)
+        write_gear_frame_and_wait(
+            dali, address.byte, (GearConfigureCommandOpcode.REMOVE_GROUP + group), send_twice=True
+        )
     write_gear_frame(dali, GearSpecialCommandOpcode.TERMINATE)

@@ -4,6 +4,7 @@ import click
 from dali.DALI.device.device_query import device_address_option
 from dali_interface import DaliInterface
 
+from ..system.constants import DaliMax
 from .gear_action import query_gear_and_display_reply, query_gear_value
 from .gear_opcode import GearQueryCommandOpcode
 
@@ -72,8 +73,15 @@ def reset(dali: DaliInterface, adr):
 @click.command(name="missing", help="Missing short address.")
 @click.pass_obj
 @gear_address_option
-def missing(dali: DaliInterface, adr):
-    query_gear_and_display_reply(dali, adr, GearQueryCommandOpcode.MISSING_SHORT_ADDRESS)
+def missing(dali: DaliInterface, adr: str) -> None:
+    """IEC62386-102-2022 11.5.4 QUERY MISSING SHORT ADDRESS"""
+    result = query_gear_value(dali, adr, GearQueryCommandOpcode.MISSING_SHORT_ADDRESS)
+    if result == DaliMax.MASK:
+        click.echo(f"missing: {result} = 0x{result:02X} = {result:08b}b = YES")
+    elif result is None:
+        click.echo("timeout - NO")
+    else:
+        click.echo(f"missing: {result} = 0x{result:02X} = {result:08b}b = undefined")
 
 
 @click.command(name="version", help="Version number.")

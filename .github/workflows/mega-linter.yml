@@ -37,7 +37,7 @@ jobs:
 
       # MegaLinter
       - name: MegaLinter
-        uses: oxsecurity/megalinter@v9
+        uses: oxsecurity/megalinter@v9.4.0
         id: ml
         env:
           VALIDATE_ALL_CODEBASE: true
